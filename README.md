@@ -139,7 +139,7 @@ user=> (str "meow " 3 " times")
 "meow 3 times"
 ```
 
-"..." is Clojure’s way of writing a regular expression
+`#"..."` is Clojure’s way of writing a regular expression.
 The parentheses mean that the regular expression should capture that part of the match. 
 We get back a list containing the part of the string that matched the first parentheses, 
 followed by the part that matched the second parentheses:
