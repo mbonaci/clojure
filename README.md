@@ -1,3 +1,5 @@
+_Made possible by Aphyr's excellent, from-the-ground-up Clojure tutorial_
+
 # Basics
 
 ```clojure
@@ -835,23 +837,23 @@ user=> (expand inc 0 10)
 (0 1 2 3 4 5 6 7 8 9)
 ```
 
-Our base case is x itself, followed by the sequence beginning with (f x). That sequence in turn expands to (f (f x)), and then (f (f (f x))), and so on. Each time we call expand, we count down by one using dec. Once the count is zero, the if returns nil, and evaluation stops.
+Our base case is `x` itself, followed by the sequence beginning with `(f x)`. That sequence in turn expands to `(f (f x))`, and then to `(f (f (f x)))`, and so on. Each time we call `expand`, we count down by one using `dec`. Once the `count` is zero, `if` returns `nil`, and evaluation stops.
 
-Clojure has a more general form of this function, called iterate:
+Clojure has a more general form of this function, called `iterate`:
 
 ```clojure
 user=> (take 10 (iterate inc 0))
 (0 1 2 3 4 5 6 7 8 9)
 ```
 
-Since this sequence is infinitely long, we’re using take to select only the first 10 elements. We can construct more complex sequences by using more complex functions:
+Since this sequence is infinitely long, we’re using `take` to select only the first 10 elements. We can construct more complex sequences by using more complex functions:
 
 ```clojure
 user=> (take 10 (iterate (fn [x] (if (odd? x) (+ 1 x) (/ x 2))) 10))
 (10 5 6 3 4 2 1 2 1 2)
 ```
 
-repeat constructs a sequence where every element is the same:
+`repeat` constructs a sequence where every element is the same:
 
 ```clojure
 user=> (take 10 (repeat "a"))
@@ -861,7 +863,7 @@ user=> (repeat 5 "b")
 ("b" "b" "b" "b" "b")
 ```
 
-repeatedly simply calls a function (f) to generate an infinite sequence of values, over and over again, without any relationship between elements. For an infinite sequence of random numbers:
+`repeatedly` simply calls a function `(f)` to generate an infinite sequence of values, over and over again, without any relationship between elements. For an infinite sequence of random numbers:
 
 ```clojure
 user=> (rand)
@@ -874,10 +876,10 @@ user=> (take 3 (repeatedly rand))
 (0.18806021884865332 0.5231673860825672 0.38244349544358525)
 ```
 
-range generates a sequence of numbers between two points. 
-(range n) gives n successive integers starting at 0. 
-(range n m) returns integers from n to m-1. 
-(range n m step) returns integers from n to m, but separated by step:
+`range` generates a sequence of numbers between two points. 
+`(range n)` gives `n` successive integers starting at 0. 
+`(range n m)` returns integers from `n` to `m-1`. 
+`(range n m step)` returns integers from `n` to `m`, separated by `step`:
 
 ```clojure
 user=> (range 5)
@@ -890,7 +892,7 @@ user=> (range 5 25 5)
 (5 10 15 20)
 ```
 
-To extend a sequence by repeating it forever, use cycle:
+To extend a sequence by repeating it forever, use `cycle`:
 
 ```clojure
 user=> (take 6 (cycle (range 5 50 5)))
@@ -904,12 +906,12 @@ user=> (take 6 (cycle (range 5 50 5)))
 
 ```clojure
 user=> (map (fn [n vehicle] (str "I've got " n " " vehicle "s"))
-  #_=> [0 200 9]
-  #_=> ["car" "train" "kiteboard"])
+  #_=>   [0 200 9]
+  #_=>   ["car" "train" "kiteboard"])
 ("I've got 0 cars" "I've got 200 trains" "I've got 9 kiteboards")
 ```
 
-If given multiple sequences, map calls its function with one element from each sequence in turn. So the first value will be (f 0 "car"), the second (f 200 "train"), and so on. Like a zipper, map folds together corresponding elements from multiple collections. To sum three vectors, column-wise:
+If given multiple sequences, `map` calls its function with one element from each sequence in turn. So the first value will be `(f 0 "car")`, the second `(f 200 "train")`, and so on. Like a zipper, map folds together corresponding elements from multiple collections. To sum three vectors, column-wise:
 
 ```clojure
 user=> (map + [1 2 3]
@@ -918,7 +920,7 @@ user=> (map + [1 2 3]
 (8 9 10)
 ```
 
-If one sequence is bigger than another, map stops at the end of the smaller one. We can exploit this to combine finite and infinite sequences. For example, to number the elements in a vector:
+If one sequence is bigger than another, `map` stops at the end of the smaller one. We can exploit this to combine finite and infinite sequences. For example, to number the elements in a vector:
 
 ```clojure
 user=> (map (fn [index element] (str index ". " element))
@@ -927,7 +929,7 @@ user=> (map (fn [index element] (str index ". " element))
 ("0. erlang" "1. scala" "2. haskell")
 ```
 
-Transforming elements together with their indices is so common that Clojure has a special function for it: map-indexed:
+Transforming elements together with their indices is so common that Clojure has a special function for it: `map-indexed`:
 
 ```clojure
 user=> (map-indexed (fn [index element] (str index ". " element))
@@ -942,21 +944,21 @@ user=> (concat [1 2 3] [:a :b :c] [4 5 6])
 (1 2 3 :a :b :c 4 5 6)
 ```
 
-Another way to combine two sequences is to riffle them together, using interleave:
+Another way to combine two sequences is to riffle them together, using `interleave`:
 
 ```clojure
 user=> (interleave [:a :b :c] [1 2 3])
 (:a 1 :b 2 :c 3)
 ```
 
-And if you want to insert a specific element between each successive pair in a sequence, try interpose:
+And if you want to insert a specific element between each successive pair in a sequence, try `interpose`:
 
 ```clojure
 user=> (interpose :and [1 2 3 4])
 (1 :and 2 :and 3 :and 4)
 ```
 
-To reverse a sequence, use reverse:
+To reverse a sequence, use ... you guessed it, `reverse`:
 
 ```clojure
 user=> (reverse [1 2 3])
@@ -966,7 +968,7 @@ user=> (reverse "woolf")
 (\f \l \o \o \w)
 ```
 
-Strings are sequences too! Each element of a string is a character, written \f. You can rejoin those characters into a string with apply str:
+Strings are sequences too! Each element of a string is a character, written `\f`. You can rejoin those characters into a string with `apply str`:
 
 
 ```clojure
@@ -974,14 +976,14 @@ user=> (apply str (reverse "woolf"))
 "floow"
 ```
 
-…and break strings up into sequences of chars with seq:
+…and break strings up into sequences of chars with `seq`:
 
 ```clojure
 user=> (seq "sato")
 (\s \a \t \o)
 ```
 
-To randomize the order of a sequence, use shuffle:
+To randomize the order of a sequence, use `shuffle`:
 
 ```clojure
 user=> (shuffle [1 2 3 4 5])
@@ -1019,7 +1021,7 @@ user=> (take-while pos? [3 2 1 0 -1 -2 10])
 (3 2 1)
 ```
 
-In general, one can cut a sequence in twain by using split-at, and giving it a particular index. There’s also split-with, which uses a function to decide when to cut:
+In general, one can cut a sequence in twain by using `split-at` with a particular index. There’s also `split-with`, which uses a function to decide when to cut:
 
 ```clojure
 user=> (split-at 4 (range 10))
@@ -1029,43 +1031,43 @@ user=> (split-with number? [1 2 3 :mark 4 5 6 :mark 7])
 [(1 2 3) (:mark 4 5 6 :mark 7)]
 ```
 
-Notice that because indexes start at zero, sequence functions tend to have predictable numbers of elements.(split-at 4) yields four elements in the first collection, and ensures the second collection begins at index four.(range 10) has ten elements, corresponding to the first ten indices in a sequence. (range 3 5) has two (since 5 - 3 is two) elements. These choices simplify the definition of recursive functions as well.
-We can select particular elements from a sequence by applying a function. To find all positive numbers in a list, use filter:
+Notice that because indexes start at zero, sequence functions tend to have predictable number of elements.`(split-at 4)` yields four elements in the first collection, and ensures the second collection begins at index four. `(range 10)` has ten elements, corresponding to the first ten indices in a sequence. `(range 3 5)` has two (as in `5 - 3 = 2`) elements. These choices simplify the definition of recursive functions as well.
+We can select particular elements from a sequence by applying a function. To pull up all positive numbers in a list, use `filter`:
 
 ```clojure
 user=> (filter pos? [1 5 -4 -7 3 0])
 (1 5 3)
 ```
 
-`filter` looks at each element in turn, and includes it in the resulting sequence only if (f element) returns a truthy value. Its complement is remove, which only includes those elements where (f element) is false or nil:
+`filter` looks at each element in turn, and includes it in the resulting sequence only if `(f element)` returns a _truthy_ value. Its complement is `remove`, which only includes those elements where `(f element)` is `false` or `nil`:
 
 ```clojure
 user=> (remove string? [1 "tur" :apple])
 (1 :apple)
 ```
 
-One can group a sequence into chunks using partition, partition-all, or partition-by. For instance, one might group alternating values into pairs:
+One can group a sequence into chunks using `partition`, `partition-all`, or `partition-by`. For instance, one might group alternating values into pairs like this:
 
 ```clojure
 user=> (partition 2 [:cats 5 :bats 27 :crocs 0])
 ((:cats 5) (:bats 27) (:crocs 0))
 ```
 
-Separate a series of numbers into negative and positive runs:
+Separate a series of numbers into negative and positive subsequences:
 
 ```clojure
 user=> (partition-by neg? [1 2 3 2 1 -1 -2 -3 -2 -1 1 2])
 ((1 2 3 2 1) (-1 -2 -3 -2 -1) (1 2))
 ```
 
-partition-all may include partitions with fewer than n items at the end:
+`partition-all` may include partitions with fewer than `n` items at the end:
 
 ```clojure
 user=> (partition-all 3 [1 2 -5 3 2 1 -1 -2 -3 -2 -1 1 2])
 ((1 2 -5) (3 2 1) (-1 -2 -3) ( -2 -1 1) ( 2))
 ```
 
-while partition may not:
+while `partition` may not:
 
 ```clojure
 user=> (partition 3 [1 2 -5 3 2 1 -1 -2 -3 -2 -1 1 2])
@@ -1075,7 +1077,7 @@ user=> (partition 3 [1 2 -5 3 2 1 -1 -2 -3 -2 -1 1 2])
 
 ## Collapsing subsequences
 
-After transforming a sequence, we often want to collapse it in some way; to derive some smaller value. For instance, we might want the number of times each element appears in a sequence:
+After transforming a sequence, we often want to collapse it in some way, in order to derive some smaller value. For instance, we might want the number of times each element appears in a sequence:
 
 ```clojure
 user=> (frequencies [:meow :mrrrow :meow :meow])
@@ -1093,8 +1095,8 @@ user=> (pprint (group-by :first [{:first "Li"    :last "Zhou"}
  "Sarah" [{:last "Lee", :first "Sarah"} {:last "Dunn", :first "Sarah"}]}
 ```
 
-Here we’ve taken a sequence of people with first and last names, and used the :first keyword (which can act as a function!) to look up those first names. group-by used that function to produce a map of first names to lists of people–kind of like an index.
-In general, we want to combine elements together in some way, using a function. Where map treated each element independently, reducing a sequence requires that we bring some information along. The most general way to collapse a sequence is reduce:
+Here we’ve taken a sequence of people with first and last names, and used the `:first` keyword (which can act as a function!) to look up those first names. `group-by` used that function to produce a map of first names to lists of people, kind of like an index.
+In general, we want to combine elements together in some way, using a function. Where `map` treated each element independently, reducing a sequence requires that we bring some information along. The most general way to collapse a sequence is `reduce`:
 
 ```clojure
 user=> (doc reduce)
@@ -1118,7 +1120,7 @@ user=> (reduce + 1 [1 2 3 4])
 11
 ```
 
-To see the reducing process in action, we can use reductions, which returns a sequence of all the intermediate states:
+To see the reducing process in action, we can use `reductions`, which returns a sequence of all the intermediate states:
 
 ```clojure
 user=> (reductions + [1 2 3 4])
@@ -1132,7 +1134,7 @@ user=> (reduce conj #{} [:a :b :b :b :a :c])
 #{:a :c :b}
 ```
 
-Reducing elements into a collection has its own name: into. We can conj [key value] vectors into a map, for instance, or build up a list:
+Reducing elements into a collection has its own name: `into`. We can `conj [key value]` vectors into a map, for instance, or build up a list:
 
 ```clojure
 user=> (into {} [[:a 2] [:b 3]])
@@ -1142,21 +1144,21 @@ user=> (into (list) [1 2 3 4])
 (4 3 2 1)
 ```
 
-Because elements added to a list appear at the beginning, not the end, this expression reverses the sequence. Vectors conj onto the end, so to emit the elements in order, using reduce, we might try:
+Because **elements added to a list appear at the beginning**, not the end, this expression **reverses the sequence**. Vectors `conj` onto the end, so to emit the elements in order, using reduce, we might try:
 
 ```clojure
 user=> (reduce conj [] [1 2 3 4 5])
 [1 2 3 4 5]
 ```
 
-remember:
+Remember?
 
 ```clojure
 user=> (conj [-1 0] [1 2 3 4 5])
-[-1 0 [1 2 3 4 5]]
+[-1 0 [1 2 3 4 5]]               ; not [-1 0 1 2 3 4 5]
 ```
 
-This looks like a map function. All that’s missing is some kind of transformation applied to each element:
+This looks like a `map` function. All that’s missing is some kind of transformation applied to each element:
 
 ```clojure
 user=> (defn my-map [f coll]
@@ -1170,7 +1172,7 @@ user=> (my-map inc [1 2 3 4])
 [2 3 4 5]
 ```
 
-So map is just a special kind of reduce. What about, say, take-while?
+So `map` is just a special kind of `reduce`. What about, say, `take-while`?
 
 ```clojure
 user=> (defn my-take-while [f coll]
@@ -1182,15 +1184,14 @@ user=> (defn my-take-while [f coll]
   #_=>           coll))
 ```
 
-We’re using a special function here, reduced, to indicate that we’ve completed our reduction early and can skip the rest of the sequence.
+We’re using a special function here, `reduced`, to indicate that we’ve completed our reduction early and can skip the rest of the sequence.
 
 ```clojure
 user=> (my-take-while pos? [2 1 0 -1 0 1 2])
 [2 1]
 ```
 
-Most of Clojure’s sequence functions are lazy. They don’t do anything until needed. 
-For instance, we can increment every number from zero to infinity:
+Most of Clojure’s **sequence functions are lazy**. For instance, we can increment every number from zero to infinity:
 
 ```clojure
 user=> (def infseq (map inc (iterate inc 0)))
@@ -1202,7 +1203,6 @@ false
 
 That function returned immediately. Because it hasn’t done any work yet, we say the sequence is unrealized. It doesn’t increment any numbers at all until we ask for them:
 
-
 ```clojure
 user=> (take 10 infseq)
 (1 2 3 4 5 6 7 8 9 10)
@@ -1211,7 +1211,7 @@ user=> (realized? infseq)
 true
 ```
 
-Lazy sequences also remember their contents, once evaluated, for faster access.
+**Lazy sequences also remember their contents, once evaluated, for faster access.**
 
 Find the sum of the products of consecutive pairs of the first 1000 odd integers.
 
@@ -1220,26 +1220,27 @@ user=> (reduce +
   #_=>         (take 1000
   #_=>               (map (fn [pair] (* (first pair) (second pair)))
   #_=>                    (partition 2 1
-  #_=>                               (filter odd?
-  #_=>                                       (iterate inc 0))))))
+  #_=>                      (filter odd?
+  #_=>                        (iterate inc 0))))))
 1335333000
 ```
 
-Homework:
-1. Write a function to find out if a string is a palindrome–that is, if it looks the same forwards and backwards.
+__Homework:__
+
+1. Write a function to find out if a string is a palindrome.
 
 ```clojure
 user=> (defn palindrome? [word] (== 0 (compare word (apply str (reverse word)))))
 ```
 
-2. Find the number of `c`s in `“abracadabra”`
+2. Find the number of `c`s in `“abracadabra”`.
 
 ```clojure
 user=> (defn occurs-count [c word]
   #_=>         (get (frequencies (seq word)) c 0))
 ```
 
-3. Write your own version of filter.
+3. Write your own version of `filter`.
 
 ```clojure
 
