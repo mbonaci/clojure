@@ -471,7 +471,7 @@ user=> (dissoc {:a 1 :b 2 :c 4} :c)
 
 We can define a meaning for a symbol within a specific expression, using `let`:
 The `let` expression first takes a vector of bindings: alternating symbols and values that those symbols are bound to, within the remainder of the expression. 
-“Let the symbol `cats` be `5`, and construct a string composed of `"I have ", cats, and " cats"`:
+“Let the symbol `cats` be `5`, and construct a string composed of `"I have "`, `cats`, and `" cats"`:
 
 ```clojure
 user=> (let [cats 5] (str "I have " cats " cats."))
