@@ -1,4 +1,4 @@
-_Made possible by Aphyr's excellent, from-the-ground-up Clojure tutorial_
+_Made possible by Aphyr's excellent, from-the-ground-up Clojure tutorial and The joy of Clojure book_
 
 # Basics
 
@@ -7,7 +7,10 @@ user=> inc
 <core$inc clojure.core$inc@d6206b5>
 ```
 
-Symbols start with a tick (references to other values)
+Valid Clojure expressions consist of numbers, symbols, keywords, booleans, characters, functions, function calls, macros, strings, literal maps, vectors, and sets. 
+Numbers, strings and keywords evaluate to themselves. 
+Symbols (references to other values) start with a tick.
+
 ```clojure
 user=> 'inc
 inc
@@ -29,7 +32,11 @@ user=> (inc 0)
 
 user=> (inc (inc 0))
 2
+```
 
+## Numbers
+
+```clojure
 user=> (+ 1 (- 5 2) (+ 3 4))
 11
 
@@ -47,12 +54,19 @@ clojure.lang.BigInt
 
 user=> (type (int 0))
 java.lang.Integer
+;; Clojure's implementation of integer can theoretically take an infinitely 
+;; large value, limited only by the available memory
 
 user=> (type (short 0))
 java.lang.Short
 
 user=> (type (byte 0))
 java.lang.Byte
+
+;; decimal, hexadecimal, octal, radix-32, and binary literals:
+[127 0x7F 0177 32r3V 2r01111111]
+user=> [127 127 127 127 127]
+;; radix supports up to base 36
 
 user=> (Short/MAX_VALUE)
 32767
@@ -69,8 +83,15 @@ java.lang.Double
 user=> (type (float 1.23))
 java.lang.Float
 
+user=> 366e3
+366000.0
+
 user=> (type 1/3)
 clojure.lang.Ratio
+
+;; rational numbers are automatically simplified, if possible:
+user=> 100/25
+4
 
 user=> (+ 1 2.0)
 3.0
@@ -113,6 +134,16 @@ false
 
 user=> (= 2 2 2)
 true
+```
+
+## Strings and Characters
+
+Any sequence of characters enclosed in double quotes, including newlines:
+
+```clojure
+user=> "this is a string
+  #_=> on two lines"
+"this is a string\non two lines"  ;; when printed in REPL includes newline escape
 
 user=> (type "a")
 java.lang.String
@@ -139,6 +170,16 @@ user=> (str '(1 2 3))
 
 user=> (str "meow " 3 " times")
 "meow 3 times"
+
+;; characters are denoted by backslash
+user=> \a
+\a
+
+user=> \u0042
+\B
+
+user=> \\
+\\
 ```
 
 `#"..."` is Clojure’s way of writing a regular expression.
@@ -160,7 +201,10 @@ user=> (rest (re-matches #"(.+):(.+)" "mouse:treat"))
 ("mouse" "treat")
 ```
 
-The only negative values are `false` and `nil`, all other are `true`:
+## Booleans
+
+**The only negative values** are `false` and `nil`, all others are `true`:
+
 ```clojure
 user=> (boolean nil)
 false
@@ -228,10 +272,20 @@ user=> (name :cat)
 "cat"
 ```
 
-
-# Lists
+# Collections
 
 A collection is a group of values. It’s a container which provides some structure, some framework, for the things that it holds. We say that a collection contains elements, or members.
+
+## Lists
+
+Literal lists are written with parentheses. 
+
+`(yankee hotel foxtrot)`
+
+When a list is evaluated, the first item of the list, `yankee`, will be resolved to a function, macro, or _special form_. If yankee is a function, the remaining items in the list will be evaluated in order, and the results will be passed to yankee as its parameters.
+
+> A **special form** is a form with special syntax or special evaluation rules that are typically not implemented using the base Clojure forms. An example of a special form is
+the `.` (dot) operator used for Java interoperability purposes.
 
 ```clojure
 user=> '(1 2 3)
@@ -469,7 +523,8 @@ user=> (dissoc {:a 1 :b 2 :c 4} :c)
 
 # Symbols
 
-We can define a meaning for a symbol within a specific expression, using `let`:
+Typically used to refer to function parameters, local variables, globals, and Java classes.
+We can define a meaning for a symbol within a specific expression, using `let`.
 The `let` expression first takes a vector of bindings: alternating symbols and values that those symbols are bound to, within the remainder of the expression. 
 “Let the symbol `cats` be `5`, and construct a string composed of `"I have "`, `cats`, and `" cats"`:
 
@@ -655,7 +710,7 @@ user=> (defn launch
 #'user/launch
 ```
 
-Docstrings are used to automatically generate documentation for a Clojure programs, but you can also access them from the **REPL**:
+Docstrings are used to automatically generate documentation for a Clojure programs, but you can also access them from the **REPL** (The `user=>` prompt refers to the top-level namespace of the default REPL):
 
 ```clojure
 user=> (doc launch)
