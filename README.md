@@ -282,7 +282,10 @@ Literal lists are written with parentheses.
 
 `(yankee hotel foxtrot)`
 
-When a list is evaluated, the first item of the list, `yankee`, will be resolved to a function, macro, or _special form_. If yankee is a function, the remaining items in the list will be evaluated in order, and the results will be passed to yankee as its parameters.
+When a list is evaluated, the first item of the list, `yankee`, will be resolved to a _function_, _macro_, or _special form_. 
+If `yankee` is a _function_, the remaining items in the list will be evaluated in order, and the results will be passed to `yankee` as its parameters.
+If `yankee` is a _macro_ or a _special form_, the remaining items in the list
+aren’t necessarily evaluated, but are processed as defined by the _macro_ or _operator_.
 
 > A **special form** is a form with special syntax or special evaluation rules that are typically not implemented using the base Clojure forms. An example of a special form is
 the `.` (dot) operator used for Java interoperability purposes.
@@ -319,13 +322,14 @@ user=> (nth (list 1 2 3) 2)
 3
 ```
 
+Unlike some _Lisps_, the empty list in Clojure, `()`, isn't the same as `nil`.
 Lists are well-suited for small collections, or collections which are read in linear order, but are slow when you want to get arbitrary elements from later in the list. 
 
 
 # Vectors
 
 For fast access to every element, we use a __vector__.
-Vectors are surrounded by square brackets, just like lists are surrounded by parentheses. Because vectors aren’t evaluated like lists are, there’s no need to quote them:
+Vectors are surrounded by square brackets, just like lists are surrounded by parentheses. Because vectors aren’t evaluated like lists are, there’s no need to quote the vector literal:
 
 ```clojure
 user=> [1 2 3]
@@ -353,6 +357,8 @@ user=> (conj [1 2 3] 4)
 ```
 
 Our friends `first`, `second`, and `nth` work here too; but unlike lists, `nth` is fast on vectors. That’s because internally, vectors are represented as a very broad tree of elements, where each part of the tree branches into 32 smaller trees. Even very large vectors are only a few layers deep, which means getting to elements only takes a few hops.
+
+The important difference, when compared to lists, is that vectors evaluate each item in order. No function or macro is performed on a vector itself.
 
 `rest` and `next` both return _everything but the first element_. They differ only by what happens when there are no remaining elements:
 
@@ -402,12 +408,12 @@ user=> (= [1 2] (list 1 2))
 true
 ```
 
-In almost all contexts, you can consider vectors, lists, and other sequences as interchangeable. They only differ in their performance characteristics, and in a few data structure-specific operations.
+In almost all contexts, you can consider vectors, lists, and other sequences as interchangeable. They only differ in their performance characteristics, and in a few data-structure-specific operations.
 
 
 # Sets
 
-Sets are surrounded by `#{...}`. Notice that though we gave the elements `:a`, `:b`, and `:c`, they came out in a different order. In general, the order of sets can shift at any time. If you want a particular order, you can ask for it as a list or vector:
+Sets are surrounded by `#{...}`. In general, the order of sets can shift at any time. If you want a particular order, you can ask for it as a list or a vector:
 
 ```clojure
 user=> #{1 2 3}
@@ -464,10 +470,10 @@ user=> (set [2 5 1])
 Maps are surrounded by braces `{...}`, filled by alternating keys and values. In this map, the three keys are `:name`, `:color`, and `:weight`, and their values are `"mittens"`, `"black"`, and `9`, respectively. We can look up the corresponding value for a key with `get`:
 
 ```clojure
-user=> {:name "luka" :weight 3 :color "white"}
+user=> {:name "luka", :weight 3, :color "white"}
 {:weight 3, :name "luka", :color "white"}
 
-user=> (get {"cat" "meow" "dog" "woof"} "cat")
+user=> (get {"cat" "meow", "dog" "woof"} "cat")
 "meow"
 ```
 
@@ -481,14 +487,14 @@ user=> (get {:glinda :god} :wicked :not-here)
 We can use maps as verbs, directly:
 
 ```clojure
-user=> ({"a" 12 "b" 24} "b")
+user=> ({"a" 12, "b" 24} "b")
 24
 ```
 
 Keywords can also be used as verbs, which look themselves up:
 
 ```clojure
-user=> (:raccoon {:weasel "queen" :raccoon "king"})
+user=> (:raccoon {:weasel "queen", :raccoon "king"})
 "king"
 ```
 
@@ -509,23 +515,24 @@ user=> (assoc nil 5 2)
 Combine maps together using `merge`. It yields a map containing all the elements of all given maps, preferring the values from later ones:
 
 ```clojure
-user=> (merge {:a 1 :b 2} {:b 3 :c 4})
+user=> (merge {:a 1, :b 2} {:b 3, :c 4})
 {:c 4, :a 1, :b 3}
 ```
 
 Remove map element with `dissoc`:
 
 ```clojure
-user=> (dissoc {:a 1 :b 2 :c 4} :c)
+user=> (dissoc {:a 1, :b 2, :c 4} :c)
 {:a 1, :b 2}
 ```
 
+Like vectors, any item in a map literal is evaluated before the result is stored in the map. Unlike vectors, the order in which they are evaluated isn't guaranteed.
 
 # Symbols
 
 Typically used to refer to function parameters, local variables, globals, and Java classes.
 We can define a meaning for a symbol within a specific expression, using `let`.
-The `let` expression first takes a vector of bindings: alternating symbols and values that those symbols are bound to, within the remainder of the expression. 
+The `let` expression first **takes a vector of bindings**: alternating symbols and values that those symbols are bound to, within the remainder of the expression. 
 “Let the symbol `cats` be `5`, and construct a string composed of `"I have "`, `cats`, and `" cats"`:
 
 ```clojure
@@ -533,7 +540,7 @@ user=> (let [cats 5] (str "I have " cats " cats."))
 "I have 5 cats."
 ```
 
-Let bindings apply only within the `let` expression itself. They also override any existing definitions for symbols at that point in the program. For instance, we can redefine addition to mean subtraction, for the duration of a `let`:
+Let bindings, also called **locals**, apply only within the `let` expression itself. They also override any existing definitions for symbols at that point in the program. For instance, we can redefine addition to mean subtraction, for the duration of a `let`:
 
 ```clojure
 user=> (let [+ -] (+ 2 3))
@@ -551,8 +558,8 @@ We can also provide multiple bindings. Since Clojure doesn’t care about spacin
 
 ```clojure
 user=> (let [person "joseph"
-  #_=>        num-cats 186]
-  #_=> (str person " has " num-cats " cats!"))
+  #_=>       num-cats 186]
+  #_=>   (str person " has " num-cats " cats!"))  ; the body
 "joseph has 186 cats!"
 ```
 
@@ -567,8 +574,16 @@ user=> (let [cats 3
 
 So fundamentally, `let` defines the meaning of symbols within an expression. When Clojure evaluates a `let`, it replaces all occurrences of those symbols in the rest of the `let` expression with their corresponding values, then evaluates the rest of the expression.
 
+The body is sometimes described as an _implicit do_ (see [blocks bellow](#blocks)) because it follows the same rules: you may include any number of expressions and all will be evaluated, but only the value of the last one is returned.
+
+Because they’re immutable, locals can’t be used to accumulate results. Instead,
+you’d use a high level function or loop/recur form.
 
 # Functions
+
+Functions are a first-class type in Clojure. They can be used the same as any value (stored in Vars, held in collections and passed as arguments and returned as a result of other functions).
+
+> Prefix notation allows any number of arguments (infix only two) and completely eliminates the problem of operator precedence.
 
 ```clojure
 let( [x] (+ x 1))
@@ -587,20 +602,19 @@ Named function definition:
 
 ```clojure
 user=> (let [twice (fn [x] (* 2 x))]
-  #_=> (+ (twice 1)
-  #_=> (twice 3)))
+  #_=>   (+ (twice 1)
+  #_=>   (twice 3)))
 8
 ```
 
-Let bindings describe a similar relationship, but with a specific set of values for those arguments. `let` is evaluated immediately, whereas `fn` is evaluated later, when bindings are provided.
-
+`let` bindings describe a similar relationship, but with a specific set of values for those arguments. `let` is evaluated immediately, whereas `fn` is evaluated later, when bindings are provided.
 
 # Vars
 
-Once a `let` is defined, there’s no way to change it. If we want to redefine symbols for everyone, even code that we didn’t write, we need a new construct, a mutable variable:
+Once a `let` is defined, there’s no way to change it. If we want to redefine symbols for everyone, even code that we didn’t write, we need a new construct, a mutable variable.
 
 ```clojure
-user=> (def cats 5cats)
+user=> (def cats 5)
 #'user/cats
 
 user=> (type #'user/cats)
@@ -610,9 +624,9 @@ user=> cats
 5
 ```
 
-`def` defines a type of value we haven’t seen before: a _Var_. _Vars_, like symbols, are references to other values. When evaluated, a `Var` is replaced by its corresponding value:
+`def` defines a type of value we haven’t seen before: a _Var_. _Vars_, like symbols, are references to other values. When evaluated, a `Var` is replaced by its corresponding value.  
 
-`def` also binds the symbol `cats` (and its globally qualified equivalent `user/cats`) to that `Var`.
+`def` also binds the symbol `cats` (and its globally qualified equivalent `user/cats`) to that `Var`.  
 
 The symbol `inc` points to the `Var` `#'inc`, which in turn points to the function `#<core$inc clojure.core$inc@16bc0b3c>`. We can see the intermediate Var with `resolve`:
 
@@ -627,19 +641,31 @@ user=> (eval 'inc)
 #<core$inc clojure.core$inc@d6206b5>  ;value
 ```
 
-Why those two levels of indirection? Unlike with symbol, we can change the meaning of a Var for everyone, globally, at any time.
+Why those two levels of indirection? Unlike with symbol, we can change the meaning of a Var for everyone, globally, at any time.  
 
-Named function:
+Vars don't require a value. Instead we can just declare them and, by doing so, defer the binding of value.
 
 ```clojure
-user=> (def half (fn [number] (/ number 2)))
+user=> (def y)
+#'user/y
+
+;; if we try to use it:
+user=> y
+java.lang.IllegalStateException: Var user/y is unbound
+```
+
+## Named functions
+
+```clojure
+user=> (def half 
+user=>   (fn [number] (/ number 2)))
 #'user/half
 
 user=> (half 8)
 4
 ```
 
-Creating a function and binding it to a variable is so common that it has its own form: `defn`, short for `def fn`:
+Creating a function and binding it to a variable is so common that it has its own form: `defn`, which is a _macro_ that is short for `def fn`:
 
 ```clojure
 user=> (defn half [number] (/ number 2))
@@ -679,15 +705,14 @@ user=> (half 8)
 4
 ```
 
-Multiple arguments work just like you expect. Just specify an argument vector of two, or three, or however many arguments the function takes.
+Multiple arguments work just like you expect. Just specify an argument vector of two, or three, or however many arguments the function takes.  
 Some functions can take any number of arguments. For that, Clojure provides `&`, which slurps up all remaining arguments as a list:
 
 ```clojure
-user=> (defn vargs
-  #_=> [x y & more-args]
-  #_=> {:x x
-  #_=> :y y
-  #_=> :more more-args})
+user=> (defn vargs [x y & more-args]
+  #_=>   {:x x
+  #_=>    :y y
+  #_=>    :more more-args})
 #'user/vargs
 
 user=> (vargs 1 2)
@@ -697,7 +722,8 @@ user=> (vargs 1 2 3 4 5)
 {:x 1, :y 2, :more (3 4 5)}
 ```
 
-`x` and `y` are mandatory, though there don’t have to be any remaining arguments.
+`x` and `y` are mandatory, though there don’t have to be any remaining arguments.  
+
 To keep track of what arguments a function takes, why the function exists, and what it does, we usually include a **docstring**. Docstrings help fill in the missing context around functions, to explain their assumptions, context, and purpose to the world:
 
 ```clojure
@@ -732,6 +758,19 @@ user=> (meta #'launch)
 
 There’s some other juicy information in there, like the file the function was defined in and which line and column it started at, but that’s not particularly useful since we’re in the _REPL_, not a file. However, this does hint at a way to answer our motivating question: how does the type function work?
 
+## Blocks
+
+When you have a series or block of expressions that need to be treated as one, use `do`. All the expressions will be evaluated, but only the last one will be returned:
+
+```clojure
+user=> (do
+  #_=>   6
+  #_=>   (+ 5 4)
+  #_=>   3)
+3
+```
+
+The expressions `6` and `(+ 5 4)` are perfectly legal. The addition in `(+ 5 4)` is even done, but the value is thrown away, only the final expression `3` is returned
 
 ## How does `type` work?
 
@@ -875,8 +914,28 @@ user=> (map inc [1 2 3 4])
 (2 3 4 5)
 ```
 
-The function `map` relates one sequence to another. The type `map` relates keys to values. There is a deep symmetry between the two: maps are usually sparse, and the relationships between keys and values may be arbitrarily complex. The `map` function, on the other hand, usually expresses the same type of relationship, applied to a series of elements in fixed order.
+The function `map` relates one sequence to another. The type `map` relates keys to values. There is a deep symmetry between the two: maps are usually sparse, and the relationships between keys and values may be arbitrarily complex. The `map` function, on the other hand, usually expresses the same type of relationship, applied to a series of elements in a fixed order.
 
+Clojure has a _special form_ called `recur` that's specifically used for tail recursion:
+
+```clojure
+user=> (defn print-down-from [x]
+  #_=>   (when (pos? x)  ;return when x is no longer positive
+  #_=>     (println x)
+  #_=>     (recur (dec x))))
+#'user/print-down-from
+
+user=> (print-down-from 5)
+5
+4
+3
+2
+1
+nil
+```
+
+This is nearly identical to how you’d structure a while loop in an imperative language.One significant difference is that the value of `x` isn’t decremented somewhere in the body of the loop. Instead, a new value is calculated as a parameter to `recur`, which immediately does two things: rebinds `x` to the new value and returns control to the top of `print-down-from`.  
+If the function has multiple arguments, the `recur` call must as well, just as if you were calling the function by name instead of using the `recur` special form. And just as with a function call, the expressions in the `recur` are evaluated in order first and only then bound to the function arguments simultaneously.
 
 ## Building Sequences
 
