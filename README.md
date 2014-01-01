@@ -7,22 +7,17 @@ user=> inc
 <core$inc clojure.core$inc@d6206b5>
 ```
 
-Valid Clojure expressions consist of _numbers_, _symbols_, _keywords_, _booleans_, _characters_, _functions_, _function calls_, _macros_, _strings_, _literal maps_, _vectors_, and _sets_. 
-Numbers, strings and keywords evaluate to themselves. 
+Valid Clojure expressions consist of _numbers_, _symbols_, _keywords_, _booleans_, _characters_, _functions_, _function calls_, _macros_, _strings_, _literal maps_, _vectors_, and _sets_.  
+Numbers, strings and keywords evaluate to themselves.  
 
-> single quote (and `quote` symbol) is used to include literal scalars in a program without evaluating them
-
-Symbols (references to other values) start with a tick.
+**Symbols** are references to other values.
 
 ```clojure
-user=> 'inc
+user=> 'inc  ;increment (comments start with ;)
 inc
 
 user=> (inc 2)
 3
-
-user=> (dec 2)
-1
 
 user=> '(1 (2 (3 ())))
 (1 (2 (3 ())))
@@ -32,10 +27,9 @@ user=> '(inc 0)
 
 user=> (inc 0)
 1
-
-user=> (inc (inc 0))
-2
 ```
+
+> single quote (and `quote` symbol) is used to include literal scalars in a program without evaluating them
 
 ## Numbers
 
