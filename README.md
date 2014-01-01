@@ -7,8 +7,11 @@ user=> inc
 <core$inc clojure.core$inc@d6206b5>
 ```
 
-Valid Clojure expressions consist of numbers, symbols, keywords, booleans, characters, functions, function calls, macros, strings, literal maps, vectors, and sets. 
+Valid Clojure expressions consist of _numbers_, _symbols_, _keywords_, _booleans_, _characters_, _functions_, _function calls_, _macros_, _strings_, _literal maps_, _vectors_, and _sets_. 
 Numbers, strings and keywords evaluate to themselves. 
+
+> single quote (and `quote` symbol) is used to include literal scalars in a program without evaluating them
+
 Symbols (references to other values) start with a tick.
 
 ```clojure
@@ -276,19 +279,31 @@ user=> (name :cat)
 
 A collection is a group of values. It’s a container which provides some structure, some framework, for the things that it holds. We say that a collection contains elements, or members.
 
+> when a collection is evaluated, each of its contained items is evaluated first
+
 ## Lists
 
-Literal lists are written with parentheses. 
-
-`(yankee hotel foxtrot)`
+Literal lists are written with parentheses: `(yankee hotel foxtrot)`.
 
 When a list is evaluated, the first item of the list, `yankee`, will be resolved to a _function_, _macro_, or _special form_. 
 If `yankee` is a _function_, the remaining items in the list will be evaluated in order, and the results will be passed to `yankee` as its parameters.
 If `yankee` is a _macro_ or a _special form_, the remaining items in the list
 aren’t necessarily evaluated, but are processed as defined by the _macro_ or _operator_.
 
-> A **special form** is a form with special syntax or special evaluation rules that are typically not implemented using the base Clojure forms. An example of a special form is
+> **special form** is a form with special syntax or special evaluation rules that are typically not implemented using the base Clojure forms. An example of a special form is
 the `.` (dot) operator used for Java interoperability purposes.
+
+```clojure
+user=> (cons 1 (2 3))
+
+ClassCastException java.lang.Long cannot be cast to clojure.lang.IFn
+;; which basically means that the number 2 cannot be used as a function
+
+user=> (cons 1 '(2 3))
+(1 2 3)
+```
+
+Remember, we quote lists (any everything else) with a `'` (or `quote`) to prevent them from being evaluated.  
 
 ```clojure
 user=> '(1 2 3)
@@ -298,7 +313,12 @@ user=> (type '(1 2 3))
 clojure.lang.PersistentList
 ```
 
-Remember, we quote lists with a `'` to prevent them from being evaluated. 
+There's also a **syntax-quote**, which automatically qualifies all unqualified symbols in its argument:
+
+```clojure
+
+```
+
 You can also construct a list using list:
 
 ```clojure
@@ -531,6 +551,7 @@ Like vectors, any item in a map literal is evaluated before the result is stored
 # Symbols
 
 Typically used to refer to function parameters, local variables, globals, and Java classes.
+
 We can define a meaning for a symbol within a specific expression, using `let`.
 The `let` expression first **takes a vector of bindings**: alternating symbols and values that those symbols are bound to, within the remainder of the expression. 
 “Let the symbol `cats` be `5`, and construct a string composed of `"I have "`, `cats`, and `" cats"`:
@@ -540,14 +561,14 @@ user=> (let [cats 5] (str "I have " cats " cats."))
 "I have 5 cats."
 ```
 
-Let bindings, also called **locals**, apply only within the `let` expression itself. They also override any existing definitions for symbols at that point in the program. For instance, we can redefine addition to mean subtraction, for the duration of a `let`:
+Let bindings, also called **locals**, apply only within the `let` expression itself. They also override any existing definitions for symbols at that point in the program. For example, we can redefine addition to mean subtraction, for the duration of a `let`:
 
 ```clojure
 user=> (let [+ -] (+ 2 3))
 -1
 ```
 
-But that definition doesn’t apply outside the `let`:
+That definition doesn’t apply outside the `let`:
 
 ```clojure
 user=> (+ 2 3)
@@ -572,18 +593,28 @@ user=> (let [cats 3
 "12 legs all together"
 ```
 
-So fundamentally, `let` defines the meaning of symbols within an expression. When Clojure evaluates a `let`, it replaces all occurrences of those symbols in the rest of the `let` expression with their corresponding values, then evaluates the rest of the expression.
+> a symbol wholse name is prefixed with a namespace, followed by a slash, is called **qualified symbol**:
+
+```clojure
+user=> clojure.core/map
+#<core$map clojure.core$map@2a0406c4>
+
+user=> clojure.set/union
+#<set$union clojure.set$union@1be2bcc8>
+```
 
 The body is sometimes described as an _implicit do_ (see [blocks bellow](#blocks)) because it follows the same rules: you may include any number of expressions and all will be evaluated, but only the value of the last one is returned.
 
-Because they’re immutable, locals can’t be used to accumulate results. Instead,
+Because they’re immutable, _locals_ can’t be used to accumulate results. Instead,
 you’d use a high level function or loop/recur form.
+
+To summarize, `let` defines the meaning of symbols within an expression. When Clojure evaluates a `let`, it replaces all occurrences of those symbols in the rest of the `let` expression with their corresponding values, then evaluates the rest of the expression.
 
 # Functions
 
 Functions are a first-class type in Clojure. They can be used the same as any value (stored in Vars, held in collections and passed as arguments and returned as a result of other functions).
 
-> Prefix notation allows any number of arguments (infix only two) and completely eliminates the problem of operator precedence.
+> prefix notation allows any number of arguments (infix only two) and completely eliminates the problem of operator precedence.
 
 ```clojure
 let( [x] (+ x 1))
@@ -878,7 +909,7 @@ This technique is called _recursion_, and it is a fundamental principle in worki
  - Some part of the problem which has a known solution
  - A relationship which connects one part of the problem to the next
 
-Incrementing the elements of an empty list returns the empty list. This is our base case, the ground to build on. Our inductive case, also called the _recurrence relation_, is how we broke the problem up into incrementing the first number in the sequence, and incrementing all the numbers in the rest of the sequence. The `if` expression bound these two cases together into a single function, a function defined in terms of itself.
+Incrementing the elements of an empty list returns the empty list. This is our **base case**, the ground to build on. Our **inductive case**, also called the _recurrence relation_, is how we broke the problem up into incrementing the first number in the sequence, and incrementing all the numbers in the rest of the sequence. The `if` expression bound these two cases together into a single function, a function defined in terms of itself.
 Let’s parameterize our `inc-all` function to use any transformation of its elements:
 
 ```clojure
@@ -892,6 +923,23 @@ user=> (defn transform-all [f xs]
 user=> (transform-all inc [1 2 3 4])
 (2 3 4 5)
 ```
+
+## Loop
+
+When using recursion, you sometimes want to loop back not to the top of the function, but to somewhere inside the function body.  
+The `loop` acts exactly like `let` but provides a target for `recur` to jump to:
+
+```clojure
+user=> (defn sum-down-from [initial-x]
+  #_=>   (loop [sum 0, x initial-x]
+  #_=>     (if (pos? x)
+  #_=>       (recur (+ sum x) (dec x))
+  #_=>       sum)))
+#'user/sum-down-from
+```
+
+Upon entering the `loop`, the locals `sum` and `x` are initialized (like in `let`). A `recur` always loops back to the closest enclosing `loop` or `fn`. The `loop` locals are rebound to the values given in `recur`.  
+`recur` works only from the tail position.  
 
 `keyword` transforms a string to keyword:
 
@@ -933,6 +981,8 @@ user=> (print-down-from 5)
 1
 nil
 ```
+
+> `when` is same as `if`, except it doesn't have the `else` part and it requires an implicit `do` in order to perform side-effects
 
 This is nearly identical to how you’d structure a while loop in an imperative language.One significant difference is that the value of `x` isn’t decremented somewhere in the body of the loop. Instead, a new value is calculated as a parameter to `recur`, which immediately does two things: rebinds `x` to the new value and returns control to the top of `print-down-from`.  
 If the function has multiple arguments, the `recur` call must as well, just as if you were calling the function by name instead of using the `recur` special form. And just as with a function call, the expressions in the `recur` are evaluated in order first and only then bound to the function arguments simultaneously.
