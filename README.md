@@ -1,13 +1,16 @@
 *Written in January 2014, with Clojure 1.5.1 and Leiningen 2.3.4 on Java 1.7.0_45.*  
 _Made possible by Aphyr's excellent, Clojure from-the-ground-up tutorial and The joy of Clojure book._
 
+> I write this as I'm going through the book myself, so bear with me :) 
+Open PRs please
+
 To set up your Clojure environment I suggest you use an excellent automation tool (dependency mgr, builder, test runner, packager, all-in-one) [Leiningen](http://leiningen.org/). 
 
 > Notice there's no "installer" in the list of features. That's because Clojure is just another _dependency_ of "our project".
 
 ![lein](http://leiningen.org/img/leiningen.jpg)
 
-For your convenience, here's a dead simple, step-by-step environment setup for Ubuntu ([other OS?](http://leiningen.org/#install)):
+For your convenience, here's a dead simple, step-by-step environment setup for Ubuntu ([other OS, sir?](http://leiningen.org/#install)):
 
 ```sh
 cd /usr/bin
@@ -19,7 +22,7 @@ Let me explain what we just did.
 First we fetched `lein` script with `curl`° into `/usr/bin`°°.
 We made sure it's executable with `chmod`.
 
-°  Use `sudo apt-get install curl`, if you haven't installed it yet (doesn't come OOTB with Ubuntu).
+°  Use `sudo apt-get install curl`, if you haven't installed it yet (doesn't come OOTB with Ubuntu).  
 °° You can use any other dir, as long as you make sure it's in your PATH (check with `echo $PATH`), which makes possible to run it from anywhere.
 
 Let's kick things off:
