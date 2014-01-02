@@ -1,42 +1,84 @@
-_Made possible by Aphyr's excellent, from-the-ground-up Clojure tutorial and The joy of Clojure book_
+*Written in January 2014, with Clojure 1.5.1 and Leiningen 2.3.4 on Java 1.7.0_45.*  
+_Made possible by Aphyr's excellent, Clojure from-the-ground-up tutorial and The joy of Clojure book._
+
+To set up your Clojure environment I suggest you use an excellent automation tool (dependency mgr, builder, test runner, packager, all-in-one) [Leiningen](http://leiningen.org/). 
+
+> Notice there's no "installer" in the list of features. That's because Clojure is just another _dependency_ of "our project".
+
+![lein](http://leiningen.org/img/leiningen.jpg)
+
+For your convenience, here's a dead simple, step-by-step environment setup for Ubuntu ([other OS?](http://leiningen.org/#install)):
+
+```sh
+cd /usr/bin
+sudo curl -O https://raw.github.com/technomancy/leiningen/stable/bin/lein
+sudo chmod a+x lein
+ ```
+
+Let me explain what we just did. 
+First we fetched `lein` script with `curl`° into `/usr/bin`°°.
+We made sure it's executable with `chmod`.
+
+°  Use `sudo apt-get install curl`, if you haven't installed it yet (doesn't come OOTB with Ubuntu).
+°° You can use any other dir, as long as you make sure it's in your PATH (check with `echo $PATH`), which makes possible to run it from anywhere.
+
+Let's kick things off:
+
+```sh
+cd
+lein new scratch
+ ```
+
+Here we used `lein new` to create a fresh Clojure project, based on the `scratch` template (_scratch_ - as in _scratch the surface_, I guess).
+Lein, in turn, installed _rest of itself_ into `~/.lein/self-installs`.
+
+In case you get stuck, visit [lein install instructions](http://leiningen.org/#install).
+If you want to know more, the official Leiningen tutorial can be found [right here](https://github.com/technomancy/leiningen/blob/master/doc/TUTORIAL.md).
+
+Now:
+
+```sh
+cd scratch
+lein repl
+```
+
+Boom! We have a working Clojure environment.
+Now when that's all sorted and you're very much in a learning mood, let's get going...
 
 # Basics
+
+Valid Clojure expressions consist of _numbers_, _symbols_, _keywords_, _booleans_, _characters_, _functions_, _function calls_, _macros_ (what?), _strings_, _literal maps_, _vectors_, and _sets_. 
+
+Here's a function call:
 
 ```clojure
 user=> inc
 <core$inc clojure.core$inc@d6206b5>
 ```
 
-Valid Clojure expressions consist of _numbers_, _symbols_, _keywords_, _booleans_, _characters_, _functions_, _function calls_, _macros_, _strings_, _literal maps_, _vectors_, and _sets_.  
+ 
 Numbers, strings and keywords evaluate to themselves.  
 
-**Symbols** are references to other values.
-
 ```clojure
-user=> 'inc  ;increment (comments start with ;)
-inc
+; skipping the 'user=>' prompt from now on
+; oh, and BTW, that was a comment, because it begins with semicolon
+; so was that, a one-line comment
+; this one also, from that semicolon to the end of the line. All the way here ->|
 
-user=> (inc 2)
-3
-
-user=> '(1 (2 (3 ())))
-(1 (2 (3 ())))
-
-user=> '(inc 0)
-(inc 0)
-
-user=> (inc 0)
-1
+(inc 2)      ; "increment 2" (again comment)
+3            ; this is REPL output
 ```
-
-> single quote (and `quote` symbol) is used to include literal scalars in a program without evaluating them
 
 ## Numbers
 
 ```clojure
 user=> (+ 1 (- 5 2) (+ 3 4))
 11
+```
 
+Uh, that looks silly, right?
+
+```clojure
 user=> (type 3)
 java.lang.Long
 
@@ -147,11 +189,16 @@ java.lang.String
 
 user=> (str nil)
 ""
-user=> (str 'a')
-"a'"
+```
 
+> single quote, backtick and `quote` (though with slightly different properties) are used to include literals in a program without evaluating them
+
+```clojure
 user=> (str 'cat)
 "cat"
+
+user=> (str 'a')
+"a'"
 
 user=> (str 1)
 "1"
@@ -240,10 +287,12 @@ user=> (not nil)
 true
 ```
 
-Symbols can have either short or full names. The short name is used to refer to things locally, and the _fully qualified name_ is used to refer unambiguously to a symbol from anywhere
-Symbol names are separated with a `/`. For instance, the symbol `str` is also present in a family called `clojure.core`; the corresponding full name is `clojure.core/str`
+**Symbols** can have either short or full names. The short name is used to refer to things locally, and the _fully qualified name_ is used to refer unambiguously to a symbol (from anywhere).
+Symbol names are separated with a `/`. For instance, the symbol `str` is also present in a namespace called `clojure.core` and the corresponding full name is `clojure.core/str`
 The purpose of symbols is to refer to _things_, to point to other values. When evaluating a program, symbols are looked up and replaced by their corresponding values. 
-That’s not the only use of symbols, but it’s the most common
+That’s not the only use of symbols, but it’s the most common.
+
+> [more about symbols](#symbols)
 
 ```clojure
 user=> (= str clojure.core/str)
