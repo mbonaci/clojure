@@ -35,7 +35,7 @@ lein new scratch
 Here we used `lein new` to create a fresh Clojure project, based on the `scratch` template (_scratch_ - as in _scratch the surface_, I guess).
 Lein, in turn, installed _rest of itself_ into `~/.lein/self-installs`.
 
-In case you get stuck, visit [lein install instructions](http://leiningen.org/#install).
+In case you get stuck, visit [lein install instructions](http://leiningen.org/#install).  
 If you want to know more, the official Leiningen tutorial can be found [right here](https://github.com/technomancy/leiningen/blob/master/doc/TUTORIAL.md).
 
 Now:
@@ -46,6 +46,9 @@ lein repl
 ```
 
 Boom! We have a working Clojure environment.
+
+![repl](https://github.com/mbonaci/clojure/blob/master/resources/repl.png)
+
 Now when that's all sorted and you're very much in a learning mood, let's get going...
 
 # Basics
