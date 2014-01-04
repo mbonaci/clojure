@@ -47,7 +47,7 @@ lein repl
 
 Boom! We have a working Clojure environment.
 
-![repl](https://github.com/mbonaci/clojure/blob/master/resources/repl.png)
+![repl](https://github.com/mbonaci/clojure/raw/master/resources/repl.png)
 
 Now when that's all sorted and you're very much in a learning mood, let's get going...
 
