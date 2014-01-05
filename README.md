@@ -81,7 +81,30 @@ Numbers, strings and keywords evaluate to themselves.
 11
 ```
 
-Uh, that looks silly, right?
+> Uh, that looks silly, right?
+
+This type of notation, called _prefix notation_ (inherited from _Lisp_), may look weird at the first glance.  
+
+Let's back up a bit. All programming languages, in order to understand the code, need to parse it first. The product of this code parsing is a so called _syntax tree_ (_abstract syntax tree_ or _parse tree_).  
+
+Let's see how that tree looks for the example at hand.  
+In Java, the expression above would be written like this:
+
+```java
+1 + (5 - 2) + (3 + 4);   // parentheses left for clarity
+// 1 + 3 + 7
+// 11
+```
+
+... and the tree would look like this:
+
+![ast](https://github.com/mbonaci/clojure/raw/master/resources/ast.png)
+
+Looks familiar?
+By doing in-order, breadth-first traversal of this tree, you'd end up with Java code.
+By doing pre-order traversal, you get the Clojure syntax.
+
+> Now forget all that nonsense cuz' it's really not important at all. Unless you'll be writing your own compiler or something.
 
 ```clojure
 (type 3)
