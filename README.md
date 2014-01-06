@@ -320,8 +320,7 @@ true
 
 **Symbols** can have either short or full names. The short name is used to refer to things locally, and the _fully qualified name_ is used to refer unambiguously to a symbol (from anywhere).
 Symbol names are separated with a `/`. For instance, the symbol `str` is also present in a namespace called `clojure.core` and the corresponding full name is `clojure.core/str`
-The purpose of symbols is to refer to _things_, to point to other values. When evaluating a program, symbols are looked up and replaced by their corresponding values. 
-That’s not the only use of symbols, but it’s the most common.
+The main purpose of symbols is to refer to _things_, i.e. to point to other values. When evaluating a program, symbols are looked up and replaced by their corresponding values. 
 
 > [more about symbols](#symbols)
 
@@ -428,7 +427,7 @@ Lists are well-suited for small collections, or collections which are read in li
 # Vectors
 
 For fast access to every element, we use a __vector__.
-Vectors are surrounded by square brackets, just like lists are surrounded by parentheses. Because vectors aren’t evaluated like lists are, there’s no need to quote the vector literal:
+Vectors are surrounded by square brackets, just like lists are surrounded by parentheses. Because vectors aren’t evaluated like lists are, there is no need to quote the vector literal:
 
 ```clojure
 [1 2 3]
@@ -438,7 +437,7 @@ Vectors are surrounded by square brackets, just like lists are surrounded by par
 clojure.lang.PersistentVector
 ```
 
-You can also create vectors with vector, or change other structures into vectors with vec:
+You can also create vectors with vector, or change other structures into vectors with `vec`:
 
 ```clojure
 (vector 1 2 3)
@@ -647,7 +646,7 @@ Let bindings, also called **locals**, apply only within the `let` expression its
 -1
 ```
 
-That definition doesn’t apply outside the `let`:
+That definition does not apply outside the `let`:
 
 ```clojure
 (+ 2 3)
@@ -672,7 +671,7 @@ When multiple bindings are given, they are evaluated in order. Later bindings ca
 "12 legs all together"
 ```
 
-> a symbol wholse name is prefixed with a namespace, followed by a slash, is called **fully qualified symbol**:
+> a symbol whose name is prefixed with a namespace, followed by a slash, is called **fully qualified symbol**:
 
 ```clojure
 clojure.core/map
@@ -685,7 +684,7 @@ clojure.set/union
 The body is sometimes described as an _implicit do_ (see [blocks bellow](#blocks)) because it follows the same rules: you may include any number of expressions and all will be evaluated, but only the value of the last one is returned.
 
 Because they’re immutable, _locals_ can’t be used to accumulate results. Instead,
-you’d use a high level function or loop/recur form.
+you'd use a high level function or loop/recur form.
 
 To summarize, `let` defines the meaning of symbols within an expression. When Clojure evaluates a `let`, it replaces all occurrences of those symbols in the rest of the `let` expression with their corresponding values, then evaluates the rest of the expression.
 
@@ -862,14 +861,14 @@ user/launch
 nil
 ```
 
-`doc` tells us the full name of the function, the arguments it accepts, and its docstring. This information comes from the `launch` var’s metadata, and is saved there by `defn`. We can inspect metadata directly with the `meta` function:
+`doc` tells us the full name of the function, the arguments it accepts, and its docstring. This information comes from the `launch` Var’s metadata, and is saved there by `defn`. We can inspect metadata directly with the `meta` function:
 
 ```clojure
 (meta #'launch)
 {:arglists ([craft target-orbit]), :ns #<Namespace user>, :name launch, :column 1, :doc "Launches a spacecraft into the given orbit by initiating a\n   controlled on-axis burn. Does not automatically stage, but\n   does vector thrust, if the craft supports it.", :line 1, :file "/tmp/form-init523009510157887861.clj"}
 ```
 
-There’s some other juicy information in there, like the file the function was defined in and which line and column it started at, but that’s not particularly useful since we’re in the _REPL_, not a file. However, this does hint at a way to answer our motivating question: how does the type function work?
+There’s some other juicy information in there, like the file the function was defined in and which line and column it started at, but that’s not particularly useful since we’re in the _REPL_, not a file. However, this does hint at a way to answer our motivating question: how does the `type` function work?
 
 ## Blocks
 
@@ -912,7 +911,7 @@ This is a set of all the types that include `type`. We say that `type` is an ins
 true
 ```
 
-`type` can take a single argument, which it calls `x`. If it has `:type` metadata, that’s what it returns. Otherwise, it returns the class of `x`. Let’s take a deeper look at type’s metadata for more clues:
+`type` can take a single argument, which it calls `x`. If it has `:type` metadata, that’s what it returns. Otherwise, it returns the class of `x`. Let’s take a deeper look at `type`’s metadata for more clues:
 
 ```clojure
 (doc type)
@@ -1526,7 +1525,7 @@ Idiomatic (best practice) Clojure prefers that you access static class members u
 
 **Accessing Java instance members with the dot operator**
 
-To access instance properties, preceede the property or method name with a dot:
+To access instance properties, precede the property or method name with a dot:
 
 ```clojure
 (.x (java.awt.Point. 10 20))  ;create a new Point and access its member x
@@ -1673,7 +1672,7 @@ mbo.core.compat=> (mbo.core.strings/report-ns) ;fully qualified name works as ex
 "The current namespace is mbo.core.compat"
 ```
 
-> refering to a namespace symbol using fully qualified name will only work for namespaces created locally or those previously loaded. Read on, it'll become clear...
+> referring to a namespace symbol using fully qualified name will only work for namespaces created locally or those previously loaded. Read on, it'll become clear...
 
 **Using `:require` directive to load other namespaces**
 
@@ -1789,12 +1788,46 @@ The use of `seq` as a terminating condition is the idiomatic way of testing whet
 
 ## Destructuring
 
-Allows you to place a collection of names in a binding form where normally you'd put just a single name.
+Allows you to place a collection of names in a binding form where normally you'd put just a single name.  
+
+Perhaps the simplest form of destructuring is picking apart a sequential thing (e.g. a vector or a list), giving each item a name:
 
 ```clojure
+(let [[fname mname lname] ["Frane" "Luka" "Bonaci"]]
+  (str lname ", " fname " " mname))
+"Bonaci, Frane Luka"
 
+;; although this is syntactically correct, it isn't factually accurate
+;; my month and a half old twins are named Frane and Luka :)
+;; what can I say, my wife is a hero (that's what everybody's telling me these days)
+;; hmmm, I wonder why?
+```
+
+This was a so called _positional destructuring_, which, as you might expect, doesn't work on maps and sets, because they are not logically aligned sequentially. But it does work on `java.util.regex.Matcher` and anything implementing `CharSequence` and `java.util.RandomAccess` interfaces.
+
+We can also use an ampersand in a destructuring vector to indicate that any remaining values of the input should be collected into a (possibly lazy) `seq`:
+
+```clojure
+(let [[a b c & the-rest] (range 10)]
+  (println "a b c are: " a b c)
+  (println "the rest is: " the-rest))
+a b c are:  0 1 2
+the rest is:  (3 4 5 6 7 8 9)
 ```
 
 
 
-> Destructuring is loosely related to pattern matching (found in Haskell or [Scala](https://github.com/mbonaci/scala#case-classes-and-pattern-matching)), but much more limited in scope. For full-featured pattern matching in Clojure use [matchure](http://github.com/dcolthorp/matchure).
+
+
+
+> Destructuring is loosely related to _pattern matching_ (found in Haskell or [Scala](https://github.com/mbonaci/scala#case-classes-and-pattern-matching)), but much more limited in scope. For full-featured pattern matching in Clojure use [matchure](http://github.com/dcolthorp/matchure).
+
+
+
+
+
+
+
+
+
+
