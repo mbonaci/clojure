@@ -65,12 +65,12 @@ user=> inc
 Numbers, strings and keywords evaluate to themselves.  
 
 ```clojure
-;; skipping the 'user=>' prompt from now on
-;; oh, and BTW, that was a comment, because it begins with semicolon
-;; so was that, a one-line comment
-;; this one also, from that semicolon to the end of the line. All the way here ->|
+;  skipping the 'user=>' prompt from now on
+;  oh, and BTW, that was a comment, because it begins with a semicolon
+;  so was that, a one-line comment
+;; this one also, from that first semicolon to the end of the line. All the way here ->
 
-(inc 2)      ;"increment 2" (again comment)
+(inc 2)      ;"increment 2"
 3            ;this is REPL output
 ```
 
@@ -218,7 +218,7 @@ on two lines"
 (type "a")
 java.lang.String
 
-(str nil)
+(str nil)    ;'nil' is Clojure's 'null'
 ""
 ```
 
@@ -1757,11 +1757,44 @@ mbo.java=> (HashMap. {"happy?" true})
 
 > Any classes in the `java.lang` package are implicitly imported when namespaces are created
 
+**`nil` punning**
+
+Since, in Clojure, everything except `nil` and `false` is `true`, empty collections evaluate to `true` in boolean context. We need a way to test whether a collection is empty or not.  
+
+This is where _nil punning_ comes in:
+
+```clojure
+(seq [1 2 3])
+(1 2 3)
+
+(seq [])
+nil
+```
+
+`seq` function returns a sequence view of a collection or `nil` if the collection is empty.
+
+```clojure
+(defn print-seq [s]
+  (when (seq s)
+    (prn (first s))     ;prn prints each object in a newline (to the output stream)
+    (recur (rest s))))
+
+(print-seq [1 2])
+1
+2
+nil
+```
+
+The use of `seq` as a terminating condition is the idiomatic way of testing whether a sequence is empty
+
+## Destructuring
+
+Allows you to place a collection of names in a binding form where normally you'd put just a single name.
+
+```clojure
+
+```
 
 
 
-
-
-
-
-
+> Destructuring is loosely related to pattern matching (found in Haskell or [Scala](https://github.com/mbonaci/scala#case-classes-and-pattern-matching)), but much more limited in scope. For full-featured pattern matching in Clojure use [matchure](http://github.com/dcolthorp/matchure).
