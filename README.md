@@ -74,7 +74,7 @@ Numbers, strings and keywords evaluate to themselves.
 3            ;this is REPL output
 ```
 
-## Numbers
+## Syntax
 
 ```clojure
 (+ 1 (- 5 2) (+ 3 4))
@@ -85,7 +85,8 @@ Numbers, strings and keywords evaluate to themselves.
 
 This type of notation, called _prefix notation_ (inherited from _Lisp_), may look weird at the first glance.  
 
-Let's back up a bit. All programming languages, in order to understand the code, need to parse it first. The product of this code parsing is a so called _syntax tree_ (_abstract syntax tree_ or _parse tree_).  
+Let's back up a bit.  
+All programming languages, in order to execute the source code, need to parse it first. The product of this code parsing is a so called _abstract syntax tree_ (_AST_).  
 
 Let's see how that tree looks for the example at hand.  
 In Java, the expression above would be written like this:
@@ -96,15 +97,19 @@ In Java, the expression above would be written like this:
 // 11
 ```
 
-... and the tree would look like this:
+... and the _AST_ would look like this:
 
 ![ast](https://github.com/mbonaci/clojure/raw/master/resources/ast.png)
 
 Looks familiar?
-By doing in-order, breadth-first traversal of this tree, you'd end up with Java code.
-By doing pre-order traversal, you get the Clojure syntax.
+By doing in-order (depth-first) traversal of this tree, you end up with Java syntax.  
+By doing pre-order traversal, you get the Clojure syntax.  
 
-> Now forget all that nonsense cuz' it's really not important at all. Unless you'll be writing your own compiler or something.
+> Now forget all this nonsense, cuz' it's really not important at all (unless you'll be writing your own compiler or something).
+
+## Numeric types
+
+The following examples of numeric expressions are trivial, so I suggest that you try them out, in your REPL.
 
 ```clojure
 (type 3)
@@ -121,8 +126,6 @@ clojure.lang.BigInt
 
 (type (int 0))
 java.lang.Integer
-;; Clojure's implementation of integer can theoretically take an infinitely 
-;; large value, limited only by the available memory
 
 (type (short 0))
 java.lang.Short
@@ -182,13 +185,13 @@ true
 4
 
 (/ 4)
-¼
+1/4
 
 (+)
-0
+0     ;neutral for addition
 
 (*)
-1
+1     ;neutral for multiplication
 
 (<= 1 2 3)
 true
@@ -209,8 +212,8 @@ Any sequence of characters enclosed in double quotes, including newlines:
 
 ```clojure
 "this is a string
- on two lines"
-"this is a string\non two lines"  ;when printed in REPL includes newline escape
+on two lines"
+"this is a string\non two lines"  ;REPL output includes newline escape
 
 (type "a")
 java.lang.String
@@ -333,7 +336,8 @@ true
 
 # Keywords
 
-Closely related to symbols and strings are keywords, which begin with a `:`. Keywords are like strings in that they’re made up of text, but are specifically intended for use as labels or identifiers. These aren’t labels in the sense of symbols, keywords aren’t replaced by any other value. They’re just names, by themselves.
+Closely related to symbols and strings are keywords, which begin with a `:`.  
+Keywords are like strings in that they’re made up of text, but are specifically intended for use as labels or identifiers. These aren’t labels in the sense of symbols, keywords aren’t replaced by any other value, they’re just names, by themselves.
 
 ```clojure
 (type :cat)
@@ -384,13 +388,17 @@ Remember, we quote lists (any everything else) with a `'` (or `quote`) to preven
 clojure.lang.PersistentList
 ```
 
-There's also a **syntax-quote**, which automatically qualifies all unqualified symbols in its argument:
+There's also a **syntax-quote** (back-tick), which automatically qualifies all unqualified symbols in its argument:
 
 ```clojure
+`map
+clojure.core/map
 
+`(map even? [1 2 3])
+(clojure.core/map clojure.core/even? [1 2 3])
 ```
 
-You can also construct a list using list:
+You can also construct a list using `list`:
 
 ```clojure
 (list 1 2 3)
@@ -621,7 +629,7 @@ Like vectors, any item in a map literal is evaluated before the result is stored
 
 # Symbols
 
-Typically used to refer to function parameters, local variables, globals, and Java classes.
+Closest thing to a variable in Clojure. Typically used to refer to function parameters, local variables, globals, and Java classes.
 
 We can define a meaning for a symbol within a specific expression, using `let`.
 The `let` expression first **takes a vector of bindings**: alternating symbols and values that those symbols are bound to, within the remainder of the expression. 
@@ -646,7 +654,7 @@ That definition doesn’t apply outside the `let`:
 5
 ```
 
-We can also provide multiple bindings. Since Clojure doesn’t care about spacing, alignment, or newlines, we’ll write this on multiple lines, for clarity.
+We can also provide multiple bindings. Since Clojure doesn’t care about spacing, alignment, or newlines, we’ll write this on multiple lines, for clarity:
 
 ```clojure
 (let [person "joseph"
@@ -655,7 +663,7 @@ We can also provide multiple bindings. Since Clojure doesn’t care about spacin
 "joseph has 186 cats!"
 ```
 
-When multiple bindings are given, they are evaluated in order. Later bindings can use previous bindings.
+When multiple bindings are given, they are evaluated in order. Later bindings can use previous bindings:
 
 ```clojure
 (let [cats 3
@@ -664,7 +672,7 @@ When multiple bindings are given, they are evaluated in order. Later bindings ca
 "12 legs all together"
 ```
 
-> a symbol wholse name is prefixed with a namespace, followed by a slash, is called **qualified symbol**:
+> a symbol wholse name is prefixed with a namespace, followed by a slash, is called **fully qualified symbol**:
 
 ```clojure
 clojure.core/map
@@ -726,11 +734,13 @@ cats
 5
 ```
 
-`def` defines a type of value we haven’t seen before: a _Var_. _Vars_, like symbols, are references to other values. When evaluated, a `Var` is replaced by its corresponding value.  
+`def` defines a type of value we haven’t seen before: a _Var_. _Vars_, like symbols, are references to other values. When evaluated, a _Var_ is replaced by its corresponding value.  
 
-`def` also binds the symbol `cats` (and its globally qualified equivalent `user/cats`) to that `Var`.  
+`def` also binds the symbol `cats` (and its globally qualified equivalent `user/cats`) to that _Var_.  
 
-The symbol `inc` points to the `Var` `#'inc`, which in turn points to the function `#<core$inc clojure.core$inc@16bc0b3c>`. We can see the intermediate Var with `resolve`:
+The symbol `inc` points to the _Var_ `#'inc`, which in turn points to the function `#<core$inc clojure.core$inc@16bc0b3c>`.  
+
+We can see the intermediate Var with `resolve`:
 
 ```clojure
 'inc     ;symbol
@@ -789,7 +799,8 @@ But if we try to use our earlier form with one argument, Clojure complains that 
 ```clojure
 (half 8)
 
-ArityException Wrong number of args (1) passed to: user$half  clojure.lang.AFn.throwArity (AFn.java:437)
+ArityException Wrong number of args (1) passed to: user$half
+clojure.lang.AFn.throwArity (AFn.java:437)
 ```
 
 To handle multiple arities, functions have an alternate form, instead of an argument vector and a body, one provides a series of lists, each of which starts with an argument vector, followed by the body:
@@ -1654,9 +1665,11 @@ nil
 
 mbo.core.compat=> (report-ns)             ;try invoking function from another ns
 
-mbo.core.compat=> CompilerException java.lang.RuntimeException: Unable to resolve symbol: report-ns in this context, compiling:(/tmp/form-init8547084957850583270.clj:1:1)
+mbo.core.compat=> CompilerException java.lang.RuntimeException: 
+Unable to resolve symbol: report-ns in this context, 
+compiling:(/tmp/form-init8547084957850583270.clj:1:1)
 
-mbo.core.compat=> (mbo.core.strings/report-ns)  ;fully qualified name works as expected
+mbo.core.compat=> (mbo.core.strings/report-ns) ;fully qualified name works as expected
 "The current namespace is mbo.core.compat"
 ```
 
@@ -1675,7 +1688,8 @@ mbo.core.set=> (clojure.set/intersection #{1 2 3} #{2 3 4})
 
 mbo.core.set=> (intersection #{1 2 3} #{2 3 4})  ;invoke a clojure.set function directly
 
-CompilerException java.lang.RuntimeException: Unable to resolve symbol: intersection in this context, compiling:(/tmp/form-init8547084957850583270.clj:1:1)
+CompilerException java.lang.RuntimeException: Unable to resolve symbol: 
+intersection in this context, compiling:(/tmp/form-init8547084957850583270.clj:1:1)
 ```
 
 This construct indicates that we want the `clojure.set` namespace loaded, but we don't want the mappings of that namespace's symbols to `mbo.core.set` functions.
@@ -1696,7 +1710,8 @@ The qualified namespace form (e.g. `clojure.set`) looks the same as a call to a 
 ```clojure
 mbo.core.set-alias=> clojure.set
 
-mbo.core.set-alias=> CompilerException java.lang.ClassNotFoundException: clojure.set, compiling:(/tmp/form-init8547084957850583270.clj:1:691) 
+mbo.core.set-alias=> CompilerException java.lang.ClassNotFoundException: 
+clojure.set, compiling:(/tmp/form-init8547084957850583270.clj:1:691) 
 
 mbo.core.set-alias=> java.lang.Object
 java.lang.Object
@@ -1704,4 +1719,49 @@ java.lang.Object
 
 > That vagaries of namespace mappings from symbols to _Vars_, both qualified and unqualified, have the potential for confusion between _class names_ and _static methods_. In the beginning, that is. The differences will begin to feel natural as we progress (at least that's what _The joy of Clojure_ book promises :)
 > One of the Clojure idioms is to use `my.Class` and `my.ns` for naming classes and namespaces, to help eliminate potential confusion.
+
+**Loading and creating mappings with `:use`**
+
+`:use`, unlike `:require`, maps Vars in another namespace to names in your own. That is typically used to avoid calling each function or macro with the qualifying namespace symbol:
+
+```clojure
+mbo.core.set-alias=> (ns mbo.test
+                #_=>   (:use [clojure.string :only [capitalize]]))
+nil
+
+mbo.test=> (map capitalize ["one" "two"])
+("One" "Two")
+mbo.test=>
+```
+
+`:only` is used to indicate that only the listed functions should be mapped in the new namespace (good practice). The `:exclude` directive does the opposite.  
+`:use`, besides creating mappings, implicitly invokes `:require`.
+
+> the idiomatic strategy for avoiding conflicts is to use `:require` with `:as` to create a namespace alias
+
+**Create mappings with `:refer`**
+
+`:refer` is a directive that works almost exactly like `:use`, except that it only creates mappings for libraries that have already been loaded (by being previously defined, by being one of Clojure's core namespaces or by having been explicitly loaded using `:require`).
+
+**Loading Java classes with `:import`**
+
+```clojure
+mbo.test=> (ns mbo.java
+      #_=>   (:import [java.util HashMap]
+      #_=>            [java.util.concurrent.atomic.AtomicLong]))
+nil
+
+mbo.java=> (HashMap. {"happy?" true})
+{"happy?" true}
+```
+
+> Any classes in the `java.lang` package are implicitly imported when namespaces are created
+
+
+
+
+
+
+
+
 
