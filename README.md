@@ -107,9 +107,13 @@ By doing pre-order traversal, you get the Clojure syntax.
 
 > Now forget all this nonsense, cuz' it's really not important at all (unless you'll be writing your own compiler or something).
 
+# Scalar data types
+
+A scalar data type is the one that can only hold one value at a time (value of a number, symbol, keyword, string or character).
+
 ## Numeric types
 
-The following examples of numeric expressions are trivial, so I suggest that you try them out, in your REPL.
+The following examples of numeric expressions are trivial, so I suggest you try them out, in your REPL.
 
 ```clojure
 (type 3)
@@ -155,7 +159,11 @@ java.lang.Float
 
 366e3
 366000.0
+```
 
+To avoid rounding of floating-point numbers, Clojure provides a rational number type:
+
+```clojure
 (type 1/3)
 clojure.lang.Ratio
 
@@ -165,6 +173,9 @@ clojure.lang.Ratio
 
 (+ 1 2.0)
 3.0
+
+(class (+ 1 2.0))
+java.lang.Double
 
 (= 3 3.0)
 false
@@ -206,9 +217,59 @@ false
 true
 ```
 
+**Truncation** 
+
+Truncation is a process of limiting the accuracy of floating-point numbers, due to deficiencies in its representation. When a number is truncated, its precision is limited such that the maximum number of digits of accuracy is bound by the number of bits that can fit into the storage space allowed by its representation.
+
+```clojure
+(let [pi-constant 3.14159265358979323846264338327950288419716939937M]
+  (println (class pi-constant))
+  pi-constant)
+java.math.BigDecimal
+3.14159265358979323846264338327950288419716939937M
+
+(let [pi-trunc 3.14159265358979323846264338327950288419716939937]
+  (println (class pi-trunc))
+  pi-trunc)
+java.lang.Double
+3.141592653589793
+```
+
+`M`, at the end of a floating-point number literal is used to tell Clojure to keep the number in arbitrary precision.  
+`N` is used for the same thing when dealing with longs.
+
+> Clojure truncates floating point numbers by default
+
+**Promotion**
+
+Clojure is able to detect when overflow occurs. Then, it automatically promotes the value to a numerical representation that can accommodate larger values
+
+```clojure
+(def small 9)
+(class small)
+java.lang.Long
+
+(class (+ small 90000000000000000000))
+clojure.lang.BigInt
+
+(class (+ small 9.0))
+java.lang.Double
+
+(+ Integer/MAX_VALUE Integer/MAX_VALUE)
+4294967294
+
+(class (+ Integer/MAX_VALUE Integer/MAX_VALUE))
+java.lang.Long
+```
+
+
+
+
+
+
 ## Strings and Characters
 
-Any sequence of characters enclosed in double quotes, including newlines:
+String is any sequence of characters enclosed in double quotes, including newlines:
 
 ```clojure
 "this is a string
@@ -1305,7 +1366,7 @@ Separate a series of numbers into negative and positive subsequences:
 ((1 2 3 2 1) (-1 -2 -3 -2 -1) (1 2))
 ```
 
-`partition-all` may include partitions with fewer than `n` items at the end:
+`partition-all n collection` may include partitions with fewer than `n` items at the end:
 
 ```clojure
 (partition-all 3 [1 2 -5 3 2 1 -1 -2 -3 -2 -1 1 2])
@@ -1629,7 +1690,13 @@ returning...
 ["You blew it dawg!"]
 ```
 
-> Clojure doesn't adhere to checked exception requirements.
+> Clojure doesn't adhere to checked exception requirements, like Java does.
+
+> When an exception is thrown in REPL, the result is stored in a Var named `*e`, which allows you to get more detail about the expression, such as the stack trace:
+
+```clojure
+(.printStackTrace *e)
+```
 
 # Namespaces
 
@@ -1790,6 +1857,8 @@ The use of `seq` as a terminating condition is the idiomatic way of testing whet
 
 Allows you to place a collection of names in a binding form where normally you'd put just a single name.  
 
+> Destructuring is loosely related to _pattern matching_ (found in Haskell or [Scala](https://github.com/mbonaci/scala#case-classes-and-pattern-matching)), but much more limited in scope. For full-featured pattern matching in Clojure use [matchure](http://github.com/dcolthorp/matchure).
+
 Perhaps the simplest form of destructuring is picking apart a sequential thing (e.g. a vector or a list), giving each item a name:
 
 ```clojure
@@ -1803,25 +1872,102 @@ Perhaps the simplest form of destructuring is picking apart a sequential thing (
 ;; hmmm, I wonder why?
 ```
 
-This was a so called _positional destructuring_, which, as you might expect, doesn't work on maps and sets, because they are not logically aligned sequentially. But it does work on `java.util.regex.Matcher` and anything implementing `CharSequence` and `java.util.RandomAccess` interfaces.
-
+This was a so called _positional destructuring_, which, as you might expect, doesn't work on maps and sets, because they are not logically aligned sequentially. But it does work on `java.util.regex.Matcher` and anything implementing `CharSequence` and `java.util.RandomAccess` interfaces.  
+  
+**Destructuring with a vector**
+  
 We can also use an ampersand in a destructuring vector to indicate that any remaining values of the input should be collected into a (possibly lazy) `seq`:
 
 ```clojure
-(let [[a b c & the-rest] (range 10)]
+(let [[a b c & more] (range 10)]
   (println "a b c are: " a b c)
-  (println "the rest is: " the-rest))
+  (println "the rest is: " more))
 a b c are:  0 1 2
 the rest is:  (3 4 5 6 7 8 9)
 ```
 
+A useful feature of vector destructuring is `:as`, which is used to bind a local to the entire collection. It must be placed at the end, even after the `&` local (if it exists):
 
+```clojure
+(let [range-vec (vec (range 10))
+  [a b c & more :as all] range-vec]
+  (println "a b c are: " a b c)
+  (println "the rest is " more)
+  (println "all is: " all))
+a b c are:  0 1 2
+the rest is  (3 4 5 6 7 8 9)
+all is:  [0 1 2 3 4 5 6 7 8 9]
+```
 
+> Notice the difference between `&` and `:as`. While `:all` produces a vector, `&` results with a `seq`.
 
+**Destructuring with a map**
 
+```clojure
+(def full-name-map
+  {:fname "Frane" :mname "Luka" :lname "Bonaci"})
 
-> Destructuring is loosely related to _pattern matching_ (found in Haskell or [Scala](https://github.com/mbonaci/scala#case-classes-and-pattern-matching)), but much more limited in scope. For full-featured pattern matching in Clojure use [matchure](http://github.com/dcolthorp/matchure).
+(let [{fname :fname, mname :mname, lname :lname} full-name-map]
+  (str lname ", " fname " " mname))
+"Bonaci, Frane Luka"
+```
 
+Here, the `:keys` feature might come in handy:
+
+```clojure
+(let [{:keys [fname mname lname]} full-name-map]
+  (str lname ", " fname " " mname))
+"Bonaci, Frane Luka"
+```
+
+By using `:keys`, we're telling Clojure that the next form will be a vector of names that it should convert to keywords (e.g. `:fname`), in order to look up their values in the input map.  
+
+We can do the same thing with `:strs` and `:syms`, except that the first one would look for string keys in the map (e.g. `"fname"`), and the latter one would indicate we're looking for symbol keys.  
+
+Sometimes you'll want to get the keys that you didn't name individually by any of the previously described methods. In that case, we use `:as`, which works just like it does with vector:
+
+```clojure
+(let [{fname :fname, :as whole-name} full-name-map]
+  whole-name)
+{:mname "Luka", :lname "Bonaci", :fname "Frane"}
+```
+
+If the destructuring map looks up a key that's not in the source map, it's bound to `nil`, but it's possible to provide different defaults with `:or`:
+
+```clojure
+(let [{:keys [title fname mname lname], :or {title "Mr."}} full-name-map]
+  (println title fname mname lname))
+Mr. Frane Luka Bonaci
+```
+
+**Associative destructuring**
+
+Using a map to define bindings isn't limited to maps, we can destructure a vector by providing a map declaring the local name as vector indices:
+
+```clojure
+(let [{first-thing 0, last-thing 3} [1 2 3 4]]
+  [first-thing last-thing])
+[1 4]
+```
+
+**Destructuring in function parameters**
+
+All previous examples use `let` to do destructuring, but exactly the same features are available in function parameters. Each function parameter can destructure a map or a sequence:
+
+```clojure
+(defn print-last-name [{:keys [lname]}]
+  (println lname))
+
+(print-last-name full-name-map)
+Bonaci
+```
+
+> When function arguments include an ampersand, that's not destructuring, but part of support for multiple function bodies, each with its own number of parameters.
+
+**Destructuring versus accessor methods**
+
+It's idiomatic in Clojure to build your application objects by composing maps and vectors, instead of using multiple objects with getters and setters, as Java does.
+This makes destructuring natural and straightforward. So anytime you find yourself calling `nth` on the same collection multiple times, or looking up constants in a map, or using `first` or `next`, consider using destructuring instead.
 
 
 
