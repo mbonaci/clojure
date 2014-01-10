@@ -1977,3 +1977,7 @@ This makes destructuring natural and straightforward. So anytime you find yourse
 
 
 
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/mbonaci/clojure/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
