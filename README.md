@@ -49,13 +49,13 @@ Boom! We have our own working Clojure environment.
 
 ![repl](https://github.com/mbonaci/clojure/raw/master/resources/repl.png)
 
-Now when that's all sorted and you sir, are very much eager to learn, let's get things started...
+Now when that's all sorted and you're eager to learn, let's get things started...
 
 # Basics
 
 Valid Clojure expressions consist of _numbers_, _symbols_, _keywords_, _booleans_, _characters_, _functions_, _function calls_, _macros_ (what?), _strings_, _literal maps_, _vectors_, and _sets_. 
 
-Here's a function call (means _increment_):
+Here's how a function looks like (`inc` is short for _increment_):
 
 ```clojure
 user=> inc
@@ -161,16 +161,9 @@ java.lang.Float
 366000.0
 ```
 
-To avoid rounding of floating-point numbers, Clojure provides a rational number type:
+
 
 ```clojure
-(type 1/3)
-clojure.lang.Ratio
-
-;; rational numbers are automatically simplified, if possible:
-100/25
-4
-
 (+ 1 2.0)
 3.0
 
@@ -217,12 +210,40 @@ false
 true
 ```
 
+To avoid having to round floating-point numbers (e.g. result of `2 / 3`), Clojure provides a rational number type `clojure.lang.Ratio`, thus maintaining absolute precision when dealing with floating point arithmetic:
+
+```clojure
+(type 1/3)
+clojure.lang.Ratio
+
+;; rational numbers are automatically simplified, if possible:
+100/25
+4
+
+(rational? 2)   ;is rational or may be rational
+true
+
+(rational? 2.1)
+false
+
+(rationalize 2.1)
+21/10
+
+(numerator (/ 21 10))
+21
+
+(denominator (/ 21 10))
+10
+```
+
+> The calculation of rational math, though accurate, isn’t nearly as fast as with floats or doubles (due to overhead cost of e.g. finding the least common denominator).
+
 **Truncation** 
 
 Truncation is a process of limiting the accuracy of floating-point numbers, due to deficiencies in its representation. When a number is truncated, its precision is limited such that the maximum number of digits of accuracy is bound by the number of bits that can fit into the storage space allowed by its representation.
 
 ```clojure
-(let [pi-constant 3.14159265358979323846264338327950288419716939937M]
+(let [pi-constant 3.14159265358979323846264338327950288419716939937M] ;notice the M
   (println (class pi-constant))
   pi-constant)
 java.math.BigDecimal
@@ -235,7 +256,7 @@ java.lang.Double
 3.141592653589793
 ```
 
-`M`, at the end of a floating-point number literal is used to tell Clojure to keep the number in arbitrary precision.  
+`M`, at the end of a floating-point number literal is used to tell Clojure to keep the number in its full precision.  
 `N` is used for the same thing when dealing with longs.
 
 > Clojure truncates floating point numbers by default
