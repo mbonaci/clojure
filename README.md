@@ -283,11 +283,6 @@ java.lang.Double
 java.lang.Long
 ```
 
-
-
-
-
-
 ## Strings and Characters
 
 String is any sequence of characters enclosed in double quotes, including newlines:
@@ -418,7 +413,7 @@ true
 # Keywords
 
 Closely related to symbols and strings are keywords, which begin with a `:`.  
-Keywords are like strings in that they’re made up of text, but are specifically intended for use as labels or identifiers. These aren’t labels in the sense of symbols, keywords aren’t replaced by any other value, they’re just names, by themselves.
+Keywords are like strings in that they are made up of text, but are specifically intended for use as labels or identifiers. These are not labels in the sense of symbols, keywords are not replaced by any other value, they are just names, by themselves:
 
 ```clojure
 (type :cat)
@@ -430,6 +425,54 @@ clojure.lang.Keyword
 (name :cat)
 "cat"
 ```
+
+**Using keywords as map keys**
+
+> since keywords are self-evaluating and provide fast equality checks, they are almost always used as map keys
+
+Another important property of keywords, when used as map keys, is that they can be used as functions, taking a map as an argument to perform value lookups:
+
+```clojure
+(def mouse-planet {:cats 180, :mice 9})   ;define a map
+#'user/mouse-planet
+
+(:cats mouse-planet)                      ;lookup by keyword
+180
+
+(println (/ (:cats mouse-planet)          ;much more useful example
+            (:mice mouse-planet))
+         "cats per capita")
+20 cats per capita
+```
+
+**As enumerations**
+
+Since their value doesn't change, convenient keyword use case is enumeration. E.g. `:mouse`, `:rat` and `:x-rat` provide a nice visual delineation (for mouse types) within a source code.
+
+> there are other useful things we can do with keywords. We can use them **As multimethod dispatch values** and **As directives**, but we'll deal with that later
+
+**Qualifying your keywords**
+
+Keywords don't belong to any specific namespace, although it's a good practice to define them as if they do, because that way you provide a context:
+
+```clojure
+user=> :not-in-ns
+:not-in-ns
+
+user=> ::not-in-ns          ;fully qualified keyword
+:user/not-in-ns
+
+user=> (ns another)
+nil
+
+another=> :user/in-another  ;"fully qualified" keyword
+:user/in-another
+
+another=> :haunted/name     ;namespace doesn't have to exist
+:haunted/name
+```
+
+> double colon is used to fully qualify a keyword by prepending the current namespace name to the keyword name
 
 # Collections
 
@@ -710,10 +753,32 @@ Like vectors, any item in a map literal is evaluated before the result is stored
 
 # Symbols
 
-Closest thing to a variable in Clojure. Typically used to refer to function parameters, local variables, globals, and Java classes.
+Closest thing to a variable in Clojure. Primarily used to provide a name for a given value, i.e. to refer to function parameters, local variables, globals, and Java classes.
+
+Unlike keywords, symbols are not unique based solely on their names:
+
+```clojure
+(identical? 'node 'node)
+false
+
+;; identical? returns true only if symbols are the same object
+(let [x 'node y x] (identical? x y))
+true
+```
+
+Each `node` symbol is a discrete object that only happens to share a name. Though name is the basis for symbol equality:
+
+```clojure
+(= 'node 'node)
+true
+
+(name 'node)
+"node"
+```
 
 We can define a meaning for a symbol within a specific expression, using `let`.
-The `let` expression first **takes a vector of bindings**: alternating symbols and values that those symbols are bound to, within the remainder of the expression. 
+The `let` expression first **takes a vector of bindings**: alternating symbols and values that those symbols are bound to within the remainder of the expression.  
+
 “Let the symbol `cats` be `5`, and construct a string composed of `"I have "`, `cats`, and `" cats"`:
 
 ```clojure
