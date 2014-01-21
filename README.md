@@ -334,10 +334,10 @@ java.lang.String
 \\
 ```
 
-`#"..."` is Clojure’s way of writing a regular expression.
-The parentheses mean that the regular expression should capture that part of the match. 
-We get back a list containing the part of the string that matched the first parentheses, 
-followed by the part that matched the second parentheses:
+## Regular expressions
+
+`#"..."` is Clojure’s way of writing a regular expression.  
+Clojure and Java have very similar Regex syntax.
 
 ```clojure
 (re-find #"cat" "mystic cat mouse")
@@ -345,13 +345,37 @@ followed by the part that matched the second parentheses:
 
 (re-find #"cat" "only dogs here")
 nil
+```
 
+The parentheses, i.e. _capturing group_ means that the regular expression should capture that part of the match. We get back a _list_ containing the part of the string that matched the first parentheses, followed by the part that matched the second parentheses, etc:
+
+```clojure
 (re-matches #"(.+):(.+)" "mouse:treat")
 ["mouse:treat" "mouse" "treat"]
 
-(rest (re-matches #"(.+):(.+)" "mouse:treat"))
-("mouse" "treat")
+;; capturing group in the regex causes each returned item to be a vector:
+(re-seq #"\w*(\w)" "one-two/three")
+(["one" "e"] ["two" "o"] ["three" "e"])
 ```
+
+Java's regex `Pattern` class has several methods that can be used directly, but only `split` is used regularly to split a string into an array of Strings:
+
+```clojure
+(seq (.split #"," "1,2,3,4"))  ;this is how you call Java methods
+("1" "2" "3" "4")
+```
+
+> [More on Java interoperability](#java-interop)
+
+The `re-seq` function returns a lazy sequence of all matches in a string:
+
+```clojure
+(re-seq #"\w+" "one-two/three")
+("one" "two" "three")
+```
+
+> Java's regex engine includes a `Matcher` object which mutates in a non-thread-safe way as it walks through a string finding matches. This object is exposed in Clojure through the `re-matcher` function and can be used in combination with `re-groups` and `re-find`.
+It's recommended that a direct usage of all of these three functions should be avoided.
 
 ## Booleans
 
@@ -474,6 +498,8 @@ another=> :haunted/name     ;namespace doesn't have to exist
 
 > double colon is used to fully qualify a keyword by prepending the current namespace name to the keyword name
 
+> equally named keywords are the same object in memory
+
 # Collections
 
 A collection is a group of values. It’s a container which provides some structure, some framework, for the things that it holds. We say that a collection contains elements, or members.
@@ -549,7 +575,7 @@ Unlike some _Lisps_, the empty list in Clojure, `()`, isn't the same as `nil`.
 Lists are well-suited for small collections, or collections which are read in linear order, but are slow when you want to get arbitrary elements from later in the list. 
 
 
-# Vectors
+## Vectors
 
 For fast access to every element, we use a __vector__.
 Vectors are surrounded by square brackets, just like lists are surrounded by parentheses. Because vectors aren’t evaluated like lists are, there is no need to quote the vector literal:
@@ -633,8 +659,7 @@ true
 
 In almost all contexts, you can consider vectors, lists, and other sequences as interchangeable. They only differ in their performance characteristics, and in a few data-structure-specific operations.
 
-
-# Sets
+## Sets
 
 Sets are surrounded by `#{...}`. In general, the order of sets can shift at any time. If you want a particular order, you can ask for it as a list or a vector:
 
@@ -687,8 +712,7 @@ You can make a set out of any other collection with `set`:
 #{1 2 5}
 ```
 
-
-# Maps
+## Maps
 
 Maps are surrounded by braces `{...}`, filled by alternating keys and values. In this map, the three keys are `:name`, `:color`, and `:weight`, and their values are `"mittens"`, `"black"`, and `9`, respectively. We can look up the corresponding value for a key with `get`:
 
@@ -782,8 +806,8 @@ The `let` expression first **takes a vector of bindings**: alternating symbols a
 “Let the symbol `cats` be `5`, and construct a string composed of `"I have "`, `cats`, and `" cats"`:
 
 ```clojure
-(let [cats 5] (str "I have " cats " cats."))
-"I have 5 cats."
+(let [mice 5] (str "I have " mice " mice."))
+"I have 5 mice."
 ```
 
 Let bindings, also called **locals**, apply only within the `let` expression itself. They also override any existing definitions for symbols at that point in the program. For example, we can redefine addition to mean subtraction, for the duration of a `let`:
@@ -835,6 +859,42 @@ you'd use a high level function or loop/recur form.
 
 To summarize, `let` defines the meaning of symbols within an expression. When Clojure evaluates a `let`, it replaces all occurrences of those symbols in the rest of the `let` expression with their corresponding values, then evaluates the rest of the expression.
 
+**Metadata**
+
+Clojure allows the attachment of metadata to various objects, including symbols. `with-meta` function takes an object and a map and returns another object of the same type with the metadata attached:
+
+```clojure
+(let [x (with-meta 'node {:js true})    ;attach :js to 'node and assign to x
+      y (with-meta 'node {:js false})]
+  [(= x y)            ;true because they both hold the same symbol, 'node
+   (identical? x y)   ;false because they are different instances
+   (meta x)
+   (meta y)])
+[true false {:js true} {:js false}]
+```
+
+**Symbols and namespaces**
+
+Like keywords, symbols don't belong to any specific namespace:
+
+```clojure
+user=> (ns what-where)
+nil
+
+what-where=> (def one-simbol 'where-is-it)
+#'what-where/one-simbol
+
+what-where=> one-simbol
+where-is-it
+
+what-where=> (resolve 'one-simbol)
+#'what-where/one-simbol  ;looks like namespace-qualified symbol
+                         ;but it's just a characteristic of symbol evaluation
+
+what-where=> `one-symbol   ;back tick
+what-where/one-symbol
+```
+
 # Functions
 
 Functions are a first-class type in Clojure. They can be used the same as any value (stored in Vars, held in collections and passed as arguments and returned as a result of other functions).
@@ -865,7 +925,7 @@ Named function definition:
 
 `let` bindings describe a similar relationship, but with a specific set of values for those arguments. `let` is evaluated immediately, whereas `fn` is evaluated later, when bindings are provided.
 
-# Vars
+## Vars
 
 Once a `let` is defined, there’s no way to change it. If we want to redefine symbols for everyone, even code that we didn’t write, we need a new construct, a mutable variable.
 
@@ -1291,7 +1351,6 @@ To extend a sequence by repeating it forever, use `cycle`:
 (5 10 15 20 25 30)
 ```
 
-
 ## Transforming Sequences
 
 `map` applies a function to each element, but it has a few more tricks up its sleeve:
@@ -1385,8 +1444,7 @@ To randomize the order of a sequence, use `shuffle`:
 "raradbabaac"
 ```
 
-
-# Subsequences
+## Subsequences
 
 `take` selects the first `n` elements
 `drop` removes the first `n` elements
@@ -1466,8 +1524,7 @@ while `partition` may not:
 ((1 2 -5) (3 2 1) (-1 -2 -3) (-2 -1 1))
 ```
 
-
-## Collapsing subsequences
+### Collapsing subsequences
 
 After transforming a sequence, we often want to collapse it in some way, in order to derive some smaller value. For instance, we might want the number of times each element appears in a sequence:
 
@@ -1939,7 +1996,7 @@ nil
 
 The use of `seq` as a terminating condition is the idiomatic way of testing whether a sequence is empty
 
-## Destructuring
+# Destructuring
 
 Allows you to place a collection of names in a binding form where normally you'd put just a single name.  
 
@@ -2054,6 +2111,8 @@ Bonaci
 
 It's idiomatic in Clojure to build your application objects by composing maps and vectors, instead of using multiple objects with getters and setters, as Java does.
 This makes destructuring natural and straightforward. So anytime you find yourself calling `nth` on the same collection multiple times, or looking up constants in a map, or using `first` or `next`, consider using destructuring instead.
+
+# Composite data types
 
 
 
