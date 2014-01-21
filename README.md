@@ -775,6 +775,45 @@ Remove map element with `dissoc`:
 
 Like vectors, any item in a map literal is evaluated before the result is stored in the map. Unlike vectors, the order in which they are evaluated isn't guaranteed.
 
+## Persistence
+
+Persistent collection is immutable, in-memory collection that allows you to preserve historical versions of its state.
+
+Since arrays are mutable, any changes happen in-place:
+
+```clojure
+(def ds (into-array [:frane :luka :glupaca]))  ;mutable
+#'mbo/ds
+
+(seq ds)     ;only for nice REPL printout
+(:frane :luka :glupaca)
+
+(aset ds 2 :suzi)   ;replace third element of the array
+:suzi
+
+(seq ds)
+(:frane :luka :suzi)
+```
+
+Using one of Clojure's persistent data structures shows the difference:
+
+```clojure
+mbo=> (def ds [:frane :luka :suzi])  ;init persistent collection
+#'mbo/ds
+
+ds                    ;print ds to REPL
+[:frane :luka :suzi]
+
+(def ds8 (replace {:suzi :glupaca} ds))   ;replace third element and bind the
+#'mbo/ds8                                 ;whole collection to ds8
+
+ds                    ;show that ds did not change
+[:frane :luka :suzi]
+
+ds8                   ;show the new collection
+[:frane :luka :glupaca]
+```
+
 # Symbols
 
 Closest thing to a variable in Clojure. Primarily used to provide a name for a given value, i.e. to refer to function parameters, local variables, globals, and Java classes.
