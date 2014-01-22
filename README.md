@@ -785,6 +785,8 @@ Since arrays are mutable, any changes happen in-place:
 (def ds (into-array [:frane :luka :glupaca]))  ;mutable
 #'mbo/ds
 
+;; btw Glupaca is the name of our cat (which means something like "stupid women")
+
 (seq ds)     ;only for nice REPL printout
 (:frane :luka :glupaca)
 
@@ -807,10 +809,10 @@ ds                    ;print ds to REPL
 (def ds8 (replace {:suzi :glupaca} ds))   ;replace third element and bind the
 #'mbo/ds8                                 ;whole collection to ds8
 
-ds                    ;show that ds did not change
+ds                    ;ds did not change
 [:frane :luka :suzi]
 
-ds8                   ;show the new collection
+ds8                   ;the newly created collection
 [:frane :luka :glupaca]
 ```
 
