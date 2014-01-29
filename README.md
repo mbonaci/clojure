@@ -574,6 +574,7 @@ You can modify a list by _conjoining_ an element onto it (notice it goes to the 
 Unlike some _Lisps_, the empty list in Clojure, `()`, isn't the same as `nil`.
 Lists are well-suited for small collections, or collections which are read in linear order, but are slow when you want to get arbitrary elements from later in the list. 
 
+> Calling `seq` on a list returns the list itself, but more often, calling `seq` on a collection returns a new `seq` object for navigating that collection.
 
 ## Vectors
 
@@ -714,7 +715,9 @@ You can make a set out of any other collection with `set`:
 
 ## Maps
 
-Maps are surrounded by braces `{...}`, filled by alternating keys and values. In this map, the three keys are `:name`, `:color`, and `:weight`, and their values are `"mittens"`, `"black"`, and `9`, respectively. We can look up the corresponding value for a key with `get`:
+Maps are represented as braces `{...}` filled by alternating keys and values.  
+
+In the following map, the three keys are `:name`, `:color`, and `:weight`, and their values are `"mittens"`, `"black"`, and `9`, respectively. We can look up the corresponding value for a key with `get`:
 
 ```clojure
 {:name "luka", :weight 3, :color "white"}
@@ -777,7 +780,7 @@ Like vectors, any item in a map literal is evaluated before the result is stored
 
 ## Persistence
 
-Persistent collection is immutable, in-memory collection that allows you to preserve historical versions of its state.
+> Persistent collection is immutable, in-memory (not related to disk persistence) collection that allows you to preserve historical versions of its state.
 
 Since arrays are mutable, any changes happen in-place:
 
@@ -1192,6 +1195,33 @@ nil
 
 
 # Sequences
+
+> a **sequential** collection is one that holds a series of values without reordering them
+
+> a **sequence** is a sequential collection that represents a series of values that may or may not exist yet (may have concrete values, may be lazy or empty). Few composite types are actually _sequences_, though several such as vectors are _sequential_
+
+> a `seq` is a simple API for navigating collections which consists of two functions, `first` and `rest`
+
+If two sequentials have the same values in the same order, `=` will return `true` for them, even if their concrete types are different:
+
+```clojure
+(= [1 2 3] '(1 2 3))
+true
+```
+
+Conversely, even if two collections have the same values in the same order, if one is a sequential collection and the other isn't, `=` will return `false`:
+
+```clojure
+(= [1 2 3] #{1 2 3})
+false
+```
+
+If the collection is empty, `seq` always returns `nil` and never an empty sequence (that goes for all other functions that return a `seq`, e.g. `next`).
+
+> Clojure classifies each composite data type into 3 partitions: _sequentials_, _maps_ and _sets_. Everything that implements `java.util.List` is included in the sequential partition. Generally things that fall into other two partitions include set or map in their name
+
+Every collection type provides at least one kind of `seq` object for walking through its elements
+
 ## Recursion
 
 `cons`, makes a list beginning with the first argument, followed by all the elements in the second argument:
