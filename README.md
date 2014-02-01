@@ -671,11 +671,7 @@ If you already have a vector but want to "pour" several values into it, use `int
 ;;the second argument must be anything that works with 'seq' function
 ```
 
-<center>
-![vector-lookup-options](https://github.com/mbonaci/clojure/raw/master/resources/vector-lookup-options.png)
-</center>
-
-**Primitive vectors**
+### Primitive vectors
 
 You can store primitive types inside of vectors using the `vector-of` function, which takes any of `:int`, `:long`, `:float`, `:double`, `:byte`, `:short`, `:boolean` and `:char` and returns an empty vector. This returned vector will act just like any other vector, except that, internally, it'll store its contents as primitives.  
 The new vector will try to coerce any additions into its internal type when they are being added:
@@ -692,7 +688,7 @@ IllegalArgumentException Value out of range for long: 60981273401951965283910847
 clojure.lang.RT.longCast (RT.java:1134)
 ```
 
-**Large vectors**
+### Large vectors
 
 Vectors are particularly efficient at three things (relative to lists): 
  - adding or removing things from the right end of the collection
@@ -715,6 +711,8 @@ a-to-e
 (a-to-e 4)       ;invoking a vector as a function
 \E
 ```
+
+![vector-lookup-options](https://github.com/mbonaci/clojure/raw/master/resources/vector-lookup-options.png)
 
 Since vectors are indexed, they can be efficiently walked in either direction. The `seq` and `rseq` return sequences that do exactly that:
 
@@ -775,7 +773,7 @@ matrix
 [[1 2 3] [4 5 6] [7 8 9]]
 ```
 
-**Vectors as stacks**
+### Vectors as stacks
 
 Clojure vectors uses `conj` as `push` and `pop` as `pop` to add and remove elements from the right side. Since vectors are immutable, `pop` returns a new vector with the rightmost element dropped, which is different from many mutable stack APIs, which generally return the dropped item. Consequently, `peek` becomes more important as the primary way to get an item from the top of the stack:
 
@@ -793,11 +791,116 @@ Clojure vectors uses `conj` as `push` and `pop` as `pop` to add and remove eleme
 5
 ```
 
-> If you're using a vector as a stack, it's idiomatic to use `conj` instead of `assoc`, `peek` instead of `last` and `pop` instead of `dissoc`. That avoids unnecessary confusion about how the collection is being used
+> If you're using a collection (any implementor of `clojure.lang.IPersistentStack`) as a stack, it's idiomatic to use `conj` instead of `assoc`, `peek` instead of `last` and `pop` instead of `dissoc`. That avoids unnecessary confusion about how the collection is being used
+  
+> Lists also implement `IPersistentStack`, but the functions there operate on the left side, i.e. beginning of the list
+
+### Using vectors instead of reverse
+
+When processing a list, it's pretty common to want to produce a new list in the same order. But if all you have is list, then you're left with backward list that needs to be reversed:
+
+```clojure
+(defn m-map1 [f coll]
+  (loop [coll coll, acc nil]
+    (if (empty? coll)
+      (reverse acc)
+      (recur (next coll) (cons (f (first coll)) acc)))))
+#'mbo/m-map1
+
+(m-map1 - (range 5))
+(0 -1 -2 -3 -4)
+```
+
+After the entire list has been walked once to produce the desired values, `reverse` walks it again to get them in the right order, which is inefficient and non-idiomatic.
+One way to avoid `reverse` is to use a vector as the accumulator, instead of a list:
+
+```clojure
+(defn m-map2 [f coll]
+  (loop [coll coll, acc []]
+    (if (empty? coll)
+      acc
+      (recur (next coll) (conj acc (f (first coll)))))))
+#'mbo/m-map2
+
+(m-map2 - (range 5))
+[0 -1 -2 -3 -4]
+```
+
+### Subvectors
+
+Provide a fast way to take a slice of an existing vector based on start and end indices.
+To produce a subvector we use the `subvec` function:
+
+```clojure
+(subvec a-to-e 2 4)
+[\C \D]
+
+;;first index is inclusive, but the second is exclusive
+```
+
+> There's a special logic for taking a `subvec` of a `subvec`, in which case the newest subvector keeps a reference to the original vector, not the intermediate subvector, which keeps both the creation and use of sub-subvectors fast and efficient.
+
+### Vectors as MapEntries
+
+Clojure's hash map, just like hash tables and dictionaries in many other languages, has a mechanism to iterate through the entire collection. Clojure's solution for this iterator is, you guessed it - `seq`.  
+Each item in this seq needs to include both the key and the value, hence they are wrapped in a `MapEntry`. When printed, each entry looks like a vector:
+
+```clojure
+(first {:width 10 :height 20 :depth 15})
+[:depth 15]
+
+;;not only does it look like a vector, it really is one:
+(vector? (first {:width 10 :height 20 :depth 15}))
+true
+
+;;which means you can use all the regular vector functions on it
+;;it even supports destructuring*
+```
+
+[destructuring?](#destructuring)
+
+```clojure
+;;e.g. the following locals, 'dimension' and 'amount', will take on the value of each
+;;key/value pair in turn:
+(doseq [[dimension amount] {:width 10, :height 20, :depth 15}]
+  (println (str (name dimension) ":") amount " inches"))
+depth: 15  inches
+width: 10  inches
+height: 20  inches
+nil
+
+(doc doseq)
+-------------------------
+clojure.core/doseq
+([seq-exprs & body])
+Macro
+  Repeatedly executes body (presumably for side-effects) with
+  bindings and filtering as provided by "for".  Does not retain
+  the head of the sequence. Returns nil.
+```
+
+A `MapEntry` is its own type and has two functions for retrieving its contents, `key` and `val`, which do exactly the same thing as `(nth m-map 0)` and `(nth m-map 1)`.
+
+### What vectors aren't?
+
+Vectors are versatile, but there are some useful patterns where they might seem like a good fit, but in fact the aren't.
+
+**Vectors aren't sparse**
+
+If you have a vector of length _n_, the only position where you can insert a value is at index _n_, appending to the far right end. You can't skip some indices and insert at a higher index number (use hash map or sorted map).  
+Although you can replace values within a vector, you can't insert or delete items such that indices are adjusted (use finger trees for that).
+
+**Vectors aren't queues**
+
+Use a `PersistentQueue` for that.
+
+**Vectors aren't sets**
+
+If you want to find out whether a vector contains a particular value, you might be tempted to use the `contains?` function, but that function checks whether a specific _key_, not _value_ is in a collection, which is really not useful for a vector.
 
 > Vectors are probably the most frequently used collection type in Clojure. They are used as literals for argument lists and `let` bindings, for holding large amounts of application data and as stacks and map entries
-
-In almost all contexts, you can consider vectors, lists, and other sequences as interchangeable. They only differ in their performance characteristics, and in a few data-structure-specific operations.
+  
+> In almost all contexts, you can consider vectors, lists, and other sequences as interchangeable. They only differ in their performance characteristics, and in a few data-structure-specific operations.
 
 ## Sets
 
