@@ -589,7 +589,9 @@ Vectors are surrounded by square brackets, just like lists are surrounded by par
 clojure.lang.PersistentVector
 ```
 
-You can also create vectors with vector, or change other structures into vectors with `vec`:
+> Vectors are similar to arrays, but are immutable and persistent
+
+You can also create vectors with `vector`, or change other structures into vectors with `vec`:
 
 ```clojure
 (vector 1 2 3)
@@ -599,14 +601,14 @@ You can also create vectors with vector, or change other structures into vectors
 [1 2 3]
 ```
 
-`conj` on a vector adds to the end, not the start:
+`conj` on a vector adds to the end, not the start, like with lists:
 
 ```clojure
 (conj [1 2 3] 4)
 [1 2 3 4]
 ```
 
-Our friends `first`, `second`, and `nth` work here too; but unlike lists, `nth` is fast on vectors. That’s because internally, vectors are represented as a very broad tree of elements, where each part of the tree branches into 32 smaller trees. Even very large vectors are only a few layers deep, which means getting to elements only takes a few hops.
+Our friends `first`, `second`, and `nth` work here too; but unlike lists, `nth` is fast on vectors. That’s because internally, vectors are represented as a very broad tree of elements, where each part of the tree branches into 32 smaller trees. Even very large vectors are only a few layers deep, which means getting to elements only takes a few hops, which is why retrieval operation from the interior of a vector takes essentially a constant time.
 
 The important difference, when compared to lists, is that vectors evaluate each item in order. No function or macro is performed on a vector itself.
 
@@ -644,7 +646,7 @@ nil
 4
 ```
 
-You can use _index_ to access vector elements:
+You can use element's index to access it:
 
 ```clojure
 ([1 2 3] 1)
@@ -657,6 +659,143 @@ Vectors and lists containing the same elements are considered equal:
 (= [1 2] (list 1 2))
 true
 ```
+
+If you already have a vector but want to "pour" several values into it, use `into`:
+
+```clojure
+(let [m-vector [:a :b :c]]
+  (into m-vector (range 10)))
+[:a :b :c 0 1 2 3 4 5 6 7 8 9]
+
+;;if you want to return a vector the first arg to 'into' must be a vector
+;;the second argument must be anything that works with 'seq' function
+```
+
+<center>
+![vector-lookup-options](https://github.com/mbonaci/clojure/raw/master/resources/vector-lookup-options.png)
+</center>
+
+**Primitive vectors**
+
+You can store primitive types inside of vectors using the `vector-of` function, which takes any of `:int`, `:long`, `:float`, `:double`, `:byte`, `:short`, `:boolean` and `:char` and returns an empty vector. This returned vector will act just like any other vector, except that, internally, it'll store its contents as primitives.  
+The new vector will try to coerce any additions into its internal type when they are being added:
+
+```clojure
+(into (vector-of :int) [Math/PI 2 1.3])
+[3 2 1]
+
+(into (vector-of :char) [100 101 102])
+[\d \e \f]
+
+(into (vector-of :int) [1 2 609812734019519652839108477134])
+IllegalArgumentException Value out of range for long: 609812734019519652839108477134
+clojure.lang.RT.longCast (RT.java:1134)
+```
+
+**Large vectors**
+
+Vectors are particularly efficient at three things (relative to lists): 
+ - adding or removing things from the right end of the collection
+ - accessing or changing items in the interior of the collection by numeric index
+ - walking in reverse order
+
+```clojure
+(def a-to-e (vec (map char (range 65 91))))
+#'mbo/a-to-z
+
+a-to-e
+[\A \B \C \D \E]
+
+(nth a-to-e 4)   ;like with a map
+\E
+
+(get a-to-e 4)   ;like with a map
+\E
+
+(a-to-e 4)       ;invoking a vector as a function
+\E
+```
+
+Since vectors are indexed, they can be efficiently walked in either direction. The `seq` and `rseq` return sequences that do exactly that:
+
+```clojure
+(seq a-to-e)
+(\A \B \C \D \E)
+
+(rseq a-to-e)
+(\E \D \C \B \A)
+```
+
+Any item in a vector can be "changed" using the `assoc` function (in a constant time). Clojure does this using _structural sharing_ between the old and the new vectors, hence avoiding having to copy all the elements.
+
+```clojure
+(assoc a-to-e 3 "former D")
+[\A \B \C "former D" \E]
+```
+
+The `assoc` function works only on indices that either already exist or, as a special case, exactly one step past the end of a vector (returned vector becomes one item larger).
+
+Function `replace` uses `assoc` internally:
+
+```clojure
+(replace {2 :a, 4 :b} [1 2 3 2 3 4])
+[1 :a 3 :a 3 :b]
+```
+
+The functions `assoc-in`, `update-in` and `get-in` are used to work with nested structures of vectors and/or maps. These functions take a series of indices to pick items from each more deeply nested level:
+
+```clojure
+(def matrix
+  [[1 2 3]
+   [4 5 6]
+   [7 8 9]])
+#'mbo/matrix
+
+(get-in matrix [1 2])   ;second row, third column
+6
+
+(assoc-in matrix [1 2] 'x)
+[[1 2 3] [4 5 x] [7 8 9]]
+```
+
+`update-in` works the similar way, but instead of taking a value to "overwrite" an existing value, it takes a function to _apply_ to an existing value. It'll replace the value at the given coordinates with the return value of the function:
+
+```clojure
+(update-in matrix [1 2] * 100)
+[[1 2 3] [4 5 600] [7 8 9]]
+
+;; the coordinates refer to the value 6 and the function is * taking an argument 100
+;; so the slot becomes the return value of (* 6 100)
+```
+
+Remember? `matrix` itself never changed:
+
+```clojure
+matrix
+[[1 2 3] [4 5 6] [7 8 9]]
+```
+
+**Vectors as stacks**
+
+Clojure vectors uses `conj` as `push` and `pop` as `pop` to add and remove elements from the right side. Since vectors are immutable, `pop` returns a new vector with the rightmost element dropped, which is different from many mutable stack APIs, which generally return the dropped item. Consequently, `peek` becomes more important as the primary way to get an item from the top of the stack:
+
+```clojure
+(peek m-stack)
+3
+
+(pop m-stack)
+[1 2]
+
+(conj m-stack 4)
+[1 2 3 4]
+
+(+ (peek m-stack) (peek (pop m-stack)))
+5
+```
+
+> If you're using a vector as a stack, it's idiomatic to use `conj` instead of `assoc`, `peek` instead of `last` and `pop` instead of `dissoc`. That avoids unnecessary confusion about how the collection is being used
+
+> Vectors are probably the most frequently used collection type in Clojure. They are used as literals for argument lists and `let` bindings, for holding large amounts of application data and as stacks and map entries
 
 In almost all contexts, you can consider vectors, lists, and other sequences as interchangeable. They only differ in their performance characteristics, and in a few data-structure-specific operations.
 
@@ -1193,12 +1332,11 @@ We could go dig up the Clojure source code and read its definition there, or we 
 nil
 ```
 
-
 # Sequences
 
 > a **sequential** collection is one that holds a series of values without reordering them
 
-> a **sequence** is a sequential collection that represents a series of values that may or may not exist yet (may have concrete values, may be lazy or empty). Few composite types are actually _sequences_, though several such as vectors are _sequential_
+> a **sequence** is a sequential collection that represents a series of values that may or may not exist yet (may have concrete values, may be lazy or empty). Few composite types are actually _sequences_, though several such as vectors are _sequential_. All an object needs to do to be a sequence is to support two core functions, `first` and `rest`
 
 > a `seq` is a simple API for navigating collections which consists of two functions, `first` and `rest`
 
