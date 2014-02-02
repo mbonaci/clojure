@@ -1,6 +1,11 @@
 *Written in January 2014, with Clojure 1.5.1 and Leiningen 2.3.4 on Java 1.7.0_45.*  
 _Made possible by Aphyr's excellent, Clojure from-the-ground-up tutorial and "The joy of Clojure" book._
 
+Although Clojure has that fresh aura around it, I've been avoiding it because it's a _Lisp dialect_ and I have a negative experience from school 
+
+Me and Clojure was a chance encounter. I stumbled upon (via myNoSql rss feed) Aphyr's (Kyle Kingsbury) distributed systems analysis blog posts. There, Clojure looked elegant, intuitive and simple.
+
+
 > I write this as I'm going through the book myself, so bear with me :) 
 Open PRs please.
 
@@ -508,6 +513,15 @@ A collection is a group of values. It’s a container which provides some struct
 
 ## Lists
 
+A `PersistentList` is a singly linked list where each node knows its distance from the end. 
+List elements can only be found by starting with the first element and walking each prior node in order. 
+List elements can only be added or removed from the left end.
+
+In idiomatic Clojure code, lists are used almost exclusively to represent code forms, e.g. to call functions, macros, ...
+Code forms are then `eval`-ed or used as the return value for a macro.
+
+> Lists are rarely used for anything other than to represent Clojure source code, because they rarely offer any value over vectors
+
 Literal lists are written with parentheses: `(yankee hotel foxtrot)`.
 
 When a list is evaluated, the first item of the list, `yankee`, will be resolved to a _function_, _macro_, or _special form_. 
@@ -557,7 +571,7 @@ You can also construct a list using `list`:
 true
 ```
 
-You can modify a list by _conjoining_ an element onto it (notice it goes to the beginning of the list):
+You can modify a list by _conjoining_ an element onto it (as always with lists, the new element goes to the beginning):
 
 ```clojure
 (conj (list 1 2 3) 4)
@@ -575,6 +589,62 @@ Unlike some _Lisps_, the empty list in Clojure, `()`, isn't the same as `nil`.
 Lists are well-suited for small collections, or collections which are read in linear order, but are slow when you want to get arbitrary elements from later in the list. 
 
 > Calling `seq` on a list returns the list itself, but more often, calling `seq` on a collection returns a new `seq` object for navigating that collection.
+
+### What lists aren't?
+
+Probably the most common misuse of lists is to hold items that will be looked up by index. Though you can use `nth` to get the element, Clojure will have to walk the list from the beginning to find it.  
+
+Lists aren't queues. You can add items to one end, but you can't remove from the other.
+
+### PersistentQueue
+
+Persistent immutable queue is a FIFO structure where `conj` adds to the rear, `pop` removes from the front and `peek` returns the front element without removal.
+
+Clojure currently doesn't provide a core construction function for creating persistent queues, but there's a readily available empty queue instance to use, `clojure.lang.PersistentQueue/EMPTY`.
+
+The printed representation for Clojure's queues isn't particularly informative, but we can change that by providing a method for them on the `print-method`:
+
+```clojure
+(defmethod print-method clojure.lang.PersistentQueue
+  [q, w]
+  (print-method '<- w) (print-method (seq q) w) (print-method '-< w))
+
+clojure.lang.PersistentQueue/EMPTY
+<-nil-<
+```
+
+> Popping an empty queue results in just another empty queue. Peeking an empty queue returns `nil`
+
+The mechanism for adding an element to a queue is `conj`:
+
+```clojure
+(def tasks
+  #_=>   (conj clojure.lang.PersistentQueue/EMPTY
+  #_=>         :wake-up :shower :brush-teeth))
+#'mbo/tasks
+
+tasks
+<-(:wake-up :shower :brush-teeth)-<
+```
+
+> Clojure's persistent queue is implemented internally using two separate collections, the front being a seq and the rear being a vector. All insertions occur in the rear vector and all removals occur in the front seq, taking advantage of each collection's strength. When all the items from the front have been popped, the back vector is wrapped in a seq to become the new front and an empty vector is used as the new back
+
+To get the front element, we use `peek`:
+
+```clojure
+(peek tasks)
+:wake-up
+```
+
+To remove elements from the front of a queue, we use `pop` (although possible, it's non-idiomatic and suboptimal to use `rest` with queues, because it returns a seq, not a queue and _fucks up_ the speed guarantees):
+
+```clojure
+(pop tasks)
+<-(:shower :brush-teeth)-<
+
+(rest tasks)
+(:shower :brush-teeth)
+```
 
 ## Vectors
 
@@ -892,7 +962,7 @@ Although you can replace values within a vector, you can't insert or delete item
 
 **Vectors aren't queues**
 
-Use a `PersistentQueue` for that.
+Use a [PersistentQueue](#persistentqueue) for that.
 
 **Vectors aren't sets**
 
