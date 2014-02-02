@@ -1,13 +1,26 @@
 *Written in January 2014, with Clojure 1.5.1 and Leiningen 2.3.4 on Java 1.7.0_45.*  
-_Made possible by Aphyr's excellent, Clojure from-the-ground-up tutorial and "The joy of Clojure" book._
+_Inspired by Aphyr's excellent, Clojure from-the-ground-up tutorial and made possible by "The joy of Clojure" book._
 
-Although Clojure has that fresh aura around it, I've been avoiding it because it's a _Lisp dialect_ and I have a negative experience from school 
+## Clojure? That's a Lisp, for god's sake!
 
-Me and Clojure was a chance encounter. I stumbled upon (via myNoSql rss feed) Aphyr's (Kyle Kingsbury) distributed systems analysis blog posts. There, Clojure looked elegant, intuitive and simple.
+I've been avoiding Clojure for a _long time_. Because it's a _Lisp dialect_ and I have a negative Lisp experience from school. It was either a bad timing or a bad teacher, I guess. Hmm, I guess my guessing about it, in itself implies the answer :) 
 
+> Times and times again it gets apparent to me. Puberty is not the right time to learn about programming languages!
 
-> I write this as I'm going through the book myself, so bear with me :) 
-Open PRs please.
+# ;)
+## It must have something to do with the way the book was written
+
+My renewed interest in Clojure was due to a chance encounter. I stumbled upon Aphyr's (Kyle Kingsbury) fascinating [Jepsen series](http://aphyr.com/tags/jepsen), a blog about perils of uncertainty in distributed systems.  
+
+There, Clojure looked terse and concise, yet expressive and simple. So I decided to give it a shot. I picked up [The joy of Clojure](http://joyofclojure.com), got in my sweatshirt, put on a headband, closed my wife and our two months old twins in the living room and opened up the first page...
+---
+
+> After the initial discovery phase, as I was going through the book, I suddenly found myself infatuated with the language. It is beautifully consistent and simple (I  easy). It has just spread out to me, ready to be consumed. And that's a great feeling!
+
+# Set the fuck up!
+## And gimme PRs
+
+> I write this as I'm going through the book myself, so bear with me. Open pull requests.
 
 To set up your Clojure environment I suggest you use an excellent automation tool (dependency mgr, builder, test runner, packager, all-in-one) [Leiningen](http://leiningen.org/). 
 
