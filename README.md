@@ -5,15 +5,14 @@ _Inspired by Aphyr's excellent, Clojure from-the-ground-up tutorial and made pos
 
 I've been avoiding Clojure for a _long time_. Because it's a _Lisp dialect_ and I have a negative Lisp experience from school. It was either a bad timing or a bad teacher, I guess. Hmm, I guess my guessing about it, in itself implies the answer :) 
 
-> Times and times again it gets apparent to me. Puberty is not the right time to learn about programming languages!
+> Times and times again it gets apparent to me. Puberty is not the right time to learn programming languages!
 
-# ;)
-## It must have something to do with the way the book was written
+# :)
+### It must have something to do with the way the book was written
 
 My renewed interest in Clojure was due to a chance encounter. I stumbled upon Aphyr's (Kyle Kingsbury) fascinating [Jepsen series](http://aphyr.com/tags/jepsen), a blog about perils of uncertainty in distributed systems.  
 
 There, Clojure looked terse and concise, yet expressive and simple. So I decided to give it a shot. I picked up [The joy of Clojure](http://joyofclojure.com), got in my sweatshirt, put on a headband, closed my wife and our two months old twins in the living room and opened up the first page...
----
 
 > After the initial discovery phase, as I was going through the book, I suddenly found myself infatuated with the language. It is beautifully consistent and simple (I  easy). It has just spread out to me, ready to be consumed. And that's a great feeling!
 
