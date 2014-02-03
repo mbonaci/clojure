@@ -399,20 +399,24 @@ It's recommended that a direct usage of all of these three functions should be a
 
 ## Booleans
 
-**The only negative values** are `false` and `nil`, all others are `true`:
+Only `false` and `nil` are logical `false`, all others values are `true`:
 
 ```clojure
 (boolean nil)
 false
+
 (boolean 0)
 true
+
 (boolean "hi")
 true
+
 (boolean str)
 true
 
 (and true false true)
 false
+
 (and true true true)
 true
 ```
@@ -421,6 +425,7 @@ true
 ```clojure
 (and 1 2 3)
 3
+
 (and -1 nil 2)
 nil
 ```
@@ -429,6 +434,7 @@ or returns the first _truthy_ value, or the last value if all are _falsy_:
 ```clojure
 (or false 2 3)
 2
+
 (or false false nil)
 nil
 ```
@@ -559,7 +565,7 @@ ClassCastException java.lang.Long cannot be cast to clojure.lang.IFn
 (1 2 3)
 ```
 
-Remember, we quote lists (any everything else) with a `'` (or `quote`) to prevent them from being evaluated.  
+Remember, we quote lists (any everything else needed quoting) with a `'` (or `quote`) to prevent them from being evaluated.  
 
 ```clojure
 '(1 2 3)
