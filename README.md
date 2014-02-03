@@ -14,14 +14,16 @@ I've been avoiding Clojure for a _long time_. Because it's a _Lisp dialect_ and 
 
 My renewed interest in Clojure was due to a chance encounter. I stumbled upon Aphyr's (Kyle Kingsbury) fascinating [Jepsen series](http://aphyr.com/tags/jepsen), a blog about perils of uncertainty in distributed systems.  
 
-There, Clojure looked terse and concise, yet expressive and simple. So I decided to give it a shot. I picked up [The joy of Clojure](http://joyofclojure.com), got in my sweatshirt, put on a headband, closed my wife and our two months old twins in the living room, slightly licked my finger and opened up the first page...
+There, Clojure looked terse and concise, yet expressive and simple. So I decided to give it a shot. I picked up [The joy of Clojure](http://joyofclojure.com), got in my sweatshirt, put on a headband, closed my wife and our two-month-old twins in the living room, slightly licked my finger and opened up the first page...
 
-> After the initial discovery phase, as I was going through the book, I suddenly found myself infatuated with the language. It is beautifully consistent and simple (I  easy). It has just spread out to me, ready to be consumed. And that's a great feeling!
+> After the initial discovery phase, as I was going through the book, I suddenly found myself infatuated with the language. It is beautifully consistent and simple (which is different from "easy", mind you). At that point, it has just spread out to me, ready to be gulped away. And that's a great feeling!
 
 # Set the fuck up!
 ### And gimme PRs
 
-> I write this as I'm going through the book myself, so bear with me. Open pull requests as you see fit
+> Disclaimer: I write this as I'm going through the book myself, so bear with me. Open pull requests as you see fit
+
+OK, that's more than enough BS (for now). Let's start by setting up our Clojure environment.
 
 To set up your Clojure environment I suggest you use an excellent automation tool (dependency mgr, builder, test runner, packager, all-in-one) [Leiningen](http://leiningen.org/). 
 
@@ -519,7 +521,9 @@ another=> :haunted/name     ;namespace doesn't have to exist
 
 # Collections
 
-A collection is a group of values. It’s a container which provides some structure, some framework, for the things that it holds. We say that a collection contains elements, or members.
+A collection is a group of values. It’s a container which provides some structure, some framework, for the things that it holds. We refer to collection members as elements, or items.
+
+All Clojure's collections support heterogeneous values (values of arbitrary types), together, in the same collection.
 
 > when a collection is evaluated, each of its contained items is evaluated first
 
@@ -986,12 +990,57 @@ If you want to find out whether a vector contains a particular value, you might 
 
 ## Sets
 
-Sets are surrounded by `#{...}`. In general, the order of sets can shift at any time. If you want a particular order, you can ask for it as a list or a vector:
+Set is a collection of unordered, unique elements.
+
+Sets are surrounded by `#{...}`:
 
 ```clojure
 #{1 2 3}
 #{1 2 3}
+
+(#{:a :b :c :d} :c)
+:c
+
+(#{:a :b :c :d} :e)
+nil
 ```
+
+If you look at the previous two expressions, you'll see that the sets are in fact functions of their elements that return the matched element or `nil` (take a pause and read that a couple more times, examining the examples). This way of looking up set returns the element itself, or `nil` if the element is not present.
+
+Elements can be accessed via the `get` function, which returns the queried value if it exists, or `nil` if it doesn't:
+
+```clojure
+(get #{:a 1 2 :b} :b)
+:b
+
+(get #{:a 1 2 :b} :k)
+nil
+```
+
+**Searching a sequence for any of multiple items using a set and `some`**
+
+The `some` function takes a predicate and a sequence. It applies the predicate to each element in turn, returning the first _truthy_ value returned by the predicate or else `nil`:
+
+```clojure
+(some #{:b} [:a 1 :b 2])
+:b
+
+(some #{1 :b} [:a 1 :b 2])
+1
+```
+
+Using a set as the predicate supplied to `some` allows you to check whether any of the truthy values in the set are contained within the given sequence. This is a frequently used Clojure idiom for searching for containment within a sequence.
+
+The key to understanding how sets determine whether an element is discrete lies in one simple statement: Given two elements, evaluating as equal, a set will contain only one, independent of concrete types:
+
+```clojure
+(let s #{[1 2] (1 2)})  ;vector and list with the same items are considered equal
+
+IllegalArgumentException Duplicate key: (1 2)
+clojure.lang.PersistentHashSet.createWithCheck (PersistentHashSet.java:68)
+```
+
+**Sorted sets**
 
 To ask for elements in a sorted order:
 
@@ -1000,34 +1049,69 @@ To ask for elements in a sorted order:
 (1 2 4)
 ```
 
-`conj` adds an element to the set:
+As long as the arguments to the `sorted-set` function are mutually comparable, you'll receive a sorted set. Otherwise an exception is thrown:
 
 ```clojure
-(conj #{:a :b :c} :d)
-#{:a :c :b :d}
+(sorted-set :b :c :a)
+#{:a :b :c}
+
+(sorted-set [3 4] [1 2])
+#{[1 2] [3 4]}
+
+(sorted-set :b 2 :c)
+ClassCastException clojure.lang.Keyword cannot be cast to java.lang.Number
+clojure.lang.Util.compare (Util.java:152)
 ```
 
-`disj` removes an element:
+You can use your own comparator with `sorted-set-by` function.
 
-```clojure
-(disj #{1 2} 2)
-#{1}
-```
+**Containment**
 
-`contains?` checks for existence of an element:
+`contains?` checks for **existence of a key** in a collection:
 
 ```clojure
 (contains? #{1 2 3} 3)
 true
 ```
 
-Like vectors, you can use the set itself as a verb. Unlike `contains?`, this expression returns the element itself (if it was present), or `nil`:
+Many newcomers to Clojure expect `contains?` to behave the same as Java's `java.util.Collection#contains` method, but it doesn't:
 
 ```clojure
-(#{1 2 3} 3)
-3
-(#{1 2 3} 4)
-nil
+(contains? [1 2 4 3] 4)
+false
+```
+
+Since `contains?` looks for existence of a key it shouldn't work with sets, but it does. That is due to the fact that sets are implemented as maps with the same element as the _key_ and _value_ with an additional check for containment before insertion.
+
+### `clojure.set` namespace
+
+`clojure.set/intersection` function works as you might expect. Given two sets, it returns a set of the common elements. Given _n_ sets, it'll incrementally return the intersection of resulting sets and the next set:
+
+```clojure
+(clojure.set/intersection #{:a :b :c} #{:d :c :b})
+#{:b :c}
+
+(clojure.set/intersection #{:a :e :i :o :u}
+                          #{:a :u :r}
+                          #{:r :u :s})
+#{:u}
+```
+
+`clojure.set/union` works as expected.  
+`clojure.set/difference` "removes" all the elements from the first set that are also present in the second set (known as _relative complement_).
+
+`conj` "adds" an element to the set:
+
+```clojure
+(conj #{:a :b :c} :d)
+#{:a :c :b :d}
+```
+
+`disj` "removes" an element:
+
+```clojure
+(disj #{1 2} 2)
+#{1}
 ```
 
 You can make a set out of any other collection with `set`:
