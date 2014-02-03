@@ -1,5 +1,7 @@
 *Written in January 2014, with Clojure 1.5.1 and Leiningen 2.3.4 on Java 1.7.0_45.*  
-_Inspired by Aphyr's excellent, Clojure from-the-ground-up tutorial and made possible by "The joy of Clojure" book._
+_Inspired by Aphyr's excellent, Clojure from-the-ground-up tutorial and made possible by "The joy of Clojure" book._  
+
+_Inspired? Made possible? Who am I kidding, I flat out stole from those kind people._
 
 ![lein](https://github.com/mbonaci/clojure/raw/master/resources/lein.jpg)
 
@@ -1123,26 +1125,29 @@ You can make a set out of any other collection with `set`:
 
 ## Maps
 
-Maps are represented as braces `{...}` filled by alternating keys and values.  
-
-In the following map, the three keys are `:name`, `:color`, and `:weight`, and their values are `"mittens"`, `"black"`, and `9`, respectively. We can look up the corresponding value for a key with `get`:
+Map is an unsorted _key/value_ associative structure (associates keys with values).
+Maps are represented with curly braces `{...}` filled by alternating _key/value_ pairs, with or without commas:
 
 ```clojure
-{:name "luka", :weight 3, :color "white"}
+{:name "luka", :weight 3 :color "white"}   ;notice missing comma
 {:weight 3, :name "luka", :color "white"}
+```
 
+We can look up the _value_ by _key_ with `get`:
+
+```clojure
 (get {"cat" "meow", "dog" "woof"} "cat")
 "meow"
 ```
 
-`get` can also take a default value to return instead of `nil`, if the key doesn’t exist in that map:
+`get` can also take a default value to return instead of `nil`, if the key doesn’t exist:
 
 ```clojure
-(get {:glinda :god} :wicked :not-here)
-:not-here
+(get {:k :v} :w :default)
+:default
 ```
 
-We can use maps as verbs, directly:
+Maps can be used as verbs, directly:
 
 ```clojure
 ({"a" 12, "b" 24} "b")
@@ -1156,21 +1161,101 @@ Keywords can also be used as verbs, which look themselves up:
 "king"
 ```
 
-`assoc` adds an element to a map: 
+In addition to literal syntax, hash maps can be created with the `hash-map` function:
+
+```clojure
+(hash-map :a 1, :b 2, :c 3, :d 4, :e 5)
+{:a 1, :c 3, :b 2, :d 4, :e 5}
+```
+
+Maps support heterogeneous keys, which means that keys can be of any type and each key can be of a different type:
+
+```clojure
+(let [m {:a 1, 1 :b, [1 2 3] "4 5 6"}]
+  [(get m :a) (get m [1 2 3])])
+[1 "4 5 6"]
+
+;;which can also be written without 'get', using map as a function of its keys:
+(let [m {:a 1, 1 :b, [1 2 3] "4 5 6"}]
+  [(m :a) (m [1 2 3])])
+[1 "4 5 6"]
+```
+
+Providing a map to a `seq` function returns a sequence of map entries:
+
+```clojure
+(seq {:a 1, :b 2})
+([:a 1] [:b 2])   ;returns key/value pairs contained in vectors
+```
+
+A new hash map can be created idiomatically using `into`:
+
+```clojure
+(into {} [[:a 1] [:b 2]])
+{:a 1, :b 2}
+
+;;even if pairs aren't vectors, they can easily be made to be
+;;here, the map function, that has nothing to do with map-the-data-structure,
+;;applies 'vec' to all the elements:
+(into {} (map vec '[(:a 1) (:b 2)]))
+{:a 1, :b 2}
+```
+
+If the key/value pairs are laid out in a sequence consecutively, your pairs don't even have to be explicitly grouped. You can use `apply` to create a hash map:
+
+```clojure
+(apply hash-map [:a 1 :b 2])
+{:a 1, :b 2}
+```
+
+Another idiomatic way to build a map is to use `zipmap` to "zip" together two sequences, the first of which contains keys and the second one values:
+
+```clojure
+(zipmap [:a :b] [1 2])
+{:b 2, :a 1}
+```
+
+`assoc` "adds" an element to a map: 
 
 ```clojure
 (assoc {:bolts 1088} :camshafts 3)
 {:camshafts 3, :bolts 1088}
 ```
 
-`assoc` adds keys if they aren’t present, and replaces values if they’re already there. If you associate a value onto `nil`, it creates a new map
+`assoc` adds keys if they are not present, and replaces values if they are already there. If you associate a value onto `nil`, it creates a new map:
 
 ```clojure
 (assoc nil 5 2)
 {5 2}
 ```
 
-Combine maps together using `merge`. It yields a map containing all the elements of all given maps, preferring the values from later ones:
+**Sorted maps**
+
+The function `sorted-map` builds a map sorted by the comparison of its keys:
+
+```clojure
+(sorted-map :b 1 :a 2 :c 0)
+{:a 2, :b 1, :c 0}
+```
+
+If you need alternative key ordering, or ordering for keys that are not naturally comparable, use `sorted-map-by`, which allows you to provide a comparison function:
+
+```clojure
+(sorted-map-by #(compare (subs %1 1) (subs %2 1)) "b" 1 "a" 2)
+{"b" 2}
+
+(doc )
+
+(doc subs)
+-------------------------
+clojure.core/subs
+([s start] [s start end])
+  Returns the substring of s beginning at start inclusive, and ending
+  at end (defaults to length of string), exclusive.
+```
+
+
+`merge` yields a map containing all the elements of all given maps, preferring the values from later ones:
 
 ```clojure
 (merge {:a 1, :b 2} {:b 3, :c 4})
@@ -1188,7 +1273,7 @@ Like vectors, any item in a map literal is evaluated before the result is stored
 
 ## Persistence
 
-> Persistent collection is immutable, in-memory (not related to disk persistence) collection that allows you to preserve historical versions of its state.
+> Persistent collections are immutable, in-memory (not on-disk) collections that allow you to preserve historical versions of their state.
 
 Since arrays are mutable, any changes happen in-place:
 
