@@ -7,9 +7,10 @@ _Inspired? Made possible? Who am I kidding, I flat out stole from those kind peo
 
 ## Clojure? That's a Lisp, for god's sake!
 
-I've been avoiding Clojure for a _long time_. Because it's a _Lisp dialect_ and I have a negative Lisp experience from school. It was either a bad timing or a bad teacher, I guess. Hmm, I guess my guessing about it, in itself implies the answer :) 
+I've been avoiding Clojure for a _long time_. Because it's a _Lisp dialect_ and I have a negative Lisp experience from school. It was either a bad timing or a bad teacher, I guess.  
+Hmm, I guess my guessing about it, in itself implies the answer :) 
 
-> Times and times again it gets apparent to me. Puberty is not the right time to learn programming languages!
+> Times and times again it gets apparent to me. Late puberty and adolescence are not the right times to go wide with programming languages!
 
 # :)
 ### It must had something to do with the way the book was written
@@ -400,20 +401,24 @@ It's recommended that a direct usage of all of these three functions should be a
 
 ## Booleans
 
-**The only negative values** are `false` and `nil`, all others are `true`:
+Only `false` and `nil` are logical `false`, all others values are `true`:
 
 ```clojure
 (boolean nil)
 false
+
 (boolean 0)
 true
+
 (boolean "hi")
 true
+
 (boolean str)
 true
 
 (and true false true)
 false
+
 (and true true true)
 true
 ```
@@ -422,6 +427,7 @@ true
 ```clojure
 (and 1 2 3)
 3
+
 (and -1 nil 2)
 nil
 ```
@@ -430,6 +436,7 @@ or returns the first _truthy_ value, or the last value if all are _falsy_:
 ```clojure
 (or false 2 3)
 2
+
 (or false false nil)
 nil
 ```
@@ -560,7 +567,7 @@ ClassCastException java.lang.Long cannot be cast to clojure.lang.IFn
 (1 2 3)
 ```
 
-Remember, we quote lists (any everything else) with a `'` (or `quote`) to prevent them from being evaluated.  
+Remember, we quote lists (any everything else needed quoting) with a `'` (or `quote`) to prevent them from being evaluated.  
 
 ```clojure
 '(1 2 3)
