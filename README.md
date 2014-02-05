@@ -93,14 +93,14 @@ Numbers, strings and keywords evaluate to themselves.
 ;; this one also, from that first semicolon to the end of the line. All the way here ->
 
 (inc 2)      ;"increment 2"
-3            ;this is REPL output
+;=> 3        ;this is REPL output
 ```
 
 ## Syntax
 
 ```clojure
 (+ 1 (- 5 2) (+ 3 4))
-11
+;=> 11
 ```
 
 > Uh, that looks silly, right?
@@ -139,123 +139,123 @@ The following examples of numeric expressions are trivial, so I suggest you try 
 
 ```clojure
 (type 3)
-java.lang.Long
+;=> java.lang.Long
 
 Long/MAX_VALUE
-9223372036854775807
+;=> 9223372036854775807
 
 (inc (bigint Long/MAX_VALUE))
-9223372036854775808N
+;=> 9223372036854775808N
 
 (type 5N)
-clojure.lang.BigInt
+;=> clojure.lang.BigInt
 
 (type (int 0))
-java.lang.Integer
+;=> java.lang.Integer
 
 (type (short 0))
-java.lang.Short
+;=> java.lang.Short
 
 (type (byte 0))
-java.lang.Byte
+;=> java.lang.Byte
 
 ;; decimal, hexadecimal, octal, radix-32, and binary literals:
 [127 0x7F 0177 32r3V 2r01111111]
-[127 127 127 127 127]
+;=> [127 127 127 127 127]
 ;; radix supports up to base 36
 
 (Short/MAX_VALUE)
-32767
+;=> 32767
 
 (Integer/MAX_VALUE)
-2147483647
+;=> 2147483647
 
 Byte/MAX_VALUE
-127
+;=> 127
 
 (type 1.23)
-java.lang.Double
+;=> java.lang.Double
 
 (type (float 1.23))
-java.lang.Float
+;=> java.lang.Float
 
 366e3
-366000.0
+;=> 366000.0
 ```
 
 
 
 ```clojure
 (+ 1 2.0)
-3.0
+;=> 3.0
 
 (class (+ 1 2.0))
-java.lang.Double
+;=> java.lang.Double
 
 (= 3 3.0)
-false
+;=> false
 
 (== 3 3.0)
-true
+;=> true
 
 (* 2 3 1/5)
-6/5
+;=> 6/5
 
 (- 5 1 1 1)
-2
+;=> 2
 
 (- 2)
--2
+;=> -2
 
 (* 4)
-4
+;=> 4
 
 (/ 4)
-1/4
+;=> 1/4
 
 (+)
-0     ;neutral for addition
+;=> 0     ;neutral for addition
 
 (*)
-1     ;neutral for multiplication
+;=> 1     ;neutral for multiplication
 
 (<= 1 2 3)
-true
+;=> true
 
 (<= 1 3 2)
-false
+;=> false
 
 (= 2 2 3)
-false
+;=> false
 
 (= 2 2 2)
-true
+;=> true
 ```
 
 To avoid having to round floating-point numbers (e.g. result of `2 / 3`), Clojure provides a rational number type `clojure.lang.Ratio`, thus maintaining absolute precision when dealing with floating point arithmetic:
 
 ```clojure
 (type 1/3)
-clojure.lang.Ratio
+;=> clojure.lang.Ratio
 
 ;; rational numbers are automatically simplified, if possible:
 100/25
-4
+;=> 4
 
 (rational? 2)   ;is rational or may be rational
-true
+;=> true
 
 (rational? 2.1)
-false
+;=> false
 
 (rationalize 2.1)
-21/10
+;=> 21/10
 
 (numerator (/ 21 10))
-21
+;=> 21
 
 (denominator (/ 21 10))
-10
+;=> 10
 ```
 
 > The calculation of rational math, though accurate, isn’t nearly as fast as with floats or doubles (due to overhead cost of e.g. finding the least common denominator).
@@ -268,14 +268,14 @@ Truncation is a process of limiting the accuracy of floating-point numbers, due 
 (let [pi-constant 3.14159265358979323846264338327950288419716939937M] ;notice the M
   (println (class pi-constant))
   pi-constant)
-java.math.BigDecimal
-3.14159265358979323846264338327950288419716939937M
+;=> java.math.BigDecimal
+;=> 3.14159265358979323846264338327950288419716939937M
 
 (let [pi-trunc 3.14159265358979323846264338327950288419716939937]
   (println (class pi-trunc))
   pi-trunc)
-java.lang.Double
-3.141592653589793
+;=> java.lang.Double
+;=> 3.141592653589793
 ```
 
 `M`, at the end of a floating-point number literal is used to tell Clojure to keep the number in its full precision.  
@@ -290,19 +290,19 @@ Clojure is able to detect when overflow occurs. Then, it automatically promotes 
 ```clojure
 (def small 9)
 (class small)
-java.lang.Long
+;=> java.lang.Long
 
 (class (+ small 90000000000000000000))
-clojure.lang.BigInt
+;=> clojure.lang.BigInt
 
 (class (+ small 9.0))
-java.lang.Double
+;=> java.lang.Double
 
 (+ Integer/MAX_VALUE Integer/MAX_VALUE)
-4294967294
+;=> 4294967294
 
 (class (+ Integer/MAX_VALUE Integer/MAX_VALUE))
-java.lang.Long
+;=> java.lang.Long
 ```
 
 ## Strings and Characters
@@ -312,48 +312,48 @@ String is any sequence of characters enclosed in double quotes, including newlin
 ```clojure
 "this is a string
 on two lines"
-"this is a string\non two lines"  ;REPL output includes newline escape
+;=> "this is a string\non two lines"  ;REPL output includes newline escape
 
 (type "a")
-java.lang.String
+;=> java.lang.String
 
 (str nil)    ;'nil' is Clojure's 'null'
-""
+;=> ""
 ```
 
 > single quote, backtick and `quote` (though with slightly different properties) are used to include literals in a program without evaluating them
 
 ```clojure
 (str 'cat)
-"cat"
+;=> "cat"
 
 (str 'a')
-"a'"
+;=> "a'"
 
 (str 1)
-"1"
+;=> "1"
 
 (str '1)
-"1"
+;=> "1"
 
 (str true)
-"true"
+;=> "true"
 
 (str '(1 2 3))
-"(1 2 3)"
+;=> "(1 2 3)"
 
 (str "meow " 3 " times")
-"meow 3 times"
+;=> "meow 3 times"
 
 ;characters are denoted by backslash
 \a
-\a
+;=> \a
 
 \u0042
-\B
+;=> \B
 
 \\
-\\
+;=> \\
 ```
 
 ## Regular expressions
@@ -363,28 +363,28 @@ Clojure and Java have very similar Regex syntax.
 
 ```clojure
 (re-find #"cat" "mystic cat mouse")
-"cat"
+;=> "cat"
 
 (re-find #"cat" "only dogs here")
-nil
+;=> nil
 ```
 
 The parentheses, i.e. _capturing group_ means that the regular expression should capture that part of the match. We get back a _list_ containing the part of the string that matched the first parentheses, followed by the part that matched the second parentheses, etc:
 
 ```clojure
 (re-matches #"(.+):(.+)" "mouse:treat")
-["mouse:treat" "mouse" "treat"]
+;=> ["mouse:treat" "mouse" "treat"]
 
 ;; capturing group in the regex causes each returned item to be a vector:
 (re-seq #"\w*(\w)" "one-two/three")
-(["one" "e"] ["two" "o"] ["three" "e"])
+;=> (["one" "e"] ["two" "o"] ["three" "e"])
 ```
 
 Java's regex `Pattern` class has several methods that can be used directly, but only `split` is used regularly to split a string into an array of Strings:
 
 ```clojure
 (seq (.split #"," "1,2,3,4"))  ;this is how you call Java methods
-("1" "2" "3" "4")
+;=> ("1" "2" "3" "4")
 ```
 
 > [More on Java interoperability](#java-interop)
@@ -393,7 +393,7 @@ The `re-seq` function returns a lazy sequence of all matches in a string:
 
 ```clojure
 (re-seq #"\w+" "one-two/three")
-("one" "two" "three")
+;=> ("one" "two" "three")
 ```
 
 > Java's regex engine includes a `Matcher` object which mutates in a non-thread-safe way as it walks through a string finding matches. This object is exposed in Clojure through the `re-matcher` function and can be used in combination with `re-groups` and `re-find`.
@@ -405,46 +405,46 @@ Only `false` and `nil` are logical `false`, all others values are `true`:
 
 ```clojure
 (boolean nil)
-false
+;=> false
 
 (boolean 0)
-true
+;=> true
 
 (boolean "hi")
-true
+;=> true
 
 (boolean str)
-true
+;=> true
 
 (and true false true)
-false
+;=> false
 
 (and true true true)
-true
+;=> true
 ```
 
 ... and returns the first _falsy_ value, or the last value if all are _truthy_:
 ```clojure
 (and 1 2 3)
-3
+;=> 3
 
 (and -1 nil 2)
-nil
+;=> nil
 ```
 
 or returns the first _truthy_ value, or the last value if all are _falsy_:
 ```clojure
 (or false 2 3)
-2
+;=> 2
 
 (or false false nil)
-nil
+;=> nil
 ```
 
 `not` inverses the _truthiness_ of the expression:
 ```clojure
 (not nil)
-true
+;=> true
 ```
 
 **Symbols** can have either short or full names. The short name is used to refer to things locally, and the _fully qualified name_ is used to refer unambiguously to a symbol (from anywhere).
@@ -455,10 +455,10 @@ The main purpose of symbols is to refer to _things_, i.e. to point to other valu
 
 ```clojure
 (= str clojure.core/str)
-true
+;=> true
 
 (name 'clojure.core/str)
-"str"
+;=> "str"
 ```
 
 
@@ -469,13 +469,13 @@ Keywords are like strings in that they are made up of text, but are specifically
 
 ```clojure
 (type :cat)
-clojure.lang.Keyword
+;=> clojure.lang.Keyword
 
 (str :cat)
-":cat"
+;=> ":cat"
 
 (name :cat)
-"cat"
+;=> "cat"
 ```
 
 **Using keywords as map keys**
@@ -486,15 +486,15 @@ Another important property of keywords, when used as map keys, is that they can 
 
 ```clojure
 (def mouse-planet {:cats 180, :mice 9})   ;define a map
-#'user/mouse-planet
+;=> #'user/mouse-planet
 
 (:cats mouse-planet)                      ;lookup by keyword
-180
+;=> 180
 
 (println (/ (:cats mouse-planet)          ;much more useful example
             (:mice mouse-planet))
          "cats per capita")
-20 cats per capita
+;=> 20 cats per capita
 ```
 
 **As enumerations**
@@ -509,19 +509,19 @@ Keywords don't belong to any specific namespace, although it's a good practice t
 
 ```clojure
 user=> :not-in-ns
-:not-in-ns
+;=> :not-in-ns
 
 user=> ::not-in-ns          ;fully qualified keyword
-:user/not-in-ns
+;=> :user/not-in-ns
 
 user=> (ns another)
-nil
+;=> nil
 
 another=> :user/in-another  ;"fully qualified" keyword
-:user/in-another
+;=> :user/in-another
 
 another=> :haunted/name     ;namespace doesn't have to exist
-:haunted/name
+;=> :haunted/name
 ```
 
 > double colon is used to fully qualify a keyword by prepending the current namespace name to the keyword name
@@ -560,31 +560,31 @@ the `.` (dot) operator used for Java interoperability purposes.
 ```clojure
 (cons 1 (2 3))
 
-ClassCastException java.lang.Long cannot be cast to clojure.lang.IFn
-;which basically means that the number 2 cannot be used as a function
+;=> ClassCastException java.lang.Long cannot be cast to clojure.lang.IFn
+;;which basically means that the number 2 cannot be used as a function
 
 (cons 1 '(2 3))
-(1 2 3)
+;=> (1 2 3)
 ```
 
 Remember, we quote lists (any everything else needed quoting) with a `'` (or `quote`) to prevent them from being evaluated.  
 
 ```clojure
 '(1 2 3)
-(1 2 3)
+;=> (1 2 3)
 
 (type '(1 2 3))
-clojure.lang.PersistentList
+;=> clojure.lang.PersistentList
 ```
 
 There's also a **syntax-quote** (back-tick), which automatically qualifies all unqualified symbols in its argument:
 
 ```clojure
 `map
-clojure.core/map
+;=> clojure.core/map
 
 `(map even? [1 2 3])
-(clojure.core/map clojure.core/even? [1 2 3])
+;=> (clojure.core/map clojure.core/even? [1 2 3])
 ```
 
 You can also construct a list using `list`:
@@ -600,14 +600,16 @@ You can modify a list by _conjoining_ an element onto it (as always with lists, 
 
 ```clojure
 (conj (list 1 2 3) 4)
-(4 1 2 3)
+;=> (4 1 2 3)
 
 (first (list 1 2 3))
-1
+;=> 1
+
 (second (list 1 2 3))
-2
+;=> 2
+
 (nth (list 1 2 3) 2)
-3
+;=> 3
 ```
 
 Unlike some _Lisps_, the empty list in Clojure, `()`, isn't the same as `nil`.
@@ -635,7 +637,7 @@ The printed representation for Clojure's queues isn't particularly informative, 
   (print-method '<- w) (print-method (seq q) w) (print-method '-< w))
 
 clojure.lang.PersistentQueue/EMPTY
-<-nil-<
+;=> <-nil-<
 ```
 
 > Popping an empty queue results in just another empty queue. Peeking an empty queue returns `nil`
@@ -646,10 +648,10 @@ The mechanism for adding an element to a queue is `conj`:
 (def tasks
   #_=>   (conj clojure.lang.PersistentQueue/EMPTY
   #_=>         :wake-up :shower :brush-teeth))
-#'mbo/tasks
+;=> #'mbo/tasks
 
 tasks
-<-(:wake-up :shower :brush-teeth)-<
+;=> <-(:wake-up :shower :brush-teeth)-<
 ```
 
 > Clojure's persistent queue is implemented internally using two separate collections, the front being a seq and the rear being a vector. All insertions occur in the rear vector and all removals occur in the front seq, taking advantage of each collection's strength. When all the items from the front have been popped, the back vector is wrapped in a seq to become the new front and an empty vector is used as the new back
@@ -658,17 +660,17 @@ To get the front element, we use `peek`:
 
 ```clojure
 (peek tasks)
-:wake-up
+;=> :wake-up
 ```
 
 To remove elements from the front of a queue, we use `pop` (although possible, it's non-idiomatic and suboptimal to use `rest` with queues, because it returns a seq, not a queue and _fucks up_ the speed guarantees):
 
 ```clojure
 (pop tasks)
-<-(:shower :brush-teeth)-<
+;=> <-(:shower :brush-teeth)-<
 
 (rest tasks)
-(:shower :brush-teeth)
+;=> (:shower :brush-teeth)
 ```
 
 ## Vectors
@@ -678,10 +680,10 @@ Vectors are surrounded by square brackets, just like lists are surrounded by par
 
 ```clojure
 [1 2 3]
-[1 2 3]
+;=> [1 2 3]
 
 (type [1 2 3])
-clojure.lang.PersistentVector
+;=> clojure.lang.PersistentVector
 ```
 
 > Vectors are similar to arrays, but are immutable and persistent
@@ -690,17 +692,17 @@ You can also create vectors with `vector`, or change other structures into vecto
 
 ```clojure
 (vector 1 2 3)
-[1 2 3]
+;=> [1 2 3]
 
 (vec (list 1 2 3))
-[1 2 3]
+;=> [1 2 3]
 ```
 
 `conj` on a vector adds to the end, not the start, like with lists:
 
 ```clojure
 (conj [1 2 3] 4)
-[1 2 3 4]
+;=> [1 2 3 4]
 ```
 
 Our friends `first`, `second`, and `nth` work here too; but unlike lists, `nth` is fast on vectors. That’s because internally, vectors are represented as a very broad tree of elements, where each part of the tree branches into 32 smaller trees. Even very large vectors are only a few layers deep, which means getting to elements only takes a few hops, which is why retrieval operation from the interior of a vector takes essentially a constant time.
@@ -711,48 +713,48 @@ The important difference, when compared to lists, is that vectors evaluate each 
 
 ```clojure
 (rest [1 2 3 4])
-(2 3 4)
+;=> (2 3 4)
 
 (next [1 2 3 4])
-(2 3 4)
+;=> (2 3 4)
 ```
 
 `rest` returns logical `true`, `next` returns logical `false`. Each has their uses, but in almost every case they’re equivalent:
 
 ```clojure
 (next [1])
-nil
+;=> nil
 
 (rest [1])
-()
+;=> ()
 ```
 
 `last`, surprisingly, returns the last element:
 
 ```clojure
 (last [1 2 3])
-3
+;=> 3
 ```
 
 `count`, shockingly, returns element count:
 
 ```clojure
 (count [1 2 3 4])
-4
+;=> 4
 ```
 
 You can use element's index to access it:
 
 ```clojure
 ([1 2 3] 1)
-2
+;=> 2
 ```
 
 Vectors and lists containing the same elements are considered equal:
 
 ```clojure
 (= [1 2] (list 1 2))
-true
+;=> true
 ```
 
 If you already have a vector but want to "pour" several values into it, use `into`:
@@ -760,7 +762,7 @@ If you already have a vector but want to "pour" several values into it, use `int
 ```clojure
 (let [m-vector [:a :b :c]]
   (into m-vector (range 10)))
-[:a :b :c 0 1 2 3 4 5 6 7 8 9]
+;=> [:a :b :c 0 1 2 3 4 5 6 7 8 9]
 
 ;;if you want to return a vector the first arg to 'into' must be a vector
 ;;the second argument must be anything that works with 'seq' function
@@ -773,14 +775,15 @@ The new vector will try to coerce any additions into its internal type when they
 
 ```clojure
 (into (vector-of :int) [Math/PI 2 1.3])
-[3 2 1]
+;=> [3 2 1]
 
 (into (vector-of :char) [100 101 102])
-[\d \e \f]
+;=> [\d \e \f]
 
 (into (vector-of :int) [1 2 609812734019519652839108477134])
-IllegalArgumentException Value out of range for long: 609812734019519652839108477134
-clojure.lang.RT.longCast (RT.java:1134)
+
+;=> IllegalArgumentException Value out of range for long: 60981273401951...
+;=> clojure.lang.RT.longCast (RT.java:1134)
 ```
 
 ### Large vectors
@@ -792,19 +795,19 @@ Vectors are particularly efficient at three things (relative to lists):
 
 ```clojure
 (def a-to-e (vec (map char (range 65 91))))
-#'mbo/a-to-z
+;=> #'mbo/a-to-z
 
 a-to-e
-[\A \B \C \D \E]
+;=> [\A \B \C \D \E]
 
 (nth a-to-e 4)   ;like with a map
-\E
+;=> \E
 
 (get a-to-e 4)   ;like with a map
-\E
+;=> \E
 
 (a-to-e 4)       ;invoking a vector as a function
-\E
+;=> \E
 ```
 
 ![vector-lookup-options](https://github.com/mbonaci/clojure/raw/master/resources/vector-lookup-options.png)
@@ -813,17 +816,17 @@ Since vectors are indexed, they can be efficiently walked in either direction. T
 
 ```clojure
 (seq a-to-e)
-(\A \B \C \D \E)
+;=> (\A \B \C \D \E)
 
 (rseq a-to-e)
-(\E \D \C \B \A)
+;=> (\E \D \C \B \A)
 ```
 
 Any item in a vector can be "changed" using the `assoc` function (in a constant time). Clojure does this using _structural sharing_ between the old and the new vectors, hence avoiding having to copy all the elements.
 
 ```clojure
 (assoc a-to-e 3 "former D")
-[\A \B \C "former D" \E]
+;=> [\A \B \C "former D" \E]
 ```
 
 The `assoc` function works only on indices that either already exist or, as a special case, exactly one step past the end of a vector (returned vector becomes one item larger).
@@ -832,7 +835,7 @@ Function `replace` uses `assoc` internally:
 
 ```clojure
 (replace {2 :a, 4 :b} [1 2 3 2 3 4])
-[1 :a 3 :a 3 :b]
+;=> [1 :a 3 :a 3 :b]
 ```
 
 The functions `assoc-in`, `update-in` and `get-in` are used to work with nested structures of vectors and/or maps. These functions take a series of indices to pick items from each more deeply nested level:
@@ -842,20 +845,20 @@ The functions `assoc-in`, `update-in` and `get-in` are used to work with nested 
   [[1 2 3]
    [4 5 6]
    [7 8 9]])
-#'mbo/matrix
+;=> #'mbo/matrix
 
 (get-in matrix [1 2])   ;second row, third column
-6
+;=> 6
 
 (assoc-in matrix [1 2] 'x)
-[[1 2 3] [4 5 x] [7 8 9]]
+;=> [[1 2 3] [4 5 x] [7 8 9]]
 ```
 
 `update-in` works the similar way, but instead of taking a value to "overwrite" an existing value, it takes a function to _apply_ to an existing value. It'll replace the value at the given coordinates with the return value of the function:
 
 ```clojure
 (update-in matrix [1 2] * 100)
-[[1 2 3] [4 5 600] [7 8 9]]
+;=> [[1 2 3] [4 5 600] [7 8 9]]
 
 ;; the coordinates refer to the value 6 and the function is * taking an argument 100
 ;; so the slot becomes the return value of (* 6 100)
@@ -865,7 +868,7 @@ Remember? `matrix` itself never changed:
 
 ```clojure
 matrix
-[[1 2 3] [4 5 6] [7 8 9]]
+;=> [[1 2 3] [4 5 6] [7 8 9]]
 ```
 
 ### Vectors as stacks
@@ -874,16 +877,16 @@ Clojure vectors uses `conj` as `push` and `pop` as `pop` to add and remove eleme
 
 ```clojure
 (peek m-stack)
-3
+;=> 3
 
 (pop m-stack)
-[1 2]
+;=> [1 2]
 
 (conj m-stack 4)
-[1 2 3 4]
+;=> [1 2 3 4]
 
 (+ (peek m-stack) (peek (pop m-stack)))
-5
+;=> 5
 ```
 
 > If you're using a collection (any implementor of `clojure.lang.IPersistentStack`) as a stack, it's idiomatic to use `conj` instead of `assoc`, `peek` instead of `last` and `pop` instead of `dissoc`. That avoids unnecessary confusion about how the collection is being used
@@ -900,10 +903,10 @@ When processing a list, it's pretty common to want to produce a new list in the 
     (if (empty? coll)
       (reverse acc)
       (recur (next coll) (cons (f (first coll)) acc)))))
-#'mbo/m-map1
+;=> #'mbo/m-map1
 
 (m-map1 - (range 5))
-(0 -1 -2 -3 -4)
+;=> (0 -1 -2 -3 -4)
 ```
 
 After the entire list has been walked once to produce the desired values, `reverse` walks it again to get them in the right order, which is inefficient and non-idiomatic.
@@ -915,10 +918,10 @@ One way to avoid `reverse` is to use a vector as the accumulator, instead of a l
     (if (empty? coll)
       acc
       (recur (next coll) (conj acc (f (first coll)))))))
-#'mbo/m-map2
+;=> #'mbo/m-map2
 
 (m-map2 - (range 5))
-[0 -1 -2 -3 -4]
+;=> [0 -1 -2 -3 -4]
 ```
 
 ### Subvectors
@@ -928,7 +931,7 @@ To produce a subvector we use the `subvec` function:
 
 ```clojure
 (subvec a-to-e 2 4)
-[\C \D]
+;=> [\C \D]
 
 ;;first index is inclusive, but the second is exclusive
 ```
@@ -942,11 +945,11 @@ Each item in this seq needs to include both the key and the value, hence they ar
 
 ```clojure
 (first {:width 10 :height 20 :depth 15})
-[:depth 15]
+;=> [:depth 15]
 
 ;;not only does it look like a vector, it really is one:
 (vector? (first {:width 10 :height 20 :depth 15}))
-true
+;=> true
 
 ;;which means you can use all the regular vector functions on it
 ;;it even supports destructuring*
@@ -959,19 +962,19 @@ true
 ;;key/value pair in turn:
 (doseq [[dimension amount] {:width 10, :height 20, :depth 15}]
   (println (str (name dimension) ":") amount " inches"))
-depth: 15  inches
-width: 10  inches
-height: 20  inches
-nil
+;=> depth: 15  inches
+;=> width: 10  inches
+;=> height: 20  inches
+;=> nil
 
 (doc doseq)
--------------------------
-clojure.core/doseq
-([seq-exprs & body])
-Macro
-  Repeatedly executes body (presumably for side-effects) with
-  bindings and filtering as provided by "for".  Does not retain
-  the head of the sequence. Returns nil.
+;=> -------------------------
+;=> clojure.core/doseq
+;=> ([seq-exprs & body])
+;=> Macro
+;=>   Repeatedly executes body (presumably for side-effects) with
+;=>   bindings and filtering as provided by "for".  Does not retain
+;=>   the head of the sequence. Returns nil.
 ```
 
 A `MapEntry` is its own type and has two functions for retrieving its contents, `key` and `val`, which do exactly the same thing as `(nth m-map 0)` and `(nth m-map 1)`.
@@ -1005,13 +1008,13 @@ Sets are surrounded by `#{...}`:
 
 ```clojure
 #{1 2 3}
-#{1 2 3}
+;=> #{1 2 3}
 
 (#{:a :b :c :d} :c)
-:c
+;=> :c
 
 (#{:a :b :c :d} :e)
-nil
+;=> nil
 ```
 
 If you look at the previous two expressions, you'll see that the sets are in fact functions of their elements that return the matched element or `nil` (take a pause and read that a couple more times, examining the examples). This way of looking up set returns the element itself, or `nil` if the element is not present.
@@ -1020,10 +1023,10 @@ Elements can be accessed via the `get` function, which returns the queried value
 
 ```clojure
 (get #{:a 1 2 :b} :b)
-:b
+;=> :b
 
 (get #{:a 1 2 :b} :k)
-nil
+;=> nil
 ```
 
 **Searching a sequence for any of multiple items using a set and `some`**
@@ -1032,10 +1035,10 @@ The `some` function takes a predicate and a sequence. It applies the predicate t
 
 ```clojure
 (some #{:b} [:a 1 :b 2])
-:b
+;=> :b
 
 (some #{1 :b} [:a 1 :b 2])
-1
+;=> 1
 ```
 
 Using a set as the predicate supplied to `some` allows you to check whether any of the truthy values in the set are contained within the given sequence. This is a frequently used Clojure idiom for searching for containment within a sequence.
@@ -1045,8 +1048,8 @@ The key to understanding how sets determine whether an element is discrete lies 
 ```clojure
 (let s #{[1 2] (1 2)})  ;vector and list with the same items are considered equal
 
-IllegalArgumentException Duplicate key: (1 2)
-clojure.lang.PersistentHashSet.createWithCheck (PersistentHashSet.java:68)
+;=> IllegalArgumentException Duplicate key: (1 2)
+;=> clojure.lang.PersistentHashSet.createWithCheck (PersistentHashSet.java:68)
 ```
 
 **Sorted sets**
@@ -1055,21 +1058,22 @@ To ask for elements in a sorted order:
 
 ```clojure
 (sort #{2 4 1})
-(1 2 4)
+;=> (1 2 4)
 ```
 
 As long as the arguments to the `sorted-set` function are mutually comparable, you'll receive a sorted set. Otherwise an exception is thrown:
 
 ```clojure
 (sorted-set :b :c :a)
-#{:a :b :c}
+;=> #{:a :b :c}
 
 (sorted-set [3 4] [1 2])
-#{[1 2] [3 4]}
+;=> #{[1 2] [3 4]}
 
 (sorted-set :b 2 :c)
-ClassCastException clojure.lang.Keyword cannot be cast to java.lang.Number
-clojure.lang.Util.compare (Util.java:152)
+
+;=> ClassCastException clojure.lang.Keyword cannot be cast to java.lang.Number
+;=> clojure.lang.Util.compare (Util.java:152)
 ```
 
 You can use your own comparator with `sorted-set-by` function.
@@ -1080,14 +1084,14 @@ You can use your own comparator with `sorted-set-by` function.
 
 ```clojure
 (contains? #{1 2 3} 3)
-true
+;=> true
 ```
 
 Many newcomers to Clojure expect `contains?` to behave the same as Java's `java.util.Collection#contains` method, but it doesn't:
 
 ```clojure
 (contains? [1 2 4 3] 4)
-false
+;=> false
 ```
 
 Since `contains?` looks for existence of a key it shouldn't work with sets, but it does. That is due to the fact that sets are implemented as maps with the same element as the _key_ and _value_ with an additional check for containment before insertion.
@@ -1098,12 +1102,12 @@ Since `contains?` looks for existence of a key it shouldn't work with sets, but 
 
 ```clojure
 (clojure.set/intersection #{:a :b :c} #{:d :c :b})
-#{:b :c}
+;=> #{:b :c}
 
 (clojure.set/intersection #{:a :e :i :o :u}
                           #{:a :u :r}
                           #{:r :u :s})
-#{:u}
+;=> #{:u}
 ```
 
 `clojure.set/union` works as expected.  
@@ -1113,21 +1117,21 @@ Since `contains?` looks for existence of a key it shouldn't work with sets, but 
 
 ```clojure
 (conj #{:a :b :c} :d)
-#{:a :c :b :d}
+;=> #{:a :c :b :d}
 ```
 
 `disj` "removes" an element:
 
 ```clojure
 (disj #{1 2} 2)
-#{1}
+;=> #{1}
 ```
 
 You can make a set out of any other collection with `set`:
 
 ```clojure
 (set [2 5 1])
-#{1 2 5}
+;=> #{1 2 5}
 ```
 
 ## Maps
@@ -1137,42 +1141,42 @@ Maps are represented with curly braces `{...}` filled by alternating _key/value_
 
 ```clojure
 {:name "luka", :weight 3 :color "white"}   ;notice missing comma
-{:weight 3, :name "luka", :color "white"}
+;=> {:weight 3, :name "luka", :color "white"}
 ```
 
 We can look up the _value_ by _key_ with `get`:
 
 ```clojure
 (get {"cat" "meow", "dog" "woof"} "cat")
-"meow"
+;=> "meow"
 ```
 
 `get` can also take a default value to return instead of `nil`, if the key doesn’t exist:
 
 ```clojure
 (get {:k :v} :w :default)
-:default
+;=> :default
 ```
 
 Maps can be used as verbs, directly:
 
 ```clojure
 ({"a" 12, "b" 24} "b")
-24
+;=> 24
 ```
 
 Keywords can also be used as verbs, which look themselves up:
 
 ```clojure
 (:raccoon {:weasel "queen", :raccoon "king"})
-"king"
+;=> "king"
 ```
 
 In addition to literal syntax, hash maps can be created with the `hash-map` function:
 
 ```clojure
 (hash-map :a 1, :b 2, :c 3, :d 4, :e 5)
-{:a 1, :c 3, :b 2, :d 4, :e 5}
+;=> {:a 1, :c 3, :b 2, :d 4, :e 5}
 ```
 
 Maps support heterogeneous keys, which means that keys can be of any type and each key can be of a different type:
@@ -1180,60 +1184,60 @@ Maps support heterogeneous keys, which means that keys can be of any type and ea
 ```clojure
 (let [m {:a 1, 1 :b, [1 2 3] "4 5 6"}]
   [(get m :a) (get m [1 2 3])])
-[1 "4 5 6"]
+;=> [1 "4 5 6"]
 
 ;;which can also be written without 'get', using map as a function of its keys:
 (let [m {:a 1, 1 :b, [1 2 3] "4 5 6"}]
   [(m :a) (m [1 2 3])])
-[1 "4 5 6"]
+;=> [1 "4 5 6"]
 ```
 
 Providing a map to a `seq` function returns a sequence of map entries:
 
 ```clojure
 (seq {:a 1, :b 2})
-([:a 1] [:b 2])   ;returns key/value pairs contained in vectors
+;=> ([:a 1] [:b 2])   ;returns key/value pairs contained in vectors
 ```
 
 A new hash map can be created idiomatically using `into`:
 
 ```clojure
 (into {} [[:a 1] [:b 2]])
-{:a 1, :b 2}
+;=> {:a 1, :b 2}
 
 ;;even if pairs aren't vectors, they can easily be made to be
 ;;here, the map function, that has nothing to do with map-the-data-structure,
 ;;applies 'vec' to all the elements:
 (into {} (map vec '[(:a 1) (:b 2)]))
-{:a 1, :b 2}
+;=> {:a 1, :b 2}
 ```
 
 If the key/value pairs are laid out in a sequence consecutively, your pairs don't even have to be explicitly grouped. You can use `apply` to create a hash map:
 
 ```clojure
 (apply hash-map [:a 1 :b 2])
-{:a 1, :b 2}
+;=> {:a 1, :b 2}
 ```
 
 Another idiomatic way to build a map is to use `zipmap` to "zip" together two sequences, the first of which contains keys and the second one values:
 
 ```clojure
 (zipmap [:a :b] [1 2])
-{:b 2, :a 1}
+;=> {:b 2, :a 1}
 ```
 
 `assoc` "adds" an element to a map: 
 
 ```clojure
 (assoc {:bolts 1088} :camshafts 3)
-{:camshafts 3, :bolts 1088}
+;=> {:camshafts 3, :bolts 1088}
 ```
 
 `assoc` adds keys if they are not present, and replaces values if they are already there. If you associate a value onto `nil`, it creates a new map:
 
 ```clojure
 (assoc nil 5 2)
-{5 2}
+;=> {5 2}
 ```
 
 **Sorted maps**
@@ -1242,23 +1246,33 @@ The function `sorted-map` builds a map sorted by the comparison of its keys:
 
 ```clojure
 (sorted-map :b 1 :a 2 :c 0)
-{:a 2, :b 1, :c 0}
+;=> {:a 2, :b 1, :c 0}
 ```
 
 If you need alternative key ordering, or ordering for keys that are not naturally comparable, use `sorted-map-by`, which allows you to provide a comparison function:
 
 ```clojure
 (sorted-map-by #(compare (subs %1 1) (subs %2 1)) "b" 1 "a" 2)
-{"b" 2}
-
-(doc )
+;=> {"b" 2}
 
 (doc subs)
--------------------------
-clojure.core/subs
-([s start] [s start end])
-  Returns the substring of s beginning at start inclusive, and ending
-  at end (defaults to length of string), exclusive.
+;-------------------------
+;clojure.core/subs
+;([s start] [s start end])
+;  Returns the substring of s beginning at start inclusive, and ending
+;  at end (defaults to length of string), exclusive.
+
+;;Explanation:
+;; by doing this:
+#(compare (subs %1 1) (subs %2 1))
+
+;; we declared an anonymous function inline, which is the same as writing:
+(defn m-compare [first second]
+  (compare (subs first 1) (subs second 1)))
+
+;; and then passing that function to sorted-by-map:
+(sorted-map-by m-compare "b" 1 "a" 2)
+;=> {"b" 2}
 ```
 
 
@@ -1266,14 +1280,14 @@ clojure.core/subs
 
 ```clojure
 (merge {:a 1, :b 2} {:b 3, :c 4})
-{:c 4, :a 1, :b 3}
+;=> {:c 4, :a 1, :b 3}
 ```
 
 Remove map element with `dissoc`:
 
 ```clojure
 (dissoc {:a 1, :b 2, :c 4} :c)
-{:a 1, :b 2}
+;=> {:a 1, :b 2}
 ```
 
 Like vectors, any item in a map literal is evaluated before the result is stored in the map. Unlike vectors, the order in which they are evaluated isn't guaranteed.
@@ -1286,37 +1300,37 @@ Since arrays are mutable, any changes happen in-place:
 
 ```clojure
 (def ds (into-array [:frane :luka :glupaca]))  ;mutable
-#'mbo/ds
+;=> #'mbo/ds
 
 ;; btw Glupaca is the name of our cat (which means something like "stupid women")
 
 (seq ds)     ;only for nice REPL printout
-(:frane :luka :glupaca)
+;=> (:frane :luka :glupaca)
 
 (aset ds 2 :suzi)   ;replace third element of the array
-:suzi
+;=> :suzi
 
 (seq ds)
-(:frane :luka :suzi)
+;=> (:frane :luka :suzi)
 ```
 
 Using one of Clojure's persistent data structures shows the difference:
 
 ```clojure
 mbo=> (def ds [:frane :luka :suzi])  ;init persistent collection
-#'mbo/ds
+;=> #'mbo/ds
 
 ds                    ;print ds to REPL
-[:frane :luka :suzi]
+;=> [:frane :luka :suzi]
 
 (def ds8 (replace {:suzi :glupaca} ds))   ;replace third element and bind the
-#'mbo/ds8                                 ;whole collection to ds8
+;=> #'mbo/ds8                                 ;whole collection to ds8
 
 ds                    ;ds did not change
-[:frane :luka :suzi]
+;=> [:frane :luka :suzi]
 
 ds8                   ;the newly created collection
-[:frane :luka :glupaca]
+;=> [:frane :luka :glupaca]
 ```
 
 # Symbols
@@ -1327,21 +1341,21 @@ Unlike keywords, symbols are not unique based solely on their names:
 
 ```clojure
 (identical? 'node 'node)
-false
+;=> false
 
 ;; identical? returns true only if symbols are the same object
 (let [x 'node y x] (identical? x y))
-true
+;=> true
 ```
 
 Each `node` symbol is a discrete object that only happens to share a name. Though name is the basis for symbol equality:
 
 ```clojure
 (= 'node 'node)
-true
+;=> true
 
 (name 'node)
-"node"
+;=> "node"
 ```
 
 We can define a meaning for a symbol within a specific expression, using `let`.
@@ -1351,21 +1365,21 @@ The `let` expression first **takes a vector of bindings**: alternating symbols a
 
 ```clojure
 (let [mice 5] (str "I have " mice " mice."))
-"I have 5 mice."
+;=> "I have 5 mice."
 ```
 
 Let bindings, also called **locals**, apply only within the `let` expression itself. They also override any existing definitions for symbols at that point in the program. For example, we can redefine addition to mean subtraction, for the duration of a `let`:
 
 ```clojure
 (let [+ -] (+ 2 3))
--1
+;=> -1
 ```
 
 That definition does not apply outside the `let`:
 
 ```clojure
 (+ 2 3)
-5
+;=> 5
 ```
 
 We can also provide multiple bindings. Since Clojure doesn’t care about spacing, alignment, or newlines, we’ll write this on multiple lines, for clarity:
@@ -1374,7 +1388,7 @@ We can also provide multiple bindings. Since Clojure doesn’t care about spacin
 (let [person "joseph"
        num-cats 186]
    (str person " has " num-cats " cats!"))  ;the body
-"joseph has 186 cats!"
+;=> "joseph has 186 cats!"
 ```
 
 When multiple bindings are given, they are evaluated in order. Later bindings can use previous bindings:
@@ -1383,17 +1397,17 @@ When multiple bindings are given, they are evaluated in order. Later bindings ca
 (let [cats 3
        legs (* 4 cats)]
  (str legs " legs all together"))
-"12 legs all together"
+;=> "12 legs all together"
 ```
 
 > a symbol whose name is prefixed with a namespace, followed by a slash, is called **fully qualified symbol**:
 
 ```clojure
 clojure.core/map
-#<core$map clojure.core$map@2a0406c4>
+;=> #<core$map clojure.core$map@2a0406c4>
 
 clojure.set/union
-#<set$union clojure.set$union@1be2bcc8>
+;=> ;=> #<set$union clojure.set$union@1be2bcc8>
 ```
 
 The body is sometimes described as an _implicit do_ (see [blocks bellow](#blocks)) because it follows the same rules: you may include any number of expressions and all will be evaluated, but only the value of the last one is returned.
@@ -1414,7 +1428,7 @@ Clojure allows the attachment of metadata to various objects, including symbols.
    (identical? x y)   ;false because they are different instances
    (meta x)
    (meta y)])
-[true false {:js true} {:js false}]
+;=> [true false {:js true} {:js false}]
 ```
 
 **Symbols and namespaces**
@@ -1423,20 +1437,20 @@ Like keywords, symbols don't belong to any specific namespace:
 
 ```clojure
 user=> (ns what-where)
-nil
+;=> nil
 
 what-where=> (def one-simbol 'where-is-it)
-#'what-where/one-simbol
+;=> #'what-where/one-simbol
 
 what-where=> one-simbol
-where-is-it
+;=> where-is-it
 
 what-where=> (resolve 'one-simbol)
-#'what-where/one-simbol  ;looks like namespace-qualified symbol
+;=> #'what-where/one-simbol  ;looks like namespace-qualified symbol
                          ;but it's just a characteristic of symbol evaluation
 
 what-where=> `one-symbol   ;back tick
-what-where/one-symbol
+;=> what-where/one-symbol
 ```
 
 # Functions
@@ -1455,7 +1469,7 @@ Function definition:
 
 ```clojure
 (fn [x] (+ x 1))
-#<user$eval1487$fn__1488 user$eval1487$fn__1488@6b7d28db>
+;=> #<user$eval1487$fn__1488 user$eval1487$fn__1488@6b7d28db>
 ```
 
 Named function definition:
@@ -1464,7 +1478,7 @@ Named function definition:
 (let [twice (fn [x] (* 2 x))]
    (+ (twice 1)
    (twice 3)))
-8
+;=> 8
 ```
 
 `let` bindings describe a similar relationship, but with a specific set of values for those arguments. `let` is evaluated immediately, whereas `fn` is evaluated later, when bindings are provided.
@@ -1475,13 +1489,13 @@ Once a `let` is defined, there’s no way to change it. If we want to redefine s
 
 ```clojure
 (def cats 5)
-#'user/cats
+;=> #'user/cats
 
 (type #'user/cats)
-clojure.lang.Var
+;=> clojure.lang.Var
 
 cats
-5
+;=> 5
 ```
 
 `def` defines a type of value we haven’t seen before: a _Var_. _Vars_, like symbols, are references to other values. When evaluated, a _Var_ is replaced by its corresponding value.  
@@ -1494,13 +1508,13 @@ We can see the intermediate Var with `resolve`:
 
 ```clojure
 'inc     ;symbol
-inc
+;=> inc
 
 (resolve 'inc)
-#'clojure.core/inc    ;variable
+;=> #'clojure.core/inc    ;variable
 
 (eval 'inc)
-#<core$inc clojure.core$inc@d6206b5>  ;value
+;=> #<core$inc clojure.core$inc@d6206b5>  ;value
 ```
 
 Why those two levels of indirection? Unlike with symbol, we can change the meaning of a Var for everyone, globally, at any time.  
@@ -1509,11 +1523,12 @@ Vars don't require a value. Instead we can just declare them and, by doing so, d
 
 ```clojure
 (def y)
-#'user/y
+;=> #'user/y
 
 ;; if we try to use it:
 y
-java.lang.IllegalStateException: Var user/y is unbound
+
+;=> java.lang.IllegalStateException: Var user/y is unbound
 ```
 
 ## Named functions
@@ -1521,27 +1536,27 @@ java.lang.IllegalStateException: Var user/y is unbound
 ```clojure
 (def half 
   (fn [number] (/ number 2)))
-#'user/half
+;=> #'user/half
 
 (half 8)
-4
+;=> 4
 ```
 
 Creating a function and binding it to a variable is so common that it has its own form: `defn`, which is a _macro_ that is short for `def fn`:
 
 ```clojure
 (defn half [number] (/ number 2))
-#'user/half
+;=> #'user/half
 
 (half 8)
-4
+;=> 4
 ```
 
 Functions don’t have to take an argument. We’ve seen functions which take zero arguments, like `(+)`:
 
 ```clojure
 (defn half [] 1/2)
-#'user/half
+;=> #'user/half
 ```
 
 But if we try to use our earlier form with one argument, Clojure complains that the *arity* (the number of arguments to a function) is incorrect:
@@ -1549,8 +1564,8 @@ But if we try to use our earlier form with one argument, Clojure complains that 
 ```clojure
 (half 8)
 
-ArityException Wrong number of args (1) passed to: user$half
-clojure.lang.AFn.throwArity (AFn.java:437)
+;=> ArityException Wrong number of args (1) passed to: user$half
+;=> clojure.lang.AFn.throwArity (AFn.java:437)
 ```
 
 To handle multiple arities, functions have an alternate form, instead of an argument vector and a body, one provides a series of lists, each of which starts with an argument vector, followed by the body:
@@ -1559,13 +1574,13 @@ To handle multiple arities, functions have an alternate form, instead of an argu
 (defn half
    ([] 1/2)
    ([x] (/ x 2)))
-#'user/half
+;=> #'user/half
 
 (half)
-1/2
+;=> 1/2
 
 (half 8)
-4
+;=> 4
 ```
 
 Multiple arguments work just like you expect. Just specify an argument vector of two, or three, or however many arguments the function takes.  
@@ -1576,13 +1591,13 @@ Some functions can take any number of arguments. For that, Clojure provides `&`,
    {:x x
     :y y
     :more more-args})
-#'user/vargs
+;=> #'user/vargs
 
 (vargs 1 2)
-{:x 1, :y 2, :more nil}
+;=> {:x 1, :y 2, :more nil}
 
 (vargs 1 2 3 4 5)
-{:x 1, :y 2, :more (3 4 5)}
+;=> {:x 1, :y 2, :more (3 4 5)}
 ```
 
 `x` and `y` are mandatory, though there don’t have to be any remaining arguments.  
@@ -1596,27 +1611,30 @@ To keep track of what arguments a function takes, why the function exists, and w
     does vector thrust, if the craft supports it."
    [craft target-orbit]
    "OK, we don't know how to control spacecraft yet.")
-#'user/launch
+;=> #'user/launch
 ```
 
 Docstrings are used to automatically generate documentation for a Clojure programs, but you can also access them from the **REPL** (The `user=>` prompt refers to the top-level namespace of the default REPL):
 
 ```clojure
 (doc launch)
--------------------------
-user/launch
-([craft target-orbit])
-  Launches a spacecraft into the given orbit by initiating a
-   controlled on-axis burn. Does not automatically stage, but
-   does vector thrust, if the craft supports it.
-nil
+;=> -------------------------
+;=> user/launch
+;=> ([craft target-orbit])
+;=>   Launches a spacecraft into the given orbit by initiating a
+;=>    controlled on-axis burn. Does not automatically stage, but
+;=>    does vector thrust, if the craft supports it.
+;=> nil
 ```
 
 `doc` tells us the full name of the function, the arguments it accepts, and its docstring. This information comes from the `launch` Var’s metadata, and is saved there by `defn`. We can inspect metadata directly with the `meta` function:
 
 ```clojure
 (meta #'launch)
-{:arglists ([craft target-orbit]), :ns #<Namespace user>, :name launch, :column 1, :doc "Launches a spacecraft into the given orbit by initiating a\n   controlled on-axis burn. Does not automatically stage, but\n   does vector thrust, if the craft supports it.", :line 1, :file "/tmp/form-init523009510157887861.clj"}
+;=> {:arglists ([craft target-orbit]), :ns #<Namespace user>, :name launch, :column 1,
+;=> :doc "Launches a spacecraft into the given orbit by initiating a\n   controlled 
+;=> on-axis burn. Does not automatically stage, but\n   does vector thrust, if the 
+;=> craft supports it.", :line 1, :file "/tmp/form-init523009510157887861.clj"}
 ```
 
 There’s some other juicy information in there, like the file the function was defined in and which line and column it started at, but that’s not particularly useful since we’re in the _REPL_, not a file. However, this does hint at a way to answer our motivating question: how does the `type` function work?
@@ -1630,7 +1648,7 @@ When you have a series or block of expressions that need to be treated as one, u
    6
    (+ 5 4)
    3)
-3
+;=> 3
 ```
 
 The expressions `6` and `(+ 5 4)` are perfectly legal. The addition in `(+ 5 4)` is even done, but the value is thrown away, only the final expression `3` is returned
@@ -1641,10 +1659,10 @@ The expressions `6` and `(+ 5 4)` are perfectly legal. The addition in `(+ 5 4)`
 
 ```clojure
 type
-#<core$type clojure.core$type@2761df2a>
+;=> #<core$type clojure.core$type@2761df2a>
 
 (type type)
-clojure.core$type
+;=> clojure.core$type
 ```
 
 This tells us that `type` is a particular instance, at memory address `39bda9b9`, of the type `clojure.core$type`. 
@@ -1652,45 +1670,50 @@ This tells us that `type` is a particular instance, at memory address `39bda9b9`
 
 ```clojure
 (supers (type type))
-#{java.io.Serializable java.lang.Runnable clojure.lang.AFunction clojure.lang.IMeta clojure.lang.AFn java.lang.Object clojure.lang.IObj java.util.Comparator clojure.lang.Fn java.util.concurrent.Callable clojure.lang.IFn}
+;=> #{java.io.Serializable java.lang.Runnable clojure.lang.AFunction 
+;=> clojure.lang.IMeta clojure.lang.AFn java.lang.Object clojure.lang.IObj 
+;=> java.util.Comparator clojure.lang.Fn java.util.concurrent.Callable 
+;=> clojure.lang.IFn}
 ```
 
 This is a set of all the types that include `type`. We say that `type` is an instance of `clojure.lang.AFunction`, or that it implements or extends `java.util.concurrent.Callable`, and so on. Since it’s a member of `clojure.lang.IMeta` it has metadata, and since it’s a member of `clojure.lang.AFn`, it’s a function. Just to double check, let’s confirm that `type` is indeed a function:
 
 ```clojure
 (fn? type)
-true
+;=> true
 ```
 
 `type` can take a single argument, which it calls `x`. If it has `:type` metadata, that’s what it returns. Otherwise, it returns the class of `x`. Let’s take a deeper look at `type`’s metadata for more clues:
 
 ```clojure
 (doc type)
--------------------------
-clojure.core/type
-([x])
-  Returns the :type metadata of x, or its Class if none
-nil
+;=> -------------------------
+;=> clojure.core/type
+;=> ([x])
+;=>   Returns the :type metadata of x, or its Class if none
+;=> nil
 ```
 
 This function was first added to Clojure in version `1.0`, and is defined in the file `clojure/core.clj`, on line `3109`:
 
 ```clojure
 (meta #'type)
-{:ns #<Namespace clojure.core>, :name type, :arglists ([x]), :column 1, :added "1.0", :static true, :doc "Returns the :type metadata of x, or its Class if none", :line 3109, :file "clojure/core.clj"}
+;=> {:ns #<Namespace clojure.core>, :name type, :arglists ([x]), :column 1, 
+;=> :added "1.0", :static true, :doc "Returns the :type metadata of x, or its Class 
+;=> if none", :line 3109, :file "clojure/core.clj"}
 ```
 
 We could go dig up the Clojure source code and read its definition there, or we could ask Clojure to do it for us. Aha! Here, at last, is how `type` works. It’s a function which takes a single argument `x`, and returns either `:type` from its metadata, or `(class x)`.
 
 ```clojure
 (source type)
-(defn type 
-  "Returns the :type metadata of x, or its Class if none"
-  {:added "1.0"
-   :static true}
-  [x]
-  (or (get (meta x) :type) (class x)))
-nil
+;=> (defn type 
+;=>   "Returns the :type metadata of x, or its Class if none"
+;=>   {:added "1.0"
+;=>    :static true}
+;=>   [x]
+;=>   (or (get (meta x) :type) (class x)))
+;=> nil
 ```
 
 # Sequences
@@ -1705,14 +1728,14 @@ If two sequentials have the same values in the same order, `=` will return `true
 
 ```clojure
 (= [1 2 3] '(1 2 3))
-true
+;=> true
 ```
 
 Conversely, even if two collections have the same values in the same order, if one is a sequential collection and the other isn't, `=` will return `false`:
 
 ```clojure
 (= [1 2 3] #{1 2 3})
-false
+;=> false
 ```
 
 If the collection is empty, `seq` always returns `nil` and never an empty sequence (that goes for all other functions that return a `seq`, e.g. `next`).
@@ -1727,7 +1750,7 @@ Every collection type provides at least one kind of `seq` object for walking thr
 
 ```clojure
 (cons 1 [2 3 4])
-(1 2 3 4)
+;=> (1 2 3 4)
 ```
 
 Problem of incrementing all elements of a vector:
@@ -1740,13 +1763,13 @@ Problem of incrementing all elements of a vector:
            (rest nums))
      ; If there's no first num, return an empty list
      (list)))
-#'user/inc-first
+;=> #'user/inc-first
 
 (inc-first [])
-()
+;=> ()
 
 (inc-first [1 2 3])
-(2 2 3)
+;=> (2 2 3)
 ```
 
 What if we called our function on `rest`?
@@ -1757,10 +1780,10 @@ What if we called our function on `rest`?
      (cons (inc (first nums))
            (inc-all (rest nums)))
      (list)))
-#'user/inc-all
+;=> #'user/inc-all
 
 (inc-all [1 2 3 4])
-(2 3 4 5)
+;=> (2 3 4 5)
 ```
 
 This technique is called _recursion_, and it is a fundamental principle in working with collections, sequences, trees, graphs or any problem which has small parts linked together. There are two key elements in a recursive program:
@@ -1776,10 +1799,10 @@ Let’s parameterize our `inc-all` function to use any transformation of its ele
      (cons (f (first xs))
            (transform-all f (rest xs)))
      (list)))
-#'user/transform-all
+;=> #'user/transform-all
 
 (transform-all inc [1 2 3 4])
-(2 3 4 5)
+;=> (2 3 4 5)
 ```
 
 ## Loop
@@ -1793,7 +1816,7 @@ The `loop` acts exactly like `let` but provides a target for `recur` to jump to:
      (if (pos? x)
        (recur (+ sum x) (dec x))
        sum)))
-#'user/sum-down-from
+;=> #'user/sum-down-from
 ```
 
 Upon entering the `loop`, the locals `sum` and `x` are initialized (like in `let`). A `recur` always loops back to the closest enclosing `loop` or `fn`. The `loop` locals are rebound to the values given in `recur`.  
@@ -1803,21 +1826,21 @@ Upon entering the `loop`, the locals `sum` and `x` are initialized (like in `let
 
 ```clojure
 (transform-all keyword ["aa" "bb" "cc"])
-(:aa :bb :cc)
+;=> (:aa :bb :cc)
 ```
 
 To wrap every element in a list:
 
 ```clojure
 (transform-all list ["aa" "bb" "cc"])
-(("aa") ("bb") ("cc"))
+;=> (("aa") ("bb") ("cc"))
 ```
 
 We basically implemented `map` function:
 
 ```clojure
 (map inc [1 2 3 4])
-(2 3 4 5)
+;=> (2 3 4 5)
 ```
 
 The function `map` relates one sequence to another. The type `map` relates keys to values. There is a deep symmetry between the two: maps are usually sparse, and the relationships between keys and values may be arbitrarily complex. The `map` function, on the other hand, usually expresses the same type of relationship, applied to a series of elements in a fixed order.
@@ -1829,15 +1852,15 @@ Clojure has a _special form_ called `recur` that's specifically used for tail re
    (when (pos? x)  ;return when x is no longer positive
      (println x)
      (recur (dec x))))
-#'user/print-down-from
+;=> #'user/print-down-from
 
 (print-down-from 5)
-5
-4
-3
-2
-1
-nil
+;=> 5
+;=> 4
+;=> 3
+;=> 2
+;=> 1
+;=> nil
 ```
 
 > `when` is same as `if`, except it doesn't have the `else` part and it requires an implicit `do` in order to perform side-effects
@@ -1853,10 +1876,10 @@ We can use recursion to expand a single value into a sequence of values, each re
 (defn expand [f x count]
    (if (pos? count)
      (cons x (expand f (f x) (dec count)))))
-#'user/expand
+;=> #'user/expand
 
 (expand inc 0 10)
-(0 1 2 3 4 5 6 7 8 9)
+;=> (0 1 2 3 4 5 6 7 8 9)
 ```
 
 Our base case is `x` itself, followed by the sequence beginning with `(f x)`. That sequence in turn expands to `(f (f x))`, and then to `(f (f (f x)))`, and so on. Each time we call `expand`, we count down by one using `dec`. Once the `count` is zero, `if` returns `nil`, and evaluation stops.
@@ -1865,37 +1888,37 @@ Clojure has a more general form of this function, called `iterate`:
 
 ```clojure
 (take 10 (iterate inc 0))
-(0 1 2 3 4 5 6 7 8 9)
+;=> (0 1 2 3 4 5 6 7 8 9)
 ```
 
 Since this sequence is infinitely long, we’re using `take` to select only the first 10 elements. We can construct more complex sequences by using more complex functions:
 
 ```clojure
 (take 10 (iterate (fn [x] (if (odd? x) (+ 1 x) (/ x 2))) 10))
-(10 5 6 3 4 2 1 2 1 2)
+;=> (10 5 6 3 4 2 1 2 1 2)
 ```
 
 `repeat` constructs a sequence where every element is the same:
 
 ```clojure
 (take 10 (repeat "a"))
-("a" "a" "a" "a" "a" "a" "a" "a" "a" "a")
+;=> ("a" "a" "a" "a" "a" "a" "a" "a" "a" "a")
 
 (repeat 5 "b")
-("b" "b" "b" "b" "b")
+;=> ("b" "b" "b" "b" "b")
 ```
 
 `repeatedly` simply calls a function `(f)` to generate an infinite sequence of values, over and over again, without any relationship between elements. For an infinite sequence of random numbers:
 
 ```clojure
 (rand)
-0.6934524557647231
+;=> 0.6934524557647231
 
 (rand)
-0.1355414232605504
+;=> 0.1355414232605504
 
 (take 3 (repeatedly rand))
-(0.18806021884865332 0.5231673860825672 0.38244349544358525)
+;=> (0.18806021884865332 0.5231673860825672 0.38244349544358525)
 ```
 
 `range` generates a sequence of numbers between two points. 
@@ -1905,20 +1928,20 @@ Since this sequence is infinitely long, we’re using `take` to select only the 
 
 ```clojure
 (range 5)
-(0 1 2 3 4)
+;=> (0 1 2 3 4)
 
 (range 5 8)
-(5 6 7)
+;=> (5 6 7)
 
 (range 5 25 5)
-(5 10 15 20)
+;=> (5 10 15 20)
 ```
 
 To extend a sequence by repeating it forever, use `cycle`:
 
 ```clojure
 (take 6 (cycle (range 5 50 5)))
-(5 10 15 20 25 30)
+;=> (5 10 15 20 25 30)
 ```
 
 ## Transforming Sequences
@@ -1929,7 +1952,7 @@ To extend a sequence by repeating it forever, use `cycle`:
 (map (fn [n vehicle] (str "I've got " n " " vehicle "s"))
    [0 200 9]
    ["car" "train" "kiteboard"])
-("I've got 0 cars" "I've got 200 trains" "I've got 9 kiteboards")
+;=> ("I've got 0 cars" "I've got 200 trains" "I've got 9 kiteboards")
 ```
 
 If given multiple sequences, `map` calls its function with one element from each sequence in turn. So the first value will be `(f 0 "car")`, the second `(f 200 "train")`, and so on. Like a zipper, map folds together corresponding elements from multiple collections. To sum three vectors, column-wise:
@@ -1938,7 +1961,7 @@ If given multiple sequences, `map` calls its function with one element from each
 (map + [1 2 3]
         [4 5 6]
         [3 2 1])
-(8 9 10)
+;=> (8 9 10)
 ```
 
 If one sequence is bigger than another, `map` stops at the end of the smaller one. We can exploit this to combine finite and infinite sequences. For example, to number the elements in a vector:
@@ -1947,7 +1970,7 @@ If one sequence is bigger than another, `map` stops at the end of the smaller on
 (map (fn [index element] (str index ". " element))
       (iterate inc 0)
       ["erlang" "scala" "haskell"])
-("0. erlang" "1. scala" "2. haskell")
+;=> ("0. erlang" "1. scala" "2. haskell")
 ```
 
 Transforming elements together with their indices is so common that Clojure has a special function for it: `map-indexed`:
@@ -1955,38 +1978,38 @@ Transforming elements together with their indices is so common that Clojure has 
 ```clojure
 (map-indexed (fn [index element] (str index ". " element))
               ["erlang" "scala" "haskell"])
-("0. erlang" "1. scala" "2. haskell")
+;=> ("0. erlang" "1. scala" "2. haskell")
 ```
 
 You can also tack one sequence onto the end of another, like so:
 
 ```clojure
 (concat [1 2 3] [:a :b :c] [4 5 6])
-(1 2 3 :a :b :c 4 5 6)
+;=> (1 2 3 :a :b :c 4 5 6)
 ```
 
 Another way to combine two sequences is to riffle them together, using `interleave`:
 
 ```clojure
 (interleave [:a :b :c] [1 2 3])
-(:a 1 :b 2 :c 3)
+;=> (:a 1 :b 2 :c 3)
 ```
 
 And if you want to insert a specific element between each successive pair in a sequence, try `interpose`:
 
 ```clojure
 (interpose :and [1 2 3 4])
-(1 :and 2 :and 3 :and 4)
+;=> (1 :and 2 :and 3 :and 4)
 ```
 
 To reverse a sequence, use ... you guessed it, `reverse`:
 
 ```clojure
 (reverse [1 2 3])
-(3 2 1)
+;=> (3 2 1)
 
 (reverse "woolf")
-(\f \l \o \o \w)
+;=> (\f \l \o \o \w)
 ```
 
 Strings are sequences too! Each element of a string is a character, written `\f`. You can rejoin those characters into a string with `apply str`:
@@ -1994,24 +2017,24 @@ Strings are sequences too! Each element of a string is a character, written `\f`
 
 ```clojure
 (apply str (reverse "woolf"))
-"floow"
+;=> "floow"
 ```
 
 …and break strings up into sequences of chars with `seq`:
 
 ```clojure
 (seq "sato")
-(\s \a \t \o)
+;=> (\s \a \t \o)
 ```
 
 To randomize the order of a sequence, use `shuffle`:
 
 ```clojure
 (shuffle [1 2 3 4 5])
-[4 3 5 1 2]
+;=> [4 3 5 1 2]
 
 (apply str (shuffle (seq "abracadabra")))
-"raradbabaac"
+;=> "raradbabaac"
 ```
 
 ## Subsequences
@@ -2022,33 +2045,33 @@ To randomize the order of a sequence, use `shuffle`:
 
 ```clojure
 (take 3 (range 10))
-(0 1 2)
+;=> (0 1 2)
 
 (drop 3 (range 10))
-(3 4 5 6 7 8 9)
+;=> (3 4 5 6 7 8 9)
 
 (take-last 3 (range 10))
-(7 8 9)
+;=> (7 8 9)
 
 (drop-last 3 (range 10))
-(0 1 2 3 4 5 6)
+;=> (0 1 2 3 4 5 6)
 ```
 
 `take-while` and `drop-while` work just like `take` and `drop`, but use a function to decide when to stop:
 
 ```clojure
 (take-while pos? [3 2 1 0 -1 -2 10])
-(3 2 1)
+;=> (3 2 1)
 ```
 
 In general, one can cut a sequence in twain by using `split-at` with a particular index. There’s also `split-with`, which uses a function to decide when to cut:
 
 ```clojure
 (split-at 4 (range 10))
-[(0 1 2 3) (4 5 6 7 8 9)]
+;=> [(0 1 2 3) (4 5 6 7 8 9)]
 
 (split-with number? [1 2 3 :mark 4 5 6 :mark 7])
-[(1 2 3) (:mark 4 5 6 :mark 7)]
+;=> [(1 2 3) (:mark 4 5 6 :mark 7)]
 ```
 
 Notice that because indexes start at zero, sequence functions tend to have predictable number of elements.`(split-at 4)` yields four elements in the first collection, and ensures the second collection begins at index four. `(range 10)` has ten elements, corresponding to the first ten indices in a sequence. `(range 3 5)` has two (as in `5 - 3 = 2`) elements. These choices simplify the definition of recursive functions as well.
@@ -2056,42 +2079,42 @@ We can select particular elements from a sequence by applying a function. To pul
 
 ```clojure
 (filter pos? [1 5 -4 -7 3 0])
-(1 5 3)
+;=> (1 5 3)
 ```
 
 `filter` looks at each element in turn, and includes it in the resulting sequence only if `(f element)` returns a _truthy_ value. Its complement is `remove`, which only includes those elements where `(f element)` is `false` or `nil`:
 
 ```clojure
 (remove string? [1 "tur" :apple])
-(1 :apple)
+;=> (1 :apple)
 ```
 
 One can group a sequence into chunks using `partition`, `partition-all`, or `partition-by`. For instance, one might group alternating values into pairs like this:
 
 ```clojure
 (partition 2 [:cats 5 :bats 27 :crocs 0])
-((:cats 5) (:bats 27) (:crocs 0))
+;=> ((:cats 5) (:bats 27) (:crocs 0))
 ```
 
 Separate a series of numbers into negative and positive subsequences:
 
 ```clojure
 (partition-by neg? [1 2 3 2 1 -1 -2 -3 -2 -1 1 2])
-((1 2 3 2 1) (-1 -2 -3 -2 -1) (1 2))
+;=> ((1 2 3 2 1) (-1 -2 -3 -2 -1) (1 2))
 ```
 
 `partition-all n collection` may include partitions with fewer than `n` items at the end:
 
 ```clojure
 (partition-all 3 [1 2 -5 3 2 1 -1 -2 -3 -2 -1 1 2])
-((1 2 -5) (3 2 1) (-1 -2 -3) ( -2 -1 1) ( 2))
+;=> ((1 2 -5) (3 2 1) (-1 -2 -3) ( -2 -1 1) ( 2))
 ```
 
 while `partition` may not:
 
 ```clojure
 (partition 3 [1 2 -5 3 2 1 -1 -2 -3 -2 -1 1 2])
-((1 2 -5) (3 2 1) (-1 -2 -3) (-2 -1 1))
+;=> ((1 2 -5) (3 2 1) (-1 -2 -3) (-2 -1 1))
 ```
 
 ### Collapsing subsequences
@@ -2100,7 +2123,7 @@ After transforming a sequence, we often want to collapse it in some way, in orde
 
 ```clojure
 (frequencies [:meow :mrrrow :meow :meow])
-{:meow 3, :mrrrow 1}
+;=> {:meow 3, :mrrrow 1}
 ```
 
 To group elements by some function:
@@ -2110,8 +2133,8 @@ To group elements by some function:
                            {:first "Sarah" :last "Lee"}
                            {:first "Sarah" :last "Dunn"}
                            {:first "Li"    :last "O'Toole"}]))
-{"Li" [{:last "Zhou", :first "Li"} {:last "O'Toole", :first "Li"}],
- "Sarah" [{:last "Lee", :first "Sarah"} {:last "Dunn", :first "Sarah"}]}
+;=> {"Li" [{:last "Zhou", :first "Li"} {:last "O'Toole", :first "Li"}],
+;=>  "Sarah" [{:last "Lee", :first "Sarah"} {:last "Dunn", :first "Sarah"}]}
 ```
 
 Here we’ve taken a sequence of people with first and last names, and used the `:first` keyword (which can act as a function!) to look up those first names. `group-by` used that function to produce a map of first names to lists of people, kind of like an index.
@@ -2119,62 +2142,62 @@ In general, we want to combine elements together in some way, using a function. 
 
 ```clojure
 (doc reduce)
--------------------------
-clojure.core/reduce
-([f coll] [f val coll])
-  f should be a function of 2 arguments. If val is not supplied,
-  returns the result of applying f to the first 2 items in coll, then
-  applying f to that result and the 3rd item, etc. If coll contains no
-  items, f must accept no arguments as well, and reduce returns the
-  result of calling f with no arguments.  If coll has only 1 item, it
-  is returned and f is not called.  If val is supplied, returns the
-  result of applying f to val and the first item in coll, then
-  applying f to that result and the 2nd item, etc. If coll contains no
-  items, returns val and f is not called.
+;=> -------------------------
+;=> clojure.core/reduce
+;=> ([f coll] [f val coll])
+;=>   f should be a function of 2 arguments. If val is not supplied,
+;=>   returns the result of applying f to the first 2 items in coll, then
+;=>   applying f to that result and the 3rd item, etc. If coll contains no
+;=>   items, f must accept no arguments as well, and reduce returns the
+;=>   result of calling f with no arguments.  If coll has only 1 item, it
+;=>   is returned and f is not called.  If val is supplied, returns the
+;=>   result of applying f to val and the first item in coll, then
+;=>   applying f to that result and the 2nd item, etc. If coll contains no
+;=>   items, returns val and f is not called.
 
 (reduce + [1 2 3 4])
-10
+;=> 10
 
 (reduce + 1 [1 2 3 4])
-11
+;=> 11
 ```
 
 To see the reducing process in action, we can use `reductions`, which returns a sequence of all the intermediate states:
 
 ```clojure
 (reductions + [1 2 3 4])
-(1 3 6 10)
+;=> (1 3 6 10)
 ```
 
 Oftentimes we include a default state to start with. For instance, we could start with an empty set, and add each element to it as we go along:
 
 ```clojure
 (reduce conj #{} [:a :b :b :b :a :c])
-#{:a :c :b}
+;=> #{:a :c :b}
 ```
 
 Reducing elements into a collection has its own name: `into`. We can `conj [key value]` vectors into a map, for instance, or build up a list:
 
 ```clojure
 (into {} [[:a 2] [:b 3]])
-{:a 2, :b 3}
+;=> {:a 2, :b 3}
 
 (into (list) [1 2 3 4])
-(4 3 2 1)
+;=> (4 3 2 1)
 ```
 
 Because **elements added to a list appear at the beginning**, not the end, this expression **reverses the sequence**. Vectors `conj` onto the end, so to emit the elements in order, using reduce, we might try:
 
 ```clojure
 (reduce conj [] [1 2 3 4 5])
-[1 2 3 4 5]
+;=> [1 2 3 4 5]
 ```
 
 Remember?
 
 ```clojure
 (conj [-1 0] [1 2 3 4 5])
-[-1 0 [1 2 3 4 5]]               ; not [-1 0 1 2 3 4 5]
+;=> [-1 0 [1 2 3 4 5]]               ; not [-1 0 1 2 3 4 5]
 ```
 
 This looks like a `map` function. All that’s missing is some kind of transformation applied to each element:
@@ -2185,10 +2208,10 @@ This looks like a `map` function. All that’s missing is some kind of transform
              (conj output (f element)))
            []
            coll))
-#'user/my-map
+;=> #'user/my-map
 
 (my-map inc [1 2 3 4])
-[2 3 4 5]
+;=> [2 3 4 5]
 ```
 
 So `map` is just a special kind of `reduce`. What about, say, `take-while`?
@@ -2201,33 +2224,34 @@ So `map` is just a special kind of `reduce`. What about, say, `take-while`?
                (reduced out)))
            []
            coll))
+;=> #'user/my-take-while
 ```
 
 We’re using a special function here, `reduced`, to indicate that we’ve completed our reduction early and can skip the rest of the sequence.
 
 ```clojure
 (my-take-while pos? [2 1 0 -1 0 1 2])
-[2 1]
+;=> [2 1]
 ```
 
 Most of Clojure’s **sequence functions are lazy**. For instance, we can increment every number from zero to infinity:
 
 ```clojure
 (def infseq (map inc (iterate inc 0)))
-#'user/infseq
+;=> #'user/infseq
 
 (realized? infseq)
-false
+;=> false
 ```
 
 That function returned immediately. Because it hasn’t done any work yet, we say the sequence is unrealized. It doesn’t increment any numbers at all until we ask for them:
 
 ```clojure
 (take 10 infseq)
-(1 2 3 4 5 6 7 8 9 10)
+;=> (1 2 3 4 5 6 7 8 9 10)
 
 (realized? infseq)
-true
+;=> true
 ```
 
 **Lazy sequences also remember their contents, once evaluated, for faster access.**
@@ -2241,7 +2265,7 @@ Find the sum of the products of consecutive pairs of the first 1000 odd integers
                     (partition 2 1
                       (filter odd?
                         (iterate inc 0))))))
-1335333000
+;=> 1335333000
 ```
 
 __Homework:__
@@ -2257,13 +2281,13 @@ __Homework:__
 
 ```clojure
 (defn occurs-count [c word]
-         (get (frequencies (seq word)) c 0))
+  (get (frequencies (seq word)) c 0))
 ```
 
 3. Write your own version of `filter`.
 
 ```clojure
-
+;=> TBD
 ```
 
 # Java interop
@@ -2276,25 +2300,25 @@ Clojure is _symbiotic_ with its host, providing its rich and powerful features, 
 
 ```clojure
 java.util.Locale/JAPAN
-#<Locale ja_JP>
+;=> #<Locale ja_JP>
 ```
 
 Idiomatic (best practice) Clojure prefers that you access static class members using a syntax like accessing a namespace-qualified Var:
 
 ```clojure
 (Math/sqrt 9)  ; the same as (java.lang.Math/sqrt 9)
-3.0
+;=> 3.0
 ```
 
 **Creating Java class instances**
 
 ```clojure
 (new java.util.HashMap {"foo" 42 "bar" 8 "baz" "beep boop"})
-{"baz" "beep boop", "foo" 42, "bar" 8}
+;=> {"baz" "beep boop", "foo" 42, "bar" 8}
 
-; idiomatic:
-(java.util.HashMap. {"foo" 42 "bar" 8 "baz" "beep boop"})  ;the dot = constructor call
-{"baz" "beep boop", "foo" 42, "bar" 8}
+;;idiomatic:
+(java.util.HashMap. {"foo" 42 "bar" 8 "baz" "beep boop"})   ;dot = constructor call
+;=> {"baz" "beep boop", "foo" 42, "bar" 8}
 ```
 
 **Accessing Java instance members with the dot operator**
@@ -2303,18 +2327,18 @@ To access instance properties, precede the property or method name with a dot:
 
 ```clojure
 (.x (java.awt.Point. 10 20))  ;create a new Point and access its member x
-10
+;=> 10
 ```
 
 To access instance methods, the dot form allows an additional argument to be passed to the method:
 
 ```clojure
 (.divide (java.math.BigDecimal. "42") 2K)
-21M
+;=> 21M
 
 ; what's this M for?
 (type 2M)
-java.math.BigDecimal
+;=> java.math.BigDecimal
 ```
 
 **Setting Java instance properties**
@@ -2325,7 +2349,7 @@ In the absence of mutator methods, in the form of `setX`, Java instance properti
 (let [origin (java.awt.Point. 0 0)]
   (set! (.x origin) 15)     ;(set! <instance_member_access> <value>)
   (str origin))
-"java.awt.Point[x=15,y=0]"
+;=> "java.awt.Point[x=15,y=0]"
 ```
 
 **The `..` macro**
@@ -2341,7 +2365,7 @@ new java.util.Date().toString().endsWith("2014")  ;java
 
 ```clojure
 (.endsWith (.toString (java.util.Date.)) "2014")
-true
+;=> true
 ```
 
 Well, anyone would agree that this is rather difficult to read.  
@@ -2349,7 +2373,7 @@ To remedy this, Clojure provides us with `..` macro:
 
 ```clojure
 (.. (java.util.Date.) toString (endsWith "2014"))
-true
+;=> true
 ```
 
 **The `doto` macro**
@@ -2370,7 +2394,7 @@ That's obviously overly verbose, but it can be streamlined using the `doto` macr
   (.put "HOME" "/home/myself")
   (.put "SRC"  "src")
   (.put "BIN"  "classes"))
-{"HOME" "/home/myself", "BIN" "classes", "SRC" "src"}
+;=> {"HOME" "/home/myself", "BIN" "classes", "SRC" "src"}
 ```
 
 # Exceptions
@@ -2380,7 +2404,7 @@ Like Java, Clojure also provides `try`, `catch`, `finally` and `throw` forms:
 ```clojure
 (throw (Exception. "Thrown"))
 
-Exception Thrown  user/eval1201 (form-init8547084957850583270.clj:1)
+;=> Exception Thrown  user/eval1201 (form-init8547084957850583270.clj:1)
 
 (defn throw-catch [f]
   [(try
@@ -2388,19 +2412,19 @@ Exception Thrown  user/eval1201 (form-init8547084957850583270.clj:1)
     (catch ArithmeticException e "You did not? Not by zero! Noooooooooooo...")
     (catch Exception e (str "You blew it " (.getMessage e)))
     (finally (println "returning... ")))])
-#'user/throw-catch
+;=> #'user/throw-catch
 
 (throw-catch #(/ 10 5))
-returning... 
-[2]
+;=> returning... 
+;=> [2]
 
 (throw-catch #(/ 10 0))
-returning... 
-["You did not? Not by zero! Noooooooooooo..."]
+;=> returning... 
+;=> ["You did not? Not by zero! Noooooooooooo..."]
 
 (throw-catch #(throw (Exception. "dawg!")))
-returning... 
-["You blew it dawg!"]
+;=> returning... 
+;=> ["You blew it dawg!"]
 ```
 
 > Clojure doesn't adhere to checked exception requirements, like Java does.
@@ -2419,8 +2443,8 @@ Provide a way to bundle related functions, macros and values.
 
 ```clojure
 (ns mbo.core.strings)
-nil
-mbo.core.strings=>    ;from now on, this is our REPL prompt
+;=> nil
+;=> mbo.core.strings=>    ;from now on, this is our REPL prompt
 ```
 
 There's also a _Var_ `*ns*`, which holds the value of the current namespace.  
@@ -2428,28 +2452,28 @@ We know from before that any _Var_ created will be a member of the current names
 
 ```clojure
 mbo.core.strings=> (defn report-ns [] (str "The current namespace is " *ns*))
-#'mbo.core.strings/report-ns
+;=> #'mbo.core.strings/report-ns
 
 mbo.core.strings=> (report-ns)
-"The current namespace is mbo.core.strings"
+;=> "The current namespace is mbo.core.strings"
 
 mbo.core.strings=> (defn sing [] (println "Marjane Marjane, Marjane Marjane, ..."))
-#'mbo.core.strings/sing
+;=> #'mbo.core.strings/sing
 
 mbo.core.strings=> sing    ;Clojure looks it up in the current namespace
-#<strings$sing mbo.core.strings$sing@3987b05>
+;=> #<strings$sing mbo.core.strings$sing@3987b05>
 
 mbo.core.strings=> (ns mbo.core.compat)   ;create another namespace
-nil
+;=> nil
 
 mbo.core.compat=> (report-ns)             ;try invoking function from another ns
 
 mbo.core.compat=> CompilerException java.lang.RuntimeException: 
-Unable to resolve symbol: report-ns in this context, 
-compiling:(/tmp/form-init8547084957850583270.clj:1:1)
+;=> Unable to resolve symbol: report-ns in this context, 
+;=> compiling:(/tmp/form-init8547084957850583270.clj:1:1)
 
 mbo.core.compat=> (mbo.core.strings/report-ns) ;fully qualified name works as expected
-"The current namespace is mbo.core.compat"
+;=> "The current namespace is mbo.core.compat"
 ```
 
 > referring to a namespace symbol using fully qualified name will only work for namespaces created locally or those previously loaded. Read on, it'll become clear...
@@ -2458,17 +2482,17 @@ mbo.core.compat=> (mbo.core.strings/report-ns) ;fully qualified name works as ex
 
 ```clojure
 mbo.core.compat=> (ns mbo.core.set
-             #_=>   (:require clojure.set))
-nil
-mbo.core.set=>  ;changed to new ns
+                    (:require clojure.set))
+;=> nil
+;=> mbo.core.set=>  ;changed to new ns
 
 mbo.core.set=> (clojure.set/intersection #{1 2 3} #{2 3 4})
-#{2 3}
+;=> #{2 3}
 
 mbo.core.set=> (intersection #{1 2 3} #{2 3 4})  ;invoke a clojure.set function directly
 
-CompilerException java.lang.RuntimeException: Unable to resolve symbol: 
-intersection in this context, compiling:(/tmp/form-init8547084957850583270.clj:1:1)
+;=> CompilerException java.lang.RuntimeException: Unable to resolve symbol: 
+;=> intersection in this context, compiling:(/tmp/form-init8547084957850583270.clj:1:1)
 ```
 
 This construct indicates that we want the `clojure.set` namespace loaded, but we don't want the mappings of that namespace's symbols to `mbo.core.set` functions.
@@ -2478,10 +2502,10 @@ We can also use `:as` directive to create an additional alias to `clojure.set`:
 ```clojure
 mbo.core.set=> (ns mbo.core.set-alias
                     #_=>   (:require [clojure.set :as s]))
-nil
+;=> nil
 
 mbo.core.set-alias=> (s/intersection #{1 2 3} #{2 3 4})
-#{2 3}
+;=> #{2 3}
 ```
 
 The qualified namespace form (e.g. `clojure.set`) looks the same as a call to a _static class method_. The difference is that a _namespace symbol_ can only be used as a qualifier, whereas a _class symbol_ can also be referenced independently:
@@ -2489,11 +2513,11 @@ The qualified namespace form (e.g. `clojure.set`) looks the same as a call to a 
 ```clojure
 mbo.core.set-alias=> clojure.set
 
-mbo.core.set-alias=> CompilerException java.lang.ClassNotFoundException: 
-clojure.set, compiling:(/tmp/form-init8547084957850583270.clj:1:691) 
+;=> mbo.core.set-alias=> CompilerException java.lang.ClassNotFoundException: 
+;=> clojure.set, compiling:(/tmp/form-init8547084957850583270.clj:1:691) 
 
 mbo.core.set-alias=> java.lang.Object
-java.lang.Object
+;=> java.lang.Object
 ```
 
 > That vagaries of namespace mappings from symbols to _Vars_, both qualified and unqualified, have the potential for confusion between _class names_ and _static methods_. In the beginning, that is. The differences will begin to feel natural as we progress (at least that's what _The joy of Clojure_ book promises :)
@@ -2506,11 +2530,11 @@ java.lang.Object
 ```clojure
 mbo.core.set-alias=> (ns mbo.test
                 #_=>   (:use [clojure.string :only [capitalize]]))
-nil
+;=> nil
 
 mbo.test=> (map capitalize ["one" "two"])
-("One" "Two")
-mbo.test=>
+;=> ("One" "Two")
+;=> mbo.test=>
 ```
 
 `:only` is used to indicate that only the listed functions should be mapped in the new namespace (good practice). The `:exclude` directive does the opposite.  
@@ -2528,10 +2552,10 @@ mbo.test=>
 mbo.test=> (ns mbo.java
       #_=>   (:import [java.util HashMap]
       #_=>            [java.util.concurrent.atomic.AtomicLong]))
-nil
+;=> nil
 
 mbo.java=> (HashMap. {"happy?" true})
-{"happy?" true}
+;=> {"happy?" true}
 ```
 
 > Any classes in the `java.lang` package are implicitly imported when namespaces are created
@@ -2544,10 +2568,10 @@ This is where _nil punning_ comes in:
 
 ```clojure
 (seq [1 2 3])
-(1 2 3)
+;=> (1 2 3)
 
 (seq [])
-nil
+;=> nil
 ```
 
 `seq` function returns a sequence view of a collection or `nil` if the collection is empty.
@@ -2559,9 +2583,9 @@ nil
     (recur (rest s))))
 
 (print-seq [1 2])
-1
-2
-nil
+;=> 1
+;=> 2
+;=> nil
 ```
 
 The use of `seq` as a terminating condition is the idiomatic way of testing whether a sequence is empty
@@ -2577,7 +2601,7 @@ Perhaps the simplest form of destructuring is picking apart a sequential thing (
 ```clojure
 (let [[fname mname lname] ["Frane" "Luka" "Bonaci"]]
   (str lname ", " fname " " mname))
-"Bonaci, Frane Luka"
+;=> "Bonaci, Frane Luka"
 
 ;; although this is syntactically correct, it isn't factually accurate
 ;; my month and a half old twins are named Frane and Luka :)
@@ -2595,8 +2619,8 @@ We can also use an ampersand in a destructuring vector to indicate that any rema
 (let [[a b c & more] (range 10)]
   (println "a b c are: " a b c)
   (println "the rest is: " more))
-a b c are:  0 1 2
-the rest is:  (3 4 5 6 7 8 9)
+;=> a b c are:  0 1 2
+;=> the rest is:  (3 4 5 6 7 8 9)
 ```
 
 A useful feature of vector destructuring is `:as`, which is used to bind a local to the entire collection. It must be placed at the end, even after the `&` local (if it exists):
@@ -2607,9 +2631,9 @@ A useful feature of vector destructuring is `:as`, which is used to bind a local
   (println "a b c are: " a b c)
   (println "the rest is " more)
   (println "all is: " all))
-a b c are:  0 1 2
-the rest is  (3 4 5 6 7 8 9)
-all is:  [0 1 2 3 4 5 6 7 8 9]
+;=> a b c are:  0 1 2
+;=> the rest is  (3 4 5 6 7 8 9)
+;=> all is:  [0 1 2 3 4 5 6 7 8 9]
 ```
 
 > Notice the difference between `&` and `:as`. While `:all` produces a vector, `&` results with a `seq`.
@@ -2622,7 +2646,7 @@ all is:  [0 1 2 3 4 5 6 7 8 9]
 
 (let [{fname :fname, mname :mname, lname :lname} full-name-map]
   (str lname ", " fname " " mname))
-"Bonaci, Frane Luka"
+;=> "Bonaci, Frane Luka"
 ```
 
 Here, the `:keys` feature might come in handy:
@@ -2630,7 +2654,7 @@ Here, the `:keys` feature might come in handy:
 ```clojure
 (let [{:keys [fname mname lname]} full-name-map]
   (str lname ", " fname " " mname))
-"Bonaci, Frane Luka"
+;=> "Bonaci, Frane Luka"
 ```
 
 By using `:keys`, we're telling Clojure that the next form will be a vector of names that it should convert to keywords (e.g. `:fname`), in order to look up their values in the input map.  
@@ -2642,7 +2666,7 @@ Sometimes you'll want to get the keys that you didn't name individually by any o
 ```clojure
 (let [{fname :fname, :as whole-name} full-name-map]
   whole-name)
-{:mname "Luka", :lname "Bonaci", :fname "Frane"}
+;=> {:mname "Luka", :lname "Bonaci", :fname "Frane"}
 ```
 
 If the destructuring map looks up a key that's not in the source map, it's bound to `nil`, but it's possible to provide different defaults with `:or`:
@@ -2650,7 +2674,7 @@ If the destructuring map looks up a key that's not in the source map, it's bound
 ```clojure
 (let [{:keys [title fname mname lname], :or {title "Mr."}} full-name-map]
   (println title fname mname lname))
-Mr. Frane Luka Bonaci
+;=> Mr. Frane Luka Bonaci
 ```
 
 **Associative destructuring**
@@ -2660,7 +2684,7 @@ Using a map to define bindings isn't limited to maps, we can destructure a vecto
 ```clojure
 (let [{first-thing 0, last-thing 3} [1 2 3 4]]
   [first-thing last-thing])
-[1 4]
+;=> [1 4]
 ```
 
 **Destructuring in function parameters**
@@ -2672,7 +2696,7 @@ All previous examples use `let` to do destructuring, but exactly the same featur
   (println lname))
 
 (print-last-name full-name-map)
-Bonaci
+;=> Bonaci
 ```
 
 > When function arguments include an ampersand, that's not destructuring, but part of support for multiple function bodies, each with its own number of parameters.
