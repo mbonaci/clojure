@@ -77,28 +77,21 @@ Now when that's all sorted and you're eager to learn, let's get things started..
 
 Valid Clojure expressions consist of _numbers_, _symbols_, _keywords_, _booleans_, _characters_, _functions_, _function calls_, _macros_ (what?), _strings_, _literal maps_, _vectors_, and _sets_. 
 
-Here's how a function looks like (`inc` is short for _increment_):
+Here's how a function call looks like (`inc` is short for _increment_):
 
 ```clojure
-user=> inc
-<core$inc clojure.core$inc@d6206b5>
-```
- 
-Numbers, strings and keywords evaluate to themselves.  
+user=> (inc 2)      ;"increment 2"
+3                   ;this is REPL output
+;=> 3               ;which I'll write like this from now on
 
-```clojure
-;  skipping the 'user=>' prompt from now on
-;  oh, and BTW, that was a comment, because it begins with a semicolon
-;  so was that, a one-line comment
-;; this one also, from that first semicolon to the end of the line. All the way here ->
-
-(inc 2)      ;"increment 2"
-;=> 3        ;this is REPL output
+; those three that begin with a semicolon are comments
+;;this one also, from that first semicolon to the end of the line. All the way here ->
 ```
 
 ## Syntax
 
 ```clojure
+;skipping the 'user=>' prompt from now on
 (+ 1 (- 5 2) (+ 3 4))
 ;=> 11
 ```
@@ -387,7 +380,7 @@ Java's regex `Pattern` class has several methods that can be used directly, but 
 ;=> ("1" "2" "3" "4")
 ```
 
-> [More on Java interoperability](#java-interop)
+[Java interoperability section.](#java-interop)  
 
 The `re-seq` function returns a lazy sequence of all matches in a string:
 
@@ -397,7 +390,7 @@ The `re-seq` function returns a lazy sequence of all matches in a string:
 ```
 
 > Java's regex engine includes a `Matcher` object which mutates in a non-thread-safe way as it walks through a string finding matches. This object is exposed in Clojure through the `re-matcher` function and can be used in combination with `re-groups` and `re-find`.
-It's recommended that a direct usage of all of these three functions should be avoided.
+It's recommended to avoid direct usage of all of these three functions.
 
 ## Booleans
 
@@ -1136,7 +1129,7 @@ You can make a set out of any other collection with `set`:
 
 ## Maps
 
-Map is an unsorted _key/value_ associative structure (associates keys with values).
+Map is an unsorted, associative _key/value_ structure (associates keys with values).
 Maps are represented with curly braces `{...}` filled by alternating _key/value_ pairs, with or without commas:
 
 ```clojure
