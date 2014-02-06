@@ -25,7 +25,7 @@ There, Clojure looked terse and concise, yet expressive and simple. So I decided
 
 <img src="https://github.com/mbonaci/clojure/raw/master/resources/lein.jpg"
  alt="Leiningen logo" title="The man himself" align="right" />
- 
+
 > Disclaimer: I write this as I'm going through the book myself, so bear with me. Open pull requests as you see fit
 
 OK, that's more than enough BS (for now). Let's start by setting up our Clojure environment.
@@ -35,7 +35,9 @@ To set up your Clojure environment I suggest you use an excellent automation too
 > Notice there's no "installer" in the list of features. That's because Clojure is just another _dependency_ of "our project".
 
 For your convenience, here's a dead simple, step-by-step environment setup for Ubuntu ([other OS, sir?](http://leiningen.org/#install)):
-
+  
+  
+  
 ```sh
 cd /usr/bin
 sudo curl -O https://raw.github.com/technomancy/leiningen/stable/bin/lein
