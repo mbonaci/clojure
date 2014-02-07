@@ -102,36 +102,38 @@ Lists start with a so called _operation form_:
  - an expression that yields a _function_
 
 Full list of **special operations**:
- - `def`<t><t>evaluates an expression and binds the result to a symbol
- - `if`<t><t>conditional evaluation
- - `fn`<t><t>defines a function
- - `let`<t><t>establishes a name in a local lexical scope
- - `loop`<t><t>used for functional looping
- - `recur`<t><t>used to support functional looping
- - `do`<t><t>defines a block of statements
- - `new`<t><t>allocates a new java object
- - `.`<t><t>used to access a java method
- - `throw`<t><t>same as in java
- - `try`<t><t>same as in java
- - `set!`<t><t>re-binds a symbol
- - `quote`<t><t>prevents evaluation of expression
- - `var`<t><t>
+```clj
+def     ;evaluates an expression and binds the result to a symbol
+if      ;conditional evaluation
+fn      ;defines a function
+let     ;establishes a name in a local lexical scope
+loop    ;used for functional looping
+recur   ;used to support functional looping
+do      ;defines a block of statements
+new     ;allocates a new java object
+.       ;used to access a java method
+throw   ;same as in java
+try     ;same as in java
+set!    ;re-binds a symbol
+quote   ;prevents evaluation of expression
+var     ;provides a mechanism to refer to a mutable storage location 
+```
 
-For instance, if the compiler encounters this:
+For instance, if the compiler encounters:
 
 ```clj
 (my-fun some-expr)
 ```
 
-it'll first try to resolve `my-fun`, which in our case, is a previously defined _function_:
+it'll first try to resolve `my-fun`, which in our case, is a previously defined function:
 
 ```clj
 (def my-fun value-expr)
 ```
 
-and then it'll evaluate `some-expr` and pass the result to the `my-fun` function.
+and then, it'll evaluate `some-expr` and pass the result to the `my-fun` function.
 
-So `my-fun` is a _symbol_ that is bound to a _function_.
+> so `my-fun` is a _symbol_ that is bound to a function definition
 
 Here's how a valid function call looks like (`inc` is short for _increment_):
 
