@@ -28,7 +28,7 @@ There, Clojure looked terse and concise, yet expressive and simple. So I decided
 
 > Disclaimer: I write this as I'm going through the book myself, so bear with me. Open pull requests as you see fit
 
-OK, that's more than enough BS (for now). Let's start by setting up our Clojure environment.
+OK, that's more than enough BS (for now). Let's start by setting up our Clojure runtime environment.
 
 To set it up, I suggest you use an excellent automation tool (dependency mgr, builder, test runner, packager, all-in-one) [Leiningen](http://leiningen.org/). 
 
@@ -74,15 +74,66 @@ lein repl
 
 Boom! We have our own working Clojure environment.
 
-![repl](https://github.com/mbonaci/clojure/raw/master/resources/repl.png)
+<img src="https://github.com/mbonaci/clojure/raw/master/resources/repl.png"
+ alt="REPL img" title="REPL" align="center" />
 
-Now when that's all sorted and you're eager to learn, let's get things started...
+REPL is short for _Read Eval Print Loop_, which is like an interactive window into a Clojure program (similar to a JavaScript console in the browser or REPL in Node).
+
+Now when that's all sorted and you're eager to learn, let's see how Clojure code looks like...
 
 # Basics
 
-Valid Clojure expressions consist of _numbers_, _symbols_, _keywords_, _booleans_, _characters_, _functions_, _function calls_, _macros_ (what?), _strings_, _literal maps_, _vectors_, and _sets_. 
+A valid Clojure expression consists of _numbers_, _symbols_, _lists_, _keywords_, _booleans_, _characters_, _functions_, _function calls_, _macros_ (wtf?), _strings_, _literal maps_, _vectors_, and _sets_. 
 
-Here's how a function call looks like (`inc` is short for _increment_):
+All of those, except _symbols_ and _lists_, evaluate to themselves.  
+
+Symbols are similar to variables in other languages, which basically means that, when a symbol is encountered, compiler tries to find the value that the symbol was previously (hopefully) bound to, which is then used in place of symbol.  
+
+Lists take a special place in Clojure (after all, Lisp means **LIS**t **P**rocessing). They are the main building block of the language.
+Lists start with a so called _operation form_:
+
+```clj
+(op ...)
+```
+
+`op` can be either:
+ - one of very few _special operations_ (listed bellow)
+ - a _macro_
+ - an expression that yields a _function_
+
+Full list of **special operations**:
+ - `def`<t><t>evaluates an expression and binds the result to a symbol
+ - `if`<t><t>conditional evaluation
+ - `fn`<t><t>defines a function
+ - `let`<t><t>establishes a name in a local lexical scope
+ - `loop`<t><t>used for functional looping
+ - `recur`<t><t>used to support functional looping
+ - `do`<t><t>defines a block of statements
+ - `new`<t><t>allocates a new java object
+ - `.`<t><t>used to access a java method
+ - `throw`<t><t>same as in java
+ - `try`<t><t>same as in java
+ - `set!`<t><t>re-binds a symbol
+ - `quote`<t><t>prevents evaluation of expression
+ - `var`<t><t>
+
+For instance, if the compiler encounters this:
+
+```clj
+(my-fun some-expr)
+```
+
+it'll first try to resolve `my-fun`, which in our case, is a previously defined _function_:
+
+```clj
+(def my-fun value-expr)
+```
+
+and then it'll evaluate `some-expr` and pass the result to the `my-fun` function.
+
+So `my-fun` is a _symbol_ that is bound to a _function_.
+
+Here's how a valid function call looks like (`inc` is short for _increment_):
 
 ```clj
 user=> (inc 2)      ;"increment 2"
@@ -124,29 +175,39 @@ In Java, the expression above would be written like this:
 
 ![ast](https://github.com/mbonaci/clojure/raw/master/resources/ast.png)
 
-This is how a program is executed in a traditional, _edit-compile-run_ way:
+This is how a program is executed in a traditional, java-style _edit-compile-run_ way:
 
 ![ast](https://github.com/mbonaci/clojure/raw/master/resources/TraditionalEvaluation.png)
 
-We all know that, in Java, the code gets handed to the compiler, which compiles it to bytecode, that is then run on the JVM. If you need to change something in your code, e.g. fix a bug, you need to do the whole process again.
+In Java, the source code gets handed to the compiler, which compiles it to bytecode. The bytecode is then run on the JVM. If you need to change something in your code, e.g. fix a bug, you need to do the whole process all over again. Open up the source file, make some changes, compile the source and finally send it back to the JVM to be executed.
+
+Then we start our program and we notice that it's still not right. OK, we then stop the whole program and run it in debug mode, carefully setting breakpoints along the way.
+
+> at work, we often used to spend a better half of our day in this iterative process, doing nothing. When you combine that with IBM's tooling, that becomes a nightmare. E.g. Rational IDE weighs more than a GB. Websphere application server takes ages to start. When a new developer needs to set up his environment, it has known to take a couple of days to wire all the stuff together. We are crazy! How on earth we got eased into this unproductive way of working.
 
 ![ast](https://github.com/mbonaci/clojure/raw/master/resources/ClojureEvaluation.png)
 
 Clojure's evaluation is much more dynamic, the code first goes to **Reader**, which takes the characters and turns them into Clojure data structures.
-The Compiler never sees the source code, it compiles the data structures produced by Reader to bytecode, which is then run on the JVM.
+The Compiler never sees the source code, it compiles the data structures produced by the Reader to bytecode, which is then run on the JVM.
 
-So what does this mean? Can such a subtle difference have a noticeable impact on our development process?  
+So what does this mean? Can such a seemingly subtle difference have a noticeable impact on our development process?  
 
 The point is that, this way, we can hot-swap a part of the running code without stopping the program. 
-The source code doesn't have to come from a file. You can use REPL to connect to a running program and evaluate expression on the fly.
+The source code doesn't have to come from a file. We can use REPL to connect to a running program and evaluate expressions on the fly.
 
-The other benefit is that other programs can easily produce data structures, thus avoiding source code and Reader all together. That's the Clojure's secret sauce. It makes macros possible. When evaluator encounters a macro reference in the code it stops executing that part of the program and sends it to a little program that manipulates data structures it receives and the sends them back to the Evaluator.
+The other benefit is that other programs can easily produce data structures, thus avoiding source code and Reader all together. That's the Clojure's secret sauce. It's what makes **macros** possible.  
+When _Evaluator_, while processing source code, encounters a symbol that is bound to a _macro_, it stops executing that part of the program and sends it to that macro, a _little side-program_ that manipulates data structures, transforming them in some useful way and then returning that, extended data structures back to the Evaluator.
 
+This is extremely powerful concept, which allows us to extend the language without waiting for Rich Hickey, father of Clojure, to do so. Many things that are built-into other languages are just macros in Clojure. For instance:
 
-By doing in-order (depth-first) traversal of this tree, you end up with Java syntax.  
-By doing pre-order traversal, you get the Clojure syntax. But Clojure 
+```clj
+(or x y)        ;'or' is a macro
 
-> Now forget all this nonsense, cuz' it's really not important at all (unless you'll be writing your own compiler or something).
+;;after being extended by or macro, becomes:
+
+(let [or__158 x]
+  (if or__158 or__158 y))
+```
 
 # Scalar data types
 
@@ -511,8 +572,8 @@ Another important property of keywords, when used as map keys, is that they can 
 ;=> 180
 
 (println (/ (:cats mouse-planet)          ;much more useful example
-            (:mice mouse-planet))
-         "cats per capita")
+			(:mice mouse-planet))
+		 "cats per capita")
 ;=> 20 cats per capita
 ```
 
@@ -553,7 +614,14 @@ A collection is a group of values. It’s a container which provides some struct
 
 All Clojure's collections support heterogeneous values (values of arbitrary types), together, in the same collection.
 
-> when a collection is evaluated, each of its contained items is evaluated first
+> when a collection is evaluated (except lists), each of its contained items is evaluated first
+
+Most of functions that work on collections aren't actually written to work on concrete collection types, but rather to work on abstract data types. For instance, some of abstractions in this space are:
+
+ - Collection  (common to all concrete types)
+ - Sequential  (ordered collections are lists and vectors)
+ - Associative (maps associate keys with values, vectors associate indices with values)
+ - Indexed     (vectors, for example, can be quickly indexed into)
 
 ## Lists
 
@@ -919,9 +987,9 @@ When processing a list, it's pretty common to want to produce a new list in the 
 ```clj
 (defn m-map1 [f coll]
   (loop [coll coll, acc nil]
-    (if (empty? coll)
-      (reverse acc)
-      (recur (next coll) (cons (f (first coll)) acc)))))
+	(if (empty? coll)
+	  (reverse acc)
+	  (recur (next coll) (cons (f (first coll)) acc)))))
 ;=> #'mbo/m-map1
 
 (m-map1 - (range 5))
@@ -934,9 +1002,9 @@ One way to avoid `reverse` is to use a vector as the accumulator, instead of a l
 ```clj
 (defn m-map2 [f coll]
   (loop [coll coll, acc []]
-    (if (empty? coll)
-      acc
-      (recur (next coll) (conj acc (f (first coll)))))))
+	(if (empty? coll)
+	  acc
+	  (recur (next coll) (conj acc (f (first coll)))))))
 ;=> #'mbo/m-map2
 
 (m-map2 - (range 5))
@@ -1124,8 +1192,8 @@ Since `contains?` looks for existence of a key it shouldn't work with sets, but 
 ;=> #{:b :c}
 
 (clojure.set/intersection #{:a :e :i :o :u}
-                          #{:a :u :r}
-                          #{:r :u :s})
+						  #{:a :u :r}
+						  #{:r :u :s})
 ;=> #{:u}
 ```
 
@@ -1405,7 +1473,7 @@ We can also provide multiple bindings. Since Clojure doesn’t care about spacin
 
 ```clj
 (let [person "joseph"
-       num-cats 186]
+	   num-cats 186]
    (str person " has " num-cats " cats!"))  ;the body
 ;=> "joseph has 186 cats!"
 ```
@@ -1414,7 +1482,7 @@ When multiple bindings are given, they are evaluated in order. Later bindings ca
 
 ```clj
 (let [cats 3
-       legs (* 4 cats)]
+	   legs (* 4 cats)]
  (str legs " legs all together"))
 ;=> "12 legs all together"
 ```
@@ -1442,7 +1510,7 @@ Clojure allows the attachment of metadata to various objects, including symbols.
 
 ```clj
 (let [x (with-meta 'node {:js true})    ;attach :js to 'node and assign to x
-      y (with-meta 'node {:js false})]
+	  y (with-meta 'node {:js false})]
   [(= x y)            ;true because they both hold the same symbol, 'node
    (identical? x y)   ;false because they are different instances
    (meta x)
@@ -1466,7 +1534,7 @@ what-where=> one-simbol
 
 what-where=> (resolve 'one-simbol)
 ;=> #'what-where/one-simbol  ;looks like namespace-qualified symbol
-                         ;but it's just a characteristic of symbol evaluation
+						 ;but it's just a characteristic of symbol evaluation
 
 what-where=> `one-symbol   ;back tick
 ;=> what-where/one-symbol
@@ -1608,8 +1676,8 @@ Some functions can take any number of arguments. For that, Clojure provides `&`,
 ```clj
 (defn vargs [x y & more-args]
    {:x x
-    :y y
-    :more more-args})
+	:y y
+	:more more-args})
 ;=> #'user/vargs
 
 (vargs 1 2)
@@ -1626,8 +1694,8 @@ To keep track of what arguments a function takes, why the function exists, and w
 ```clj
 (defn launch
    "Launches a spacecraft into the given orbit by initiating a
-    controlled on-axis burn. Does not automatically stage, but
-    does vector thrust, if the craft supports it."
+	controlled on-axis burn. Does not automatically stage, but
+	does vector thrust, if the craft supports it."
    [craft target-orbit]
    "OK, we don't know how to control spacecraft yet.")
 ;=> #'user/launch
@@ -1777,11 +1845,11 @@ Problem of incrementing all elements of a vector:
 ```clj
 (defn inc-first [nums]
    (if (first nums)
-     ; If there's a first num, build a new list with cons
-     (cons (inc (first nums))
-           (rest nums))
-     ; If there's no first num, return an empty list
-     (list)))
+	 ; If there's a first num, build a new list with cons
+	 (cons (inc (first nums))
+		   (rest nums))
+	 ; If there's no first num, return an empty list
+	 (list)))
 ;=> #'user/inc-first
 
 (inc-first [])
@@ -1796,9 +1864,9 @@ What if we called our function on `rest`?
 ```clj
 (defn inc-all [nums]
    (if (first nums)
-     (cons (inc (first nums))
-           (inc-all (rest nums)))
-     (list)))
+	 (cons (inc (first nums))
+		   (inc-all (rest nums)))
+	 (list)))
 ;=> #'user/inc-all
 
 (inc-all [1 2 3 4])
@@ -1815,9 +1883,9 @@ Let’s parameterize our `inc-all` function to use any transformation of its ele
 ```clj
 (defn transform-all [f xs]
    (if (first xs)
-     (cons (f (first xs))
-           (transform-all f (rest xs)))
-     (list)))
+	 (cons (f (first xs))
+		   (transform-all f (rest xs)))
+	 (list)))
 ;=> #'user/transform-all
 
 (transform-all inc [1 2 3 4])
@@ -1832,9 +1900,9 @@ The `loop` acts exactly like `let` but provides a target for `recur` to jump to:
 ```clj
 (defn sum-down-from [initial-x]
    (loop [sum 0, x initial-x]
-     (if (pos? x)
-       (recur (+ sum x) (dec x))
-       sum)))
+	 (if (pos? x)
+	   (recur (+ sum x) (dec x))
+	   sum)))
 ;=> #'user/sum-down-from
 ```
 
@@ -1869,8 +1937,8 @@ Clojure has a _special form_ called `recur` that's specifically used for tail re
 ```clj
 (defn print-down-from [x]
    (when (pos? x)  ;return when x is no longer positive
-     (println x)
-     (recur (dec x))))
+	 (println x)
+	 (recur (dec x))))
 ;=> #'user/print-down-from
 
 (print-down-from 5)
@@ -1894,7 +1962,7 @@ We can use recursion to expand a single value into a sequence of values, each re
 ```clj
 (defn expand [f x count]
    (if (pos? count)
-     (cons x (expand f (f x) (dec count)))))
+	 (cons x (expand f (f x) (dec count)))))
 ;=> #'user/expand
 
 (expand inc 0 10)
@@ -1978,8 +2046,8 @@ If given multiple sequences, `map` calls its function with one element from each
 
 ```clj
 (map + [1 2 3]
-        [4 5 6]
-        [3 2 1])
+		[4 5 6]
+		[3 2 1])
 ;=> (8 9 10)
 ```
 
@@ -1987,8 +2055,8 @@ If one sequence is bigger than another, `map` stops at the end of the smaller on
 
 ```clj
 (map (fn [index element] (str index ". " element))
-      (iterate inc 0)
-      ["erlang" "scala" "haskell"])
+	  (iterate inc 0)
+	  ["erlang" "scala" "haskell"])
 ;=> ("0. erlang" "1. scala" "2. haskell")
 ```
 
@@ -1996,7 +2064,7 @@ Transforming elements together with their indices is so common that Clojure has 
 
 ```clj
 (map-indexed (fn [index element] (str index ". " element))
-              ["erlang" "scala" "haskell"])
+			  ["erlang" "scala" "haskell"])
 ;=> ("0. erlang" "1. scala" "2. haskell")
 ```
 
@@ -2149,9 +2217,9 @@ To group elements by some function:
 
 ```clj
 (pprint (group-by :first [{:first "Li"    :last "Zhou"}
-                           {:first "Sarah" :last "Lee"}
-                           {:first "Sarah" :last "Dunn"}
-                           {:first "Li"    :last "O'Toole"}]))
+						   {:first "Sarah" :last "Lee"}
+						   {:first "Sarah" :last "Dunn"}
+						   {:first "Li"    :last "O'Toole"}]))
 ;=> {"Li" [{:last "Zhou", :first "Li"} {:last "O'Toole", :first "Li"}],
 ;=>  "Sarah" [{:last "Lee", :first "Sarah"} {:last "Dunn", :first "Sarah"}]}
 ```
@@ -2224,9 +2292,9 @@ This looks like a `map` function. All that’s missing is some kind of transform
 ```clj
 (defn my-map [f coll]
    (reduce (fn [output element]
-             (conj output (f element)))
-           []
-           coll))
+			 (conj output (f element)))
+		   []
+		   coll))
 ;=> #'user/my-map
 
 (my-map inc [1 2 3 4])
@@ -2238,11 +2306,11 @@ So `map` is just a special kind of `reduce`. What about, say, `take-while`?
 ```clj
 (defn my-take-while [f coll]
    (reduce (fn [out elem]
-             (if (f elem)
-               (conj out elem)
-               (reduced out)))
-           []
-           coll))
+			 (if (f elem)
+			   (conj out elem)
+			   (reduced out)))
+		   []
+		   coll))
 ;=> #'user/my-take-while
 ```
 
@@ -2279,11 +2347,11 @@ Find the sum of the products of consecutive pairs of the first 1000 odd integers
 
 ```clj
 (reduce +
-         (take 1000
-               (map (fn [pair] (* (first pair) (second pair)))
-                    (partition 2 1
-                      (filter odd?
-                        (iterate inc 0))))))
+		 (take 1000
+			   (map (fn [pair] (* (first pair) (second pair)))
+					(partition 2 1
+					  (filter odd?
+						(iterate inc 0))))))
 ;=> 1335333000
 ```
 
@@ -2427,10 +2495,10 @@ Like Java, Clojure also provides `try`, `catch`, `finally` and `throw` forms:
 
 (defn throw-catch [f]
   [(try
-    (f)
-    (catch ArithmeticException e "You did not? Not by zero! Noooooooooooo...")
-    (catch Exception e (str "You blew it " (.getMessage e)))
-    (finally (println "returning... ")))])
+	(f)
+	(catch ArithmeticException e "You did not? Not by zero! Noooooooooooo...")
+	(catch Exception e (str "You blew it " (.getMessage e)))
+	(finally (println "returning... ")))])
 ;=> #'user/throw-catch
 
 (throw-catch #(/ 10 5))
@@ -2501,7 +2569,7 @@ mbo.core.compat=> (mbo.core.strings/report-ns) ;fully qualified name works as ex
 
 ```clj
 mbo.core.compat=> (ns mbo.core.set
-                    (:require clojure.set))
+					(:require clojure.set))
 ;=> nil
 ;=> mbo.core.set=>  ;changed to new ns
 
@@ -2520,7 +2588,7 @@ We can also use `:as` directive to create an additional alias to `clojure.set`:
 
 ```clj
 mbo.core.set=> (ns mbo.core.set-alias
-                    #_=>   (:require [clojure.set :as s]))
+					#_=>   (:require [clojure.set :as s]))
 ;=> nil
 
 mbo.core.set-alias=> (s/intersection #{1 2 3} #{2 3 4})
@@ -2548,7 +2616,7 @@ mbo.core.set-alias=> java.lang.Object
 
 ```clj
 mbo.core.set-alias=> (ns mbo.test
-                #_=>   (:use [clojure.string :only [capitalize]]))
+				#_=>   (:use [clojure.string :only [capitalize]]))
 ;=> nil
 
 mbo.test=> (map capitalize ["one" "two"])
@@ -2569,8 +2637,8 @@ mbo.test=> (map capitalize ["one" "two"])
 
 ```clj
 mbo.test=> (ns mbo.java
-      #_=>   (:import [java.util HashMap]
-      #_=>            [java.util.concurrent.atomic.AtomicLong]))
+	  #_=>   (:import [java.util HashMap]
+	  #_=>            [java.util.concurrent.atomic.AtomicLong]))
 ;=> nil
 
 mbo.java=> (HashMap. {"happy?" true})
@@ -2598,8 +2666,8 @@ This is where _nil punning_ comes in:
 ```clj
 (defn print-seq [s]
   (when (seq s)
-    (prn (first s))     ;prn prints each object in a newline (to the output stream)
-    (recur (rest s))))
+	(prn (first s))     ;prn prints each object in a newline (to the output stream)
+	(recur (rest s))))
 
 (print-seq [1 2])
 ;=> 1
