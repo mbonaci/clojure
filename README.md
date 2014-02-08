@@ -1,5 +1,5 @@
 *Written in January 2014, with Clojure 1.5.1 and Leiningen 2.3.4 on Java 1.7.0_45.*  
-_Inspired by Aphyr's excellent, Clojure from-the-ground-up tutorial and made possible by "The joy of Clojure" book._  
+_Inspired by Aphyr's excellent, Clojure from-the-ground-up tutorial and made possible by "The joy of Clojure" book. I also heavily used great "Clojure for Java programmers" talks by Rich Hickey, father of Clojure._  
 
 _Inspired? Made possible? Who am I kidding, I flat out stole from those kind people._
 
@@ -7,7 +7,7 @@ _Inspired? Made possible? Who am I kidding, I flat out stole from those kind peo
 ## Clojure? That's a Lisp, for god's sake!
 
 I've been avoiding Clojure for a _long time_. Because it's a _Lisp dialect_ and I have a negative Lisp experience from school. It was either a bad timing or a bad teacher, I guess.  
-Hmm, I guess my guessing about it, in itself implies the answer :) 
+Hmm, I guess my guessing about it, in itself, implies the answer :) 
 
 > Times and times again it gets apparent to me. Late puberty and adolescence are not the right times to go wide with programming languages!
 
@@ -87,7 +87,7 @@ A valid Clojure expression consists of _numbers_, _symbols_, _lists_, _keywords_
 
 All of those, except _symbols_ and _lists_, evaluate to themselves.  
 
-Symbols are similar to variables in other languages, which basically means that, when a symbol is encountered, compiler tries to find the value that the symbol was previously (hopefully) bound to, which is then used in place of symbol.  
+Symbols are similar to variables in other languages, which basically means that, when a symbol is encountered, compiler tries to find the value that the symbol was previously (hopefully) bound to, which is then used in place of the symbol.  
 
 Lists take a special place in Clojure (after all, Lisp means **LIS**t **P**rocessing). They are the main building block of the language.
 Lists start with a so called _operation form_:
@@ -119,13 +119,15 @@ quote   ;prevents evaluation of expression
 var     ;provides a mechanism to refer to a mutable storage location 
 ```
 
-For instance, if the compiler encounters:
+There are some descriptions above that may not be clear to you this moment, but soon, it'll get clear. Chrystal clearer :)
+
+For instance, if the Clojure compiler encounters:
 
 ```clj
 (my-fun some-expr)
 ```
 
-it'll first try to resolve `my-fun`, which in our case, is a previously defined function:
+it'll first try to resolve `my-fun`, which in our case, is a previously defined function that conceptually looks like this:
 
 ```clj
 (def my-fun value-expr)
@@ -149,20 +151,38 @@ user=> (inc 2)      ;"increment 2"
 ## Syntax
 
 ```clj
+;;     Java      |      Clojure
+;;---------------|--------------------
+int i = 5;             (def i 5)
+;;---------------|--------------------
+if(x == 0)             (if (zero? x)
+	return y;							 y
+else                     z)
+	return z;
+;;---------------|--------------------
+x * y * z;             (* x y z)
+;;---------------|--------------------
+foo(x, y, z);          (foo x y z)
+;;---------------|--------------------
+```
+
+You can try the following example in your REPL:
+
+```clj
 ;skipping the 'user=>' prompt from now on
 (+ 1 (- 5 2) (+ 3 4))
 ;=> 11
 ```
 
-> Uh, that looks silly, right?
+> Uh, that looks somewhat weird, right?
 
-This type of notation, called _prefix notation_ (inherited from _Lisp_), may look weird at the first glance.  
+This type of notation, inherited from Lisp, called _prefix notation_ and _Polish notation_ (inherited from _Lisp_), may look weird at the first glance. At least that's how I felt when I first saw it.
 
 ### Clojure is different
 
 Let's back up a bit.  
 All programming languages, in order to execute the source code, need to parse it first. 
-In most languages, the product of this code parsing is a so called _abstract syntax tree_ (_AST_).  
+In most languages, the product of this code parsing is a so called _abstract syntax tree_ (_AST_), which is then fed into a compiler.  
 
 Let's see how that tree looks for the example at hand.  
 In Java, the expression above would be written like this:
@@ -200,10 +220,10 @@ The source code doesn't have to come from a file. We can use REPL to connect to 
 The other benefit is that other programs can easily produce data structures, thus avoiding source code and Reader all together. That's the Clojure's secret sauce. It's what makes **macros** possible.  
 When _Evaluator_, while processing source code, encounters a symbol that is bound to a _macro_, it stops executing that part of the program and sends it to that macro, a _little side-program_ that manipulates data structures, transforming them in some useful way and then returning that, extended data structures back to the Evaluator.
 
-This is extremely powerful concept, which allows us to extend the language without waiting for Rich Hickey, father of Clojure, to do so. Many things that are built-into other languages are just macros in Clojure. For instance:
+This is extremely powerful concept, which allows us to extend the language without waiting for Rich Hickey to do so. Overwhelming amount of things, that are built-into other languages, are just macros in Clojure. For instance:
 
 ```clj
-(or x y)        ;'or' is a macro
+(or x y)        ;'or' is a macro in Clojure 
 
 ;;after being extended by or macro, becomes:
 
@@ -1250,7 +1270,7 @@ We can look up the _value_ by _key_ with `get`:
 Maps can be used as verbs, directly:
 
 ```clj
-({"a" 12, "b" 24} "b")
+({"a" 12, "b" 24} "b")  ;maps are functions of their keys
 ;=> 24
 ```
 
