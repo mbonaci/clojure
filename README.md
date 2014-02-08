@@ -74,8 +74,7 @@ lein repl
 
 Boom! We have our own working Clojure environment.
 
-<img src="https://github.com/mbonaci/clojure/raw/master/resources/repl.png"
- alt="REPL img" title="REPL" align="center" />
+![repl](https://github.com/mbonaci/clojure/raw/master/resources/repl.png)
 
 REPL is short for _Read Eval Print Loop_, which is like an interactive window into a Clojure program (similar to a JavaScript console in the browser or REPL in Node).
 
@@ -101,6 +100,25 @@ Lists start with a so called _operation form_:
  - a _macro_
  - an expression that yields a _function_
 
+
+There are some descriptions above that may not be clear to you this moment, but soon, it'll all get cleared.
+
+For instance, if the Clojure compiler encounters:
+
+```clj
+(my-fun some-expr)
+```
+
+it'll first try to resolve `my-fun`, which in our case, is a previously defined function that conceptually looks like this:
+
+```clj
+(def my-fun value-expr)
+```
+
+and then, it'll evaluate `some-expr` and pass the result to the `my-fun` function.
+
+> so `my-fun` is a _symbol_ that is bound to a function definition
+
 Full list of **special operations**:
 ```clj
 def     ;evaluates an expression and binds the result to a symbol
@@ -119,25 +137,7 @@ quote   ;prevents evaluation of expression
 var     ;provides a mechanism to refer to a mutable storage location 
 ```
 
-There are some descriptions above that may not be clear to you this moment, but soon, it'll get clear. Chrystal clearer :)
-
-For instance, if the Clojure compiler encounters:
-
-```clj
-(my-fun some-expr)
-```
-
-it'll first try to resolve `my-fun`, which in our case, is a previously defined function that conceptually looks like this:
-
-```clj
-(def my-fun value-expr)
-```
-
-and then, it'll evaluate `some-expr` and pass the result to the `my-fun` function.
-
-> so `my-fun` is a _symbol_ that is bound to a function definition
-
-Here's how a valid function call looks like (`inc` is short for _increment_):
+Here's how a valid function invocation looks like (`inc` is short for _increment_):
 
 ```clj
 user=> (inc 2)      ;"increment 2"
@@ -150,20 +150,25 @@ user=> (inc 2)      ;"increment 2"
 
 ## Syntax
 
+### Prefix/Polish notation
+
 ```clj
-;;     Java      |      Clojure
-;;---------------|--------------------
-int i = 5;             (def i 5)
-;;---------------|--------------------
+;; intentionally skipping java semicolons
+
+;;------------------------------------
+;;     Java             Clojure
+;;------------------------------------
+int i = 5              (def i 5)
+;;------------------------------------
 if(x == 0)             (if (zero? x)
-	return y;							 y
+  return y               y
 else                     z)
-	return z;
-;;---------------|--------------------
-x * y * z;             (* x y z)
-;;---------------|--------------------
-foo(x, y, z);          (foo x y z)
-;;---------------|--------------------
+  return z 
+;;------------------------------------
+x * y * z              (* x y z)
+;;------------------------------------
+foo(x, y, z)           (foo x y z)
+;;------------------------------------
 ```
 
 You can try the following example in your REPL:
@@ -176,13 +181,11 @@ You can try the following example in your REPL:
 
 > Uh, that looks somewhat weird, right?
 
-This type of notation, inherited from Lisp, called _prefix notation_ and _Polish notation_ (inherited from _Lisp_), may look weird at the first glance. At least that's how I felt when I first saw it.
-
-### Clojure is different
+This type of notation, inherited from Lisp, called a _prefix notation_ or _Polish notation_, may look weird at the first glance.  
 
 Let's back up a bit.  
 All programming languages, in order to execute the source code, need to parse it first. 
-In most languages, the product of this code parsing is a so called _abstract syntax tree_ (_AST_), which is then fed into a compiler.  
+In most languages, the product of this code parsing is a so called _abstract syntax tree_ (_AST_), which is then fed into the compiler.  
 
 Let's see how that tree looks for the example at hand.  
 In Java, the expression above would be written like this:
@@ -197,13 +200,23 @@ In Java, the expression above would be written like this:
 
 ![ast](https://github.com/mbonaci/clojure/raw/master/resources/ast.png)
 
+After seeing what _AST_ looks like, it becomes obvious that _infix_ is the natural way of representing expressions.  
+
+When you think of it (really hard), as early as first grade maths, the only option we ever see is _infix_ notation, so that's what gets hardwired in our brains.
+
+That is why, the _Polish notation_ looks weird.
+
+> prefix notation allows any number of arguments in an operation (infix only two). Moreover, it completely eliminates the problem of operator precedence.
+
+### Clojure is different
+
 This is how a program is executed in a traditional, java-style _edit-compile-run_ way:
 
 ![ast](https://github.com/mbonaci/clojure/raw/master/resources/TraditionalEvaluation.png)
 
-In Java, the source code gets handed to the compiler, which compiles it to bytecode. The bytecode is then run on the JVM. If you need to change something in your code, e.g. fix a bug, you need to do the whole process all over again. Open up the source file, make some changes, compile the source and finally send it back to the JVM to be executed.
+In Java (and it's similar in other traditional languages), the source code gets handed to the compiler, which compiles it to bytecode. The bytecode is then run on the JVM. If you need to change something in your code, e.g. fix a bug, you need to do the whole process all over again. Open up the source file, make some changes, compile the source and finally send it back to the JVM to be executed.
 
-Then we start our program and we notice that it's still not right. OK, we then stop the whole program and run it in debug mode, carefully setting breakpoints along the way.
+Then we start our program and we notice that it's still not right. OK, we then stop the whole program and run it in debug mode, carefully setting breakpoints along the way. But sometimes it's not that easy to replicate the context where our program errors out.
 
 > at work, we often used to spend a better half of our day in this iterative process, doing nothing. When you combine that with IBM's tooling, that becomes a nightmare. E.g. Rational IDE weighs more than a GB. Websphere application server takes ages to start. When a new developer needs to set up his environment, it has known to take a couple of days to wire all the stuff together. We are crazy! How on earth we got eased into this unproductive way of working.
 
@@ -1565,8 +1578,6 @@ what-where=> `one-symbol   ;back tick
 # Functions
 
 Functions are a first-class type in Clojure. They can be used the same as any value (stored in Vars, held in collections and passed as arguments and returned as a result of other functions).
-
-> prefix notation allows any number of arguments (infix only two) and completely eliminates the problem of operator precedence.
 
 ```clj
 let( [x] (+ x 1))
