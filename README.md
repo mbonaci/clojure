@@ -31,6 +31,9 @@ It is built on three great facilities, **immutable data, first-class functions a
 
 **Dynamic typing** means that we don't declare types. Data types are inferred by the compiler.
 
+> So from now on, when we say "modify", "add", "remove", ... it really means "create a copy, modify the copy and return a reference to that new object".
+> In order to preserve the performance guarantees, to facilitate immutability Clojure uses something called **Structural sharing**, which basically means that the data structure of the new object simply points to the same elements the old object does, except the modified ones (called **path copying**).
+
 # Set the fuck up!
 ### And gimme PRs
 
@@ -128,6 +131,7 @@ Then, it'll evaluate `some-expr` and invoke the `my-fun` function, passing in th
 > so `my-fun` is a _symbol_ that is bound to a function definition
 
 Full list of **special operations**:
+
 ```clojure
 def     ;evaluates an expression and binds the result to a symbol
 if      ;conditional evaluation
@@ -141,8 +145,8 @@ new     ;allocates a new java object
 throw   ;same as in java
 try     ;same as in java
 set!    ;re-binds a symbol
-quote   ;prevents evaluation of an expression
-var     ;provides a mechanism to refer to a mutable storage location (?)
+quote   ;supresses evaluation of an expression (same as single quote, ')
+var     ;provides a mechanism to refer to a mutable storage location inside a thread (?)
 ```
 
 The list above may contain some descriptions that may not be clear to you, but soon, if you stuck with it, it'll all get cleared. And that's a promise.
@@ -254,11 +258,15 @@ This is extremely powerful concept, which allows us to extend the language witho
   (if or__158 or__158 y))
 ```
 
-# Scalar data types
+Don't worry if _macros_ are not clear yet (I explained them rather poorly, I know), we'll dedicate the whole chapter to that powerful construct.
 
-A scalar data type is the one that can only hold one value at a time (value of a number, symbol, keyword, string or character).
+# Basics (this time real)
 
-## Numeric types
+## Scalar data types
+
+A scalar data type is the one that can only hold one value at a time (value of a number, symbol, keyword, string or a character).
+
+### Numeric types
 
 The following examples of numeric expressions are trivial, so I suggest you try them out, in your REPL.
 
@@ -309,7 +317,6 @@ Byte/MAX_VALUE
 ```
 
 
-
 ```clj
 (+ 1 2.0)
 ;=> 3.0
@@ -357,7 +364,7 @@ Byte/MAX_VALUE
 ;=> true
 ```
 
-To avoid having to round floating-point numbers (e.g. result of `2 / 3`), Clojure provides a rational number type `clojure.lang.Ratio`, thus maintaining absolute precision when dealing with floating point arithmetic:
+To avoid having to round floating-point numbers (e.g. result of `2 / 3`), Clojure provides a **rational** number type `clojure.lang.Ratio`, thus maintaining absolute precision when dealing with floating point arithmetic:
 
 ```clj
 (type 1/3)
@@ -385,7 +392,7 @@ To avoid having to round floating-point numbers (e.g. result of `2 / 3`), Clojur
 
 > The calculation of rational math, though accurate, isn’t nearly as fast as with floats or doubles (due to overhead cost of e.g. finding the least common denominator).
 
-**Truncation** 
+**Truncation**
 
 Truncation is a process of limiting the accuracy of floating-point numbers, due to deficiencies in its representation. When a number is truncated, its precision is limited such that the maximum number of digits of accuracy is bound by the number of bits that can fit into the storage space allowed by its representation.
 
@@ -430,7 +437,9 @@ Clojure is able to detect when overflow occurs. Then, it automatically promotes 
 ;=> java.lang.Long
 ```
 
-## Strings and Characters
+> There's no limit to integer size in Clojure, besides RAM size
+
+### Strings and Characters
 
 String is any sequence of characters enclosed in double quotes, including newlines:
 
@@ -481,48 +490,88 @@ on two lines"
 ;=> \\
 ```
 
-## Regular expressions
+## Symbols
 
-`#"..."` is Clojure’s way of writing a regular expression.  
-Clojure and Java have very similar Regex syntax.
+Symbols can have either short or full names. The short name is used to refer to things locally, and the _fully qualified name_ is used to refer unambiguously to a symbol (from anywhere).
+Symbol names are separated with a `/`. For instance, the symbol `str` is also present in a namespace called `clojure.core` and the corresponding full name is `clojure.core/str`
+The main purpose of symbols is to refer to _things_, i.e. to point to other values. When evaluating a program, symbols are looked up and replaced by their corresponding values. 
+
+> [more about symbols](#symbols)
 
 ```clj
-(re-find #"cat" "mystic cat mouse")
+(= str clojure.core/str)
+;=> true
+
+(name 'clojure.core/str)
+;=> "str"
+```
+
+
+## Keywords
+
+Closely related to symbols and strings are keywords, which begin with a `:`.  
+Keywords are like strings in that they are made up of text, but are specifically intended for use as labels or identifiers. These are not labels in the sense of symbols, keywords are not replaced by any other value, they are just names, by themselves:
+
+```clj
+(type :cat)
+;=> clojure.lang.Keyword
+
+(str :cat)
+;=> ":cat"
+
+(name :cat)
 ;=> "cat"
+```
 
-(re-find #"cat" "only dogs here")
+**Using keywords as map keys**
+
+> since keywords are self-evaluating and provide fast equality checks, they are almost always used as map keys
+
+Another important property of keywords, when used as map keys, is that they can be used as functions, taking a map as an argument to perform value lookups:
+
+```clj
+(def mouse-planet {:cats 180, :mice 9})   ;define a map
+;=> #'user/mouse-planet
+
+(:cats mouse-planet)                      ;lookup by keyword
+;=> 180
+
+(println (/ (:cats mouse-planet)          ;much more useful example
+            (:mice mouse-planet))
+         "cats per capita")
+;=> 20 cats per capita
+```
+
+**As enumerations**
+
+Since their value doesn't change, convenient keyword use case is enumeration. E.g. `:mouse`, `:rat` and `:x-rat` provide a nice visual delineation (for mouse types) within a source code.
+
+> there are other useful things we can do with keywords. We can use them **As multimethod dispatch values** and **As directives**, but we'll deal with that later
+
+**Qualifying your keywords**
+
+Keywords don't belong to any specific namespace, although it's a good practice to define them as if they do, because that way you provide a context:
+
+```clj
+user=> :not-in-ns
+;=> :not-in-ns
+
+user=> ::not-in-ns          ;fully qualified keyword
+;=> :user/not-in-ns
+
+user=> (ns another)
 ;=> nil
+
+another=> :user/in-another  ;"fully qualified" keyword
+;=> :user/in-another
+
+another=> :haunted/name     ;namespace doesn't have to exist
+;=> :haunted/name
 ```
 
-The parentheses, i.e. _capturing group_ means that the regular expression should capture that part of the match. We get back a _list_ containing the part of the string that matched the first parentheses, followed by the part that matched the second parentheses, etc:
+> double colon is used to fully qualify a keyword by prepending the current namespace name to the keyword name
 
-```clj
-(re-matches #"(.+):(.+)" "mouse:treat")
-;=> ["mouse:treat" "mouse" "treat"]
-
-;; capturing group in the regex causes each returned item to be a vector:
-(re-seq #"\w*(\w)" "one-two/three")
-;=> (["one" "e"] ["two" "o"] ["three" "e"])
-```
-
-Java's regex `Pattern` class has several methods that can be used directly, but only `split` is used regularly to split a string into an array of Strings:
-
-```clj
-(seq (.split #"," "1,2,3,4"))  ;this is how you call Java methods
-;=> ("1" "2" "3" "4")
-```
-
-[Java interoperability section.](#java-interop)  
-
-The `re-seq` function returns a lazy sequence of all matches in a string:
-
-```clj
-(re-seq #"\w+" "one-two/three")
-;=> ("one" "two" "three")
-```
-
-> Java's regex engine includes a `Matcher` object which mutates in a non-thread-safe way as it walks through a string finding matches. This object is exposed in Clojure through the `re-matcher` function and can be used in combination with `re-groups` and `re-find`.
-It's recommended to avoid direct usage of all of these three functions.
+> equally named keywords are the same object in memory
 
 ## Booleans
 
@@ -572,86 +621,48 @@ or returns the first _truthy_ value, or the last value if all are _falsy_:
 ;=> true
 ```
 
-**Symbols** can have either short or full names. The short name is used to refer to things locally, and the _fully qualified name_ is used to refer unambiguously to a symbol (from anywhere).
-Symbol names are separated with a `/`. For instance, the symbol `str` is also present in a namespace called `clojure.core` and the corresponding full name is `clojure.core/str`
-The main purpose of symbols is to refer to _things_, i.e. to point to other values. When evaluating a program, symbols are looked up and replaced by their corresponding values. 
+## Regular expressions
 
-> [more about symbols](#symbols)
-
-```clj
-(= str clojure.core/str)
-;=> true
-
-(name 'clojure.core/str)
-;=> "str"
-```
-
-
-# Keywords
-
-Closely related to symbols and strings are keywords, which begin with a `:`.  
-Keywords are like strings in that they are made up of text, but are specifically intended for use as labels or identifiers. These are not labels in the sense of symbols, keywords are not replaced by any other value, they are just names, by themselves:
+`#"..."` is Clojure’s way of writing a regular expression.  
+Clojure and Java have very similar Regex syntax.
 
 ```clj
-(type :cat)
-;=> clojure.lang.Keyword
-
-(str :cat)
-;=> ":cat"
-
-(name :cat)
+(re-find #"cat" "mystic cat mouse")
 ;=> "cat"
-```
 
-**Using keywords as map keys**
-
-> since keywords are self-evaluating and provide fast equality checks, they are almost always used as map keys
-
-Another important property of keywords, when used as map keys, is that they can be used as functions, taking a map as an argument to perform value lookups:
-
-```clj
-(def mouse-planet {:cats 180, :mice 9})   ;define a map
-;=> #'user/mouse-planet
-
-(:cats mouse-planet)                      ;lookup by keyword
-;=> 180
-
-(println (/ (:cats mouse-planet)          ;much more useful example
-			(:mice mouse-planet))
-		 "cats per capita")
-;=> 20 cats per capita
-```
-
-**As enumerations**
-
-Since their value doesn't change, convenient keyword use case is enumeration. E.g. `:mouse`, `:rat` and `:x-rat` provide a nice visual delineation (for mouse types) within a source code.
-
-> there are other useful things we can do with keywords. We can use them **As multimethod dispatch values** and **As directives**, but we'll deal with that later
-
-**Qualifying your keywords**
-
-Keywords don't belong to any specific namespace, although it's a good practice to define them as if they do, because that way you provide a context:
-
-```clj
-user=> :not-in-ns
-;=> :not-in-ns
-
-user=> ::not-in-ns          ;fully qualified keyword
-;=> :user/not-in-ns
-
-user=> (ns another)
+(re-find #"cat" "only dogs here")
 ;=> nil
-
-another=> :user/in-another  ;"fully qualified" keyword
-;=> :user/in-another
-
-another=> :haunted/name     ;namespace doesn't have to exist
-;=> :haunted/name
 ```
 
-> double colon is used to fully qualify a keyword by prepending the current namespace name to the keyword name
+The parentheses, i.e. _capturing group_ means that the regular expression should capture that part of the match. We get back a _list_ containing the part of the string that matched the first parentheses, followed by the part that matched the second parentheses, etc:
 
-> equally named keywords are the same object in memory
+```clj
+(re-matches #"(.+):(.+)" "mouse:treat")
+;=> ["mouse:treat" "mouse" "treat"]
+
+;; capturing group in the regex causes each returned item to be a vector:
+(re-seq #"\w*(\w)" "one-two/three")
+;=> (["one" "e"] ["two" "o"] ["three" "e"])
+```
+
+Java's regex `Pattern` class has several methods that can be used directly, but only `split` is used regularly to split a string into an array of Strings:
+
+```clj
+(seq (.split #"," "1,2,3,4"))  ;this is how you call Java methods
+;=> ("1" "2" "3" "4")
+```
+
+[Java interoperability section.](#java-interop)  
+
+The `re-seq` function returns a lazy sequence of all matches in a string:
+
+```clj
+(re-seq #"\w+" "one-two/three")
+;=> ("one" "two" "three")
+```
+
+> Java's regex engine includes a `Matcher` object which mutates in a non-thread-safe way as it walks through a string finding matches. This object is exposed in Clojure through the `re-matcher` function and can be used in combination with `re-groups` and `re-find`.
+It's recommended to avoid direct usage of all of these three functions.
 
 # Collections
 
