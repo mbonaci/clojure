@@ -1,0 +1,25 @@
+{
+  "name": "clojure",
+  "version": "0.0.5",
+  "description": "(Now former) Java programmer sneaks up on Clojure",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mbonaci/clojure.git"
+  },
+  "keywords": [
+    "clojure"
+  ],
+  "author": "mbonaci",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mbonaci/clojure/issues"
+  },
+  "homepage": "https://mbonaci.github.io/clojure",
+  "devDependencies": {
+    "grunt": "~0.4.2"
+  }
+}
