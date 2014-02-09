@@ -9,7 +9,7 @@ _Inspired? Made possible? Who am I kidding, I flat out stole from those kind peo
 I've been avoiding Clojure for a _long time_. Because it's a _Lisp dialect_ and I have a negative Lisp experience from school. It was either a bad timing or a bad teacher, I guess.  
 Hmm, I guess my guessing about it, in itself, implies the answer :) 
 
-> Times and times again it gets apparent to me. Late puberty and adolescence are not the right times to go wide with programming languages!
+> Times and times again it gets apparent to me. Late puberty nor adolescence is the right time to go wide with programming languages!
 
 # :)
 ### It must had something to do with the way the book was written
@@ -18,7 +18,7 @@ My renewed interest in Clojure was due to a chance encounter. I stumbled upon Ap
 
 There, Clojure looked terse and concise, yet expressive and simple. So I decided to give it a shot. I picked up [The joy of Clojure](http://joyofclojure.com), got in my sweatshirt, put on a headband, closed my wife and our two-month-old twins in the living room, slightly licked my finger and opened up the first page...
 
-> After the initial discovery phase, as I was going through the book, I suddenly found myself infatuated with the language. It is beautifully consistent and simple (which is different from "easy", mind you). At that point, it has just spread out to me, ready to be gulped away. And that's a great feeling!
+> After the initial discovery phase, as I was going through the book, I suddenly found myself infatuated with the language. It is beautifully uniform, consistent and simple (which is different from "easy", mind you). At that point, it has just spread out to me, ready to be gulped away. And that's a great feeling!
 
 # Set the fuck up!
 ### And gimme PRs
@@ -214,9 +214,9 @@ This is how a program is executed in a traditional, java-style _edit-compile-run
 
 ![ast](https://github.com/mbonaci/clojure/raw/master/resources/TraditionalEvaluation.png)
 
-In Java (and it's similar in other traditional languages), the source code gets handed to the compiler, which compiles it to bytecode. The bytecode is then run on the JVM. If you need to change something in your code, e.g. fix a bug, you need to do the whole process all over again. Open up the source file, make some changes, compile the source and finally send it back to the JVM to be executed.
+In Java (and it's similar in other traditional languages), the source code gets handed to the compiler, which compiles it to bytecode. The bytecode is then run on the JVM. If you need to change something in your code, e.g. fix a bug, you need to do the whole process all over again. Open up the source file, make some changes, compile the source code, then stop the whole program and finally send the new version of bytecode to the JVM to be executed.
 
-Then we start our program and we notice that it's still not right. OK, we then stop the whole program and run it in debug mode, carefully setting breakpoints along the way. But sometimes it's not that easy to replicate the context where our program errors out.
+Uh, we got over that hurdle. Now we confidently start our program but we soon notice that it's still not right. OK, we stop the whole program once more and then start it in a debug mode, carefully setting breakpoints along the way. But sometimes it's not that easy, or even possible to replicate the exact context where our bug has previously occurred.
 
 > at work, we often used to spend a better half of our day in this iterative process, doing nothing. When you combine that with IBM's tooling, that becomes a nightmare. E.g. Rational IDE weighs more than a GB. Websphere application server takes ages to start. When a new developer needs to set up his environment, it has known to take a couple of days to wire all the stuff together. We are crazy! How on earth we got eased into this unproductive way of working.
 
@@ -231,7 +231,7 @@ The point is that, this way, we can hot-swap a part of the running code without 
 The source code doesn't have to come from a file. We can use REPL to connect to a running program and evaluate expressions on the fly.
 
 The other benefit is that other programs can easily produce data structures, thus avoiding source code and Reader all together. That's the Clojure's secret sauce. It's what makes **macros** possible.  
-When _Evaluator_, while processing source code, encounters a symbol that is bound to a _macro_, it stops executing that part of the program and sends it to that macro, a _little side-program_ that manipulates data structures, transforming them in some useful way and then returning that, extended data structures back to the Evaluator.
+When _Evaluator_, while processing source code, encounters a _macro_ (i.e. a symbol that is bound to a _macro_), it stops executing that part of the program and sends it to that _macro_, a _little side-program_ that manipulates data structures, transforming them in some useful way and then returning that, extended data structures back to the Evaluator.
 
 This is extremely powerful concept, which allows us to extend the language without waiting for Rich Hickey to do so. Overwhelming amount of things, that are built-into other languages, are just macros in Clojure. For instance:
 
@@ -868,7 +868,7 @@ The important difference, when compared to lists, is that vectors evaluate each 
 You can use element's index to access it:
 
 ```clj
-([1 2 3] 1)
+([1 2 3] 1)  ;vectors are in fact functions of their indices
 ;=> 2
 ```
 
@@ -1139,7 +1139,7 @@ Sets are surrounded by `#{...}`:
 ;=> nil
 ```
 
-If you look at the previous two expressions, you'll see that the sets are in fact functions of their elements that return the matched element or `nil` (take a pause and read that a couple more times, examining the examples). This way of looking up set returns the element itself, or `nil` if the element is not present.
+If you look at the previous two expressions, you'll see that the sets are in fact functions of their elements that return the matched element or `nil` if the element is not present (take a pause and read that a couple more times, examining the examples).
 
 Elements can be accessed via the `get` function, which returns the queried value if it exists, or `nil` if it doesn't:
 
@@ -1577,7 +1577,7 @@ what-where=> `one-symbol   ;back tick
 
 # Functions
 
-Functions are a first-class type in Clojure. They can be used the same as any value (stored in Vars, held in collections and passed as arguments and returned as a result of other functions).
+Functions are a first-class type in Clojure. They can be used the same as any value (stored in Vars, held in collections, passed as arguments and returned as a result of other functions).
 
 ```clj
 let( [x] (+ x 1))
@@ -1838,11 +1838,11 @@ We could go dig up the Clojure source code and read its definition there, or we 
 
 # Sequences
 
-> a **sequential** collection is one that holds a series of values without reordering them
+A **sequential** collection is one that holds a series of values without reordering them.
 
-> a **sequence** is a sequential collection that represents a series of values that may or may not exist yet (may have concrete values, may be lazy or empty). Few composite types are actually _sequences_, though several such as vectors are _sequential_. All an object needs to do to be a sequence is to support two core functions, `first` and `rest`
+A **sequence** is a sequential collection that represents a series of values that may or may not exist yet (may have concrete values, may be lazy or empty). Few composite types are actually _sequences_, though several such as vectors are _sequential_. All an object needs to do to be a sequence is to support two core functions, `first` and `rest`
 
-> a `seq` is a simple API for navigating collections which consists of two functions, `first` and `rest`
+A **seq** is a simple API for navigating collections which consists of two functions, `first` and `rest`
 
 If two sequentials have the same values in the same order, `=` will return `true` for them, even if their concrete types are different:
 
@@ -2057,7 +2057,7 @@ Since this sequence is infinitely long, we’re using `take` to select only the 
 ;=> (5 10 15 20)
 ```
 
-To extend a sequence by repeating it forever, use `cycle`:
+`cycle` returns an infinite lazy sequence of repetitions of the items in a collection:
 
 ```clj
 (take 6 (cycle (range 5 50 5)))
@@ -2129,11 +2129,10 @@ To reverse a sequence, use ... you guessed it, `reverse`:
 ;=> (3 2 1)
 
 (reverse "woolf")
-;=> (\f \l \o \o \w)
+;=> (\f \l \o \o \w)  ;not a string
 ```
 
 Strings are sequences too! Each element of a string is a character, written `\f`. You can rejoin those characters into a string with `apply str`:
-
 
 ```clj
 (apply str (reverse "woolf"))
@@ -2414,6 +2413,12 @@ __Homework:__
 
 Clojure is _symbiotic_ with its host, providing its rich and powerful features, while Java provides an object model, libraries and runtime support.
 
+Clojure strings are Java `String`s, numbers are `Number`s, collections implement `Collection`, fns implement `Callable` and `Runnable`, ...
+
+Core abstractions, such as `seq`, are Java interfaces (`ISeq`).  
+Clojure `seq` library works on Java `Iterable`s, `String`s and arrays.  
+It is possible to implement and extend Java interfaces and classes.  
+
 **Accessing static class members**
 
 ... is trivial:
@@ -2423,7 +2428,7 @@ java.util.Locale/JAPAN
 ;=> #<Locale ja_JP>
 ```
 
-Idiomatic (best practice) Clojure prefers that you access static class members using a syntax like accessing a namespace-qualified Var:
+Idiomatic Clojure prefers that you access static class members using a syntax like accessing a namespace-qualified Var:
 
 ```clj
 (Math/sqrt 9)  ; the same as (java.lang.Math/sqrt 9)
@@ -2510,7 +2515,7 @@ props.put("BIN",  "classes");
 That's obviously overly verbose, but it can be streamlined using the `doto` macro:
 
 ```clj
-(doto (java.util.HashMap.)
+(doto (java.util.HashMap.)       ;do to HashMap all these things
   (.put "HOME" "/home/myself")
   (.put "SRC"  "src")
   (.put "BIN"  "classes"))
