@@ -18,7 +18,18 @@ My renewed interest in Clojure was due to a chance encounter. I stumbled upon Ap
 
 There, Clojure looked terse and concise, yet expressive and simple. So I decided to give it a shot. I picked up [The joy of Clojure](http://joyofclojure.com), got in my sweatshirt, put on a headband, closed my wife and our two-month-old twins in the living room, slightly licked my finger and opened up the first page...
 
-> After the initial discovery phase, as I was going through the book, I suddenly found myself infatuated with the language. It is beautifully uniform, consistent and simple (which is different from "easy", mind you). At that point, it has just spread out to me, ready to be gulped away. And that's a great feeling!
+> After the initial discovery phase, as I was going through the book, I suddenly found myself infatuated with the language. It's beautifully uniform, consistent and simple (which is different from "easy", mind you). At that point, it has just spread out to me, ready to be gulped away. And that's a great feeling!
+
+### How would you describe Clojure?
+
+Clojure prides itself in being a **dynamic functional programming language**.  
+It is built on three great facilities, **immutable data, first-class functions and dynamic typing**.  
+
+**Immutable data** means that a function always produces the same output, given the same input and that functions are side-effects free (when a function is run, nothing changes outside that function). All collections are immutable by design. Immutability in Clojure is not optional, like for instance, in Scala.
+
+**First class functions** means that a variable can be bound to a function, that a function can be passed to another (higher-order) function or that it may be returned from a function. In short, function is data.
+
+**Dynamic typing** means that we don't declare types. Data types are inferred by the compiler.
 
 # Set the fuck up!
 ### And gimme PRs
@@ -100,9 +111,6 @@ Lists start with a so called _operation form_:
  - a _macro_
  - an expression that yields a _function_
 
-
-There are some descriptions above that may not be clear to you this moment, but soon, it'll all get cleared.
-
 For instance, if the Clojure compiler encounters:
 
 ```clj
@@ -115,29 +123,31 @@ it'll first try to resolve `my-fun`, which in our case, is a previously defined 
 (def my-fun value-expr)
 ```
 
-and then, it'll evaluate `some-expr` and pass the result to the `my-fun` function.
+Then, it'll evaluate `some-expr` and invoke the `my-fun` function, passing in the result.
 
 > so `my-fun` is a _symbol_ that is bound to a function definition
 
 Full list of **special operations**:
-```clj
+```clojure
 def     ;evaluates an expression and binds the result to a symbol
 if      ;conditional evaluation
 fn      ;defines a function
 let     ;establishes a name in a local lexical scope
 loop    ;used for functional looping
-recur   ;used to support functional looping
+recur   ;used to support recursion in functional looping
 do      ;defines a block of statements
 new     ;allocates a new java object
 .       ;used to access a java method
 throw   ;same as in java
 try     ;same as in java
 set!    ;re-binds a symbol
-quote   ;prevents evaluation of expression
-var     ;provides a mechanism to refer to a mutable storage location 
+quote   ;prevents evaluation of an expression
+var     ;provides a mechanism to refer to a mutable storage location (?)
 ```
 
-Here's how a valid function invocation looks like (`inc` is short for _increment_):
+The list above may contain some descriptions that may not be clear to you, but soon, if you stuck with it, it'll all get cleared. And that's a promise.
+
+Here's how a function invocation looks like:
 
 ```clj
 user=> (inc 2)      ;"increment 2"
@@ -202,9 +212,9 @@ In Java, the expression above would be written like this:
 
 After seeing what _AST_ looks like, it becomes obvious that _infix_ is the natural way of representing expressions.  
 
-When you think of it (really hard), as early as first grade maths, the only option we ever see is _infix_ notation, so that's what gets hardwired in our brains.
+When you think of it (really hard), as early as first grade maths, the only option we ever see is _infix_ notation, so that's what gets hardwired inside our brains.
 
-That is why, the _Polish notation_ looks weird.
+That is why, IMO, the _Polish notation_ looks weird to us.
 
 > prefix notation allows any number of arguments in an operation (infix only two). Moreover, it completely eliminates the problem of operator precedence.
 
