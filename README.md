@@ -31,8 +31,9 @@ It is built on three great facilities, **immutable data, first-class functions a
 
 **Dynamic typing** means that we don't declare types. Data types are inferred by the compiler.
 
-> So from now on, when we say "modify", "add", "remove", ... it really means "create a copy, modify the copy and return a reference to that new object".
-> In order to preserve the performance guarantees, to facilitate immutability Clojure uses something called **Structural sharing**, which basically means that the data structure of the new object simply points to the same elements the old object does, except the modified ones (called **path copying**).
+> So from now on, when we say "modify", "add", "remove", ... it really means "create a copy, modify the copy and return a reference to that new object"  
+
+> In order to preserve the performance guarantees, while facilitating immutability Clojure uses something called **Structural sharing**, which basically means that the data structure of the newly created object simply points to the same elements the old object does, except the modified ones (that's called **path copying**).
 
 # Set the fuck up!
 ### And gimme PRs
@@ -214,13 +215,15 @@ In Java, the expression above would be written like this:
 
 ![ast](https://github.com/mbonaci/clojure/raw/master/resources/ast.png)
 
-After seeing what _AST_ looks like, it becomes obvious that _infix_ is the natural way of representing expressions.  
+After seeing what _AST_ (as ideal structure for representing code) looks like, I dare to argue that _infix_ is the natural way of representing expressions.  
 
 When you think of it (really hard), as early as first grade maths, the only option we ever see is _infix_ notation, so that's what gets hardwired inside our brains.
 
 That is why, IMO, the _Polish notation_ looks weird to us.
 
-> prefix notation allows any number of arguments in an operation (infix only two). Moreover, it completely eliminates the problem of operator precedence.
+> prefix notation allows any number of arguments in an operation (infix only two). Moreover, it completely eliminates the problem of operator precedence  
+
+> at this point I have to stress that this is my opinion after only a couple of weeks learning Clojure. I'm slightly affraid of what would happen to me after I explore all corners of the language :)
 
 ### Clojure is different
 
