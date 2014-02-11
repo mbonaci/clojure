@@ -215,7 +215,7 @@ In Java, the expression above would be written like this:
 
 ![ast](https://github.com/mbonaci/clojure/raw/master/resources/ast.png)
 
-After seeing what _AST_ (as ideal structure for representing code) looks like, I dare to argue that _infix_ is the natural way of representing expressions.  
+After seeing what _AST_ (as the ideal structure for representing code) looks like, I argue that _prefix_ is the natural way of representing expressions.  
 
 When you think of it (really hard), as early as first grade maths, the only option we ever see is _infix_ notation, so that's what gets hardwired inside our brains.
 
