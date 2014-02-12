@@ -7,37 +7,38 @@
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="javascripts/respond.js"></script>
+    <script src="javascripts/main.js"></script>
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <!--[if lt IE 8]>
-    <link rel="stylesheet" href="stylesheets/ie.css">
     <![endif]-->
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
   </head>
   <body>
-      <div id="header">
-        <nav>
-          <li class="fork"><a href="https://github.com/mbonaci/clojure">View On GitHub</a></li>
-          <li class="downloads"><a href="https://github.com/mbonaci/clojure/zipball/master">ZIP</a></li>
-          <li class="downloads"><a href="https://github.com/mbonaci/clojure/tarball/master">TAR</a></li>
-          <li class="title">DOWNLOADS</li>
-        </nav>
-      </div><!-- end header -->
+
+      <header>
+        <h1>Clojure</h1>
+        <p>(Now former) Java developer sneaks up on Clojure</p>
+      </header>
+
+      <div id="banner">
+        <span id="logo"></span>
+
+        <a href="https://github.com/mbonaci/clojure" class="button fork"><strong>View On GitHub</strong></a>
+        <div class="downloads">
+          <span>Downloads:</span>
+          <ul>
+            <li><a href="https://github.com/mbonaci/clojure/zipball/master" class="button">ZIP</a></li>
+            <li><a href="https://github.com/mbonaci/clojure/tarball/master" class="button">TAR</a></li>
+          </ul>
+        </div>
+      </div><!-- end banner -->
 
     <div class="wrapper">
-
+      <nav>
+        <ul></ul>
+      </nav>
       <section>
-        <div id="title">
-          <h1>Clojure</h1>
-          <p>(Now former) Java programmer sneaks up on Clojure</p>
-          <hr>
-          <span class="credits left">Project maintained by <a href="https://github.com/mbonaci">mbonaci</a></span>
-          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
-        </div>
-
         <p><em>Written in January 2014, with Clojure 1.5.1 and Leiningen 2.3.4 on Java 1.7.0_45.</em><br><em>Inspired by Aphyr's excellent, Clojure from-the-ground-up tutorial and made possible by "The joy of Clojure" book. I also heavily used great "Clojure for Java programmers" talks by Rich Hickey, father of Clojure.</em>  </p>
 
 <p><em>Inspired? Made possible? Who am I kidding, I flat out stole from those kind people.</em></p>
@@ -77,6 +78,12 @@ It is built on three great facilities, <strong>immutable data, first-class funct
 <p><strong>First class functions</strong> means that a variable can be bound to a function, that a function can be passed to another (higher-order) function or that it may be returned from a function. In short, function is data.</p>
 
 <p><strong>Dynamic typing</strong> means that we don't declare types. Data types are inferred by the compiler.</p>
+
+<blockquote>
+<p>So from now on, when we say "modify", "add", "remove", ... it really means "create a copy, modify the copy and return a reference to that new object"  </p>
+
+<p>In order to preserve the performance guarantees, while facilitating immutability Clojure uses something called <strong>Structural sharing</strong>, which basically means that the data structure of the newly created object simply points to the same elements the old object does, except the modified ones (that's called <strong>path copying</strong>).</p>
+</blockquote>
 
 <h1>
 <a name="set-the-fuck-up" class="anchor" href="#set-the-fuck-up"><span class="octicon octicon-link"></span></a>Set the fuck up!</h1>
@@ -192,8 +199,8 @@ Lists start with a so called <em>operation form</em>:</p>
 <span class="nv">throw</span>   <span class="c1">;same as in java</span>
 <span class="nv">try</span>     <span class="c1">;same as in java</span>
 <span class="nv">set!</span>    <span class="c1">;re-binds a symbol</span>
-<span class="k">quote </span>  <span class="c1">;prevents evaluation of an expression</span>
-<span class="k">var </span>    <span class="c1">;provides a mechanism to refer to a mutable storage location (?)</span>
+<span class="k">quote </span>  <span class="c1">;supresses evaluation of an expression (same as single quote, ')</span>
+<span class="k">var </span>    <span class="c1">;provides a mechanism to refer to a mutable storage location inside a thread (?)</span>
 </pre></div>
 
 <p>The list above may contain some descriptions that may not be clear to you, but soon, if you stuck with it, it'll all get cleared. And that's a promise.</p>
@@ -261,14 +268,16 @@ In Java, the expression above would be written like this:</p>
 
 <p><img src="https://github.com/mbonaci/clojure/raw/master/resources/ast.png" alt="ast"></p>
 
-<p>After seeing what <em>AST</em> looks like, it becomes obvious that <em>infix</em> is the natural way of representing expressions.  </p>
+<p>After seeing what <em>AST</em> (as the ideal structure for representing code) looks like, I argue that <em>prefix</em> is the natural way of representing expressions.  </p>
 
 <p>When you think of it (really hard), as early as first grade maths, the only option we ever see is <em>infix</em> notation, so that's what gets hardwired inside our brains.</p>
 
 <p>That is why, IMO, the <em>Polish notation</em> looks weird to us.</p>
 
 <blockquote>
-<p>prefix notation allows any number of arguments in an operation (infix only two). Moreover, it completely eliminates the problem of operator precedence.</p>
+<p>prefix notation allows any number of arguments in an operation (infix only two). Moreover, it completely eliminates the problem of operator precedence  </p>
+
+<p>at this point I have to stress that this is my opinion after only a couple of weeks learning Clojure. I'm slightly affraid of what would happen to me after I explore all corners of the language :)</p>
 </blockquote>
 
 <h3>
@@ -309,13 +318,18 @@ When <em>Evaluator</em>, while processing source code, encounters a <em>macro</e
   <span class="p">(</span><span class="k">if </span><span class="nv">or__158</span> <span class="nv">or__158</span> <span class="nv">y</span><span class="p">))</span>
 </pre></div>
 
-<h1>
-<a name="scalar-data-types" class="anchor" href="#scalar-data-types"><span class="octicon octicon-link"></span></a>Scalar data types</h1>
+<p>Don't worry if <em>macros</em> are not clear yet (I explained them rather poorly, I know), we'll dedicate the whole chapter to that powerful construct.</p>
 
-<p>A scalar data type is the one that can only hold one value at a time (value of a number, symbol, keyword, string or character).</p>
+<h1>
+<a name="basics-this-time-real" class="anchor" href="#basics-this-time-real"><span class="octicon octicon-link"></span></a>Basics (this time real)</h1>
 
 <h2>
-<a name="numeric-types" class="anchor" href="#numeric-types"><span class="octicon octicon-link"></span></a>Numeric types</h2>
+<a name="scalar-data-types" class="anchor" href="#scalar-data-types"><span class="octicon octicon-link"></span></a>Scalar data types</h2>
+
+<p>A scalar data type is the one that can only hold one value at a time (value of a number, symbol, keyword, string or a character).</p>
+
+<h3>
+<a name="numeric-types" class="anchor" href="#numeric-types"><span class="octicon octicon-link"></span></a>Numeric types</h3>
 
 <p>The following examples of numeric expressions are trivial, so I suggest you try them out, in your REPL.</p>
 
@@ -410,7 +424,7 @@ When <em>Evaluator</em>, while processing source code, encounters a <em>macro</e
 <span class="c1">;=&gt; true</span>
 </pre></div>
 
-<p>To avoid having to round floating-point numbers (e.g. result of <code>2 / 3</code>), Clojure provides a rational number type <code>clojure.lang.Ratio</code>, thus maintaining absolute precision when dealing with floating point arithmetic:</p>
+<p>To avoid having to round floating-point numbers (e.g. result of <code>2 / 3</code>), Clojure provides a <strong>rational</strong> number type <code>clojure.lang.Ratio</code>, thus maintaining absolute precision when dealing with floating point arithmetic:</p>
 
 <div class="highlight highlight-clj"><pre><span class="p">(</span><span class="nf">type</span> <span class="mi">1</span><span class="nv">/3</span><span class="p">)</span>
 <span class="c1">;=&gt; clojure.lang.Ratio</span>
@@ -439,7 +453,7 @@ When <em>Evaluator</em>, while processing source code, encounters a <em>macro</e
 <p>The calculation of rational math, though accurate, isn’t nearly as fast as with floats or doubles (due to overhead cost of e.g. finding the least common denominator).</p>
 </blockquote>
 
-<p><strong>Truncation</strong> </p>
+<p><strong>Truncation</strong></p>
 
 <p>Truncation is a process of limiting the accuracy of floating-point numbers, due to deficiencies in its representation. When a number is truncated, its precision is limited such that the maximum number of digits of accuracy is bound by the number of bits that can fit into the storage space allowed by its representation.</p>
 
@@ -483,8 +497,12 @@ When <em>Evaluator</em>, while processing source code, encounters a <em>macro</e
 <span class="c1">;=&gt; java.lang.Long</span>
 </pre></div>
 
-<h2>
-<a name="strings-and-characters" class="anchor" href="#strings-and-characters"><span class="octicon octicon-link"></span></a>Strings and Characters</h2>
+<blockquote>
+<p>There's no limit to integer size in Clojure, besides RAM size</p>
+</blockquote>
+
+<h3>
+<a name="strings-and-characters" class="anchor" href="#strings-and-characters"><span class="octicon octicon-link"></span></a>Strings and Characters</h3>
 
 <p>String is any sequence of characters enclosed in double quotes, including newlines:</p>
 
@@ -536,96 +554,9 @@ When <em>Evaluator</em>, while processing source code, encounters a <em>macro</e
 </pre></div>
 
 <h2>
-<a name="regular-expressions" class="anchor" href="#regular-expressions"><span class="octicon octicon-link"></span></a>Regular expressions</h2>
+<a name="symbols" class="anchor" href="#symbols"><span class="octicon octicon-link"></span></a>Symbols</h2>
 
-<p><code>#"..."</code> is Clojure’s way of writing a regular expression.<br>
-Clojure and Java have very similar Regex syntax.</p>
-
-<div class="highlight highlight-clj"><pre><span class="p">(</span><span class="nb">re-find </span><span class="o">#</span><span class="s">"cat"</span> <span class="s">"mystic cat mouse"</span><span class="p">)</span>
-<span class="c1">;=&gt; "cat"</span>
-
-<span class="p">(</span><span class="nb">re-find </span><span class="o">#</span><span class="s">"cat"</span> <span class="s">"only dogs here"</span><span class="p">)</span>
-<span class="c1">;=&gt; nil</span>
-</pre></div>
-
-<p>The parentheses, i.e. <em>capturing group</em> means that the regular expression should capture that part of the match. We get back a <em>list</em> containing the part of the string that matched the first parentheses, followed by the part that matched the second parentheses, etc:</p>
-
-<div class="highlight highlight-clj"><pre><span class="p">(</span><span class="nb">re-matches </span><span class="o">#</span><span class="s">"(.+):(.+)"</span> <span class="s">"mouse:treat"</span><span class="p">)</span>
-<span class="c1">;=&gt; ["mouse:treat" "mouse" "treat"]</span>
-
-<span class="c1">;; capturing group in the regex causes each returned item to be a vector:</span>
-<span class="p">(</span><span class="nb">re-seq </span><span class="o">#</span><span class="s">"\w*(\w)"</span> <span class="s">"one-two/three"</span><span class="p">)</span>
-<span class="c1">;=&gt; (["one" "e"] ["two" "o"] ["three" "e"])</span>
-</pre></div>
-
-<p>Java's regex <code>Pattern</code> class has several methods that can be used directly, but only <code>split</code> is used regularly to split a string into an array of Strings:</p>
-
-<div class="highlight highlight-clj"><pre><span class="p">(</span><span class="nb">seq </span><span class="p">(</span><span class="nf">.split</span> <span class="o">#</span><span class="s">","</span> <span class="s">"1,2,3,4"</span><span class="p">))</span>  <span class="c1">;this is how you call Java methods</span>
-<span class="c1">;=&gt; ("1" "2" "3" "4")</span>
-</pre></div>
-
-<p><a href="#java-interop">Java interoperability section.</a>  </p>
-
-<p>The <code>re-seq</code> function returns a lazy sequence of all matches in a string:</p>
-
-<div class="highlight highlight-clj"><pre><span class="p">(</span><span class="nb">re-seq </span><span class="o">#</span><span class="s">"\w+"</span> <span class="s">"one-two/three"</span><span class="p">)</span>
-<span class="c1">;=&gt; ("one" "two" "three")</span>
-</pre></div>
-
-<blockquote>
-<p>Java's regex engine includes a <code>Matcher</code> object which mutates in a non-thread-safe way as it walks through a string finding matches. This object is exposed in Clojure through the <code>re-matcher</code> function and can be used in combination with <code>re-groups</code> and <code>re-find</code>.
-It's recommended to avoid direct usage of all of these three functions.</p>
-</blockquote>
-
-<h2>
-<a name="booleans" class="anchor" href="#booleans"><span class="octicon octicon-link"></span></a>Booleans</h2>
-
-<p>Only <code>false</code> and <code>nil</code> are logical <code>false</code>, all others values are <code>true</code>:</p>
-
-<div class="highlight highlight-clj"><pre><span class="p">(</span><span class="nb">boolean </span><span class="nv">nil</span><span class="p">)</span>
-<span class="c1">;=&gt; false</span>
-
-<span class="p">(</span><span class="nb">boolean </span><span class="mi">0</span><span class="p">)</span>
-<span class="c1">;=&gt; true</span>
-
-<span class="p">(</span><span class="nb">boolean </span><span class="s">"hi"</span><span class="p">)</span>
-<span class="c1">;=&gt; true</span>
-
-<span class="p">(</span><span class="nb">boolean </span><span class="nv">str</span><span class="p">)</span>
-<span class="c1">;=&gt; true</span>
-
-<span class="p">(</span><span class="nb">and </span><span class="nv">true</span> <span class="nv">false</span> <span class="nv">true</span><span class="p">)</span>
-<span class="c1">;=&gt; false</span>
-
-<span class="p">(</span><span class="nb">and </span><span class="nv">true</span> <span class="nv">true</span> <span class="nv">true</span><span class="p">)</span>
-<span class="c1">;=&gt; true</span>
-</pre></div>
-
-<p>... and returns the first <em>falsy</em> value, or the last value if all are <em>truthy</em>:</p>
-
-<div class="highlight highlight-clj"><pre><span class="p">(</span><span class="nb">and </span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">)</span>
-<span class="c1">;=&gt; 3</span>
-
-<span class="p">(</span><span class="nb">and </span><span class="mi">-1</span> <span class="nv">nil</span> <span class="mi">2</span><span class="p">)</span>
-<span class="c1">;=&gt; nil</span>
-</pre></div>
-
-<p>or returns the first <em>truthy</em> value, or the last value if all are <em>falsy</em>:</p>
-
-<div class="highlight highlight-clj"><pre><span class="p">(</span><span class="nb">or </span><span class="nv">false</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">)</span>
-<span class="c1">;=&gt; 2</span>
-
-<span class="p">(</span><span class="nb">or </span><span class="nv">false</span> <span class="nv">false</span> <span class="nv">nil</span><span class="p">)</span>
-<span class="c1">;=&gt; nil</span>
-</pre></div>
-
-<p><code>not</code> inverses the <em>truthiness</em> of the expression:</p>
-
-<div class="highlight highlight-clj"><pre><span class="p">(</span><span class="nb">not </span><span class="nv">nil</span><span class="p">)</span>
-<span class="c1">;=&gt; true</span>
-</pre></div>
-
-<p><strong>Symbols</strong> can have either short or full names. The short name is used to refer to things locally, and the <em>fully qualified name</em> is used to refer unambiguously to a symbol (from anywhere).
+<p>Symbols can have either short or full names. The short name is used to refer to things locally, and the <em>fully qualified name</em> is used to refer unambiguously to a symbol (from anywhere).
 Symbol names are separated with a <code>/</code>. For instance, the symbol <code>str</code> is also present in a namespace called <code>clojure.core</code> and the corresponding full name is <code>clojure.core/str</code>
 The main purpose of symbols is to refer to <em>things</em>, i.e. to point to other values. When evaluating a program, symbols are looked up and replaced by their corresponding values. </p>
 
@@ -640,8 +571,8 @@ The main purpose of symbols is to refer to <em>things</em>, i.e. to point to oth
 <span class="c1">;=&gt; "str"</span>
 </pre></div>
 
-<h1>
-<a name="keywords" class="anchor" href="#keywords"><span class="octicon octicon-link"></span></a>Keywords</h1>
+<h2>
+<a name="keywords" class="anchor" href="#keywords"><span class="octicon octicon-link"></span></a>Keywords</h2>
 
 <p>Closely related to symbols and strings are keywords, which begin with a <code>:</code>.<br>
 Keywords are like strings in that they are made up of text, but are specifically intended for use as labels or identifiers. These are not labels in the sense of symbols, keywords are not replaced by any other value, they are just names, by themselves:</p>
@@ -708,6 +639,96 @@ Keywords are like strings in that they are made up of text, but are specifically
 <p>double colon is used to fully qualify a keyword by prepending the current namespace name to the keyword name</p>
 
 <p>equally named keywords are the same object in memory</p>
+</blockquote>
+
+<h2>
+<a name="booleans" class="anchor" href="#booleans"><span class="octicon octicon-link"></span></a>Booleans</h2>
+
+<p>Only <code>false</code> and <code>nil</code> are logical <code>false</code>, all others values are <code>true</code>:</p>
+
+<div class="highlight highlight-clj"><pre><span class="p">(</span><span class="nb">boolean </span><span class="nv">nil</span><span class="p">)</span>
+<span class="c1">;=&gt; false</span>
+
+<span class="p">(</span><span class="nb">boolean </span><span class="mi">0</span><span class="p">)</span>
+<span class="c1">;=&gt; true</span>
+
+<span class="p">(</span><span class="nb">boolean </span><span class="s">"hi"</span><span class="p">)</span>
+<span class="c1">;=&gt; true</span>
+
+<span class="p">(</span><span class="nb">boolean </span><span class="nv">str</span><span class="p">)</span>
+<span class="c1">;=&gt; true</span>
+
+<span class="p">(</span><span class="nb">and </span><span class="nv">true</span> <span class="nv">false</span> <span class="nv">true</span><span class="p">)</span>
+<span class="c1">;=&gt; false</span>
+
+<span class="p">(</span><span class="nb">and </span><span class="nv">true</span> <span class="nv">true</span> <span class="nv">true</span><span class="p">)</span>
+<span class="c1">;=&gt; true</span>
+</pre></div>
+
+<p>... and returns the first <em>falsy</em> value, or the last value if all are <em>truthy</em>:</p>
+
+<div class="highlight highlight-clj"><pre><span class="p">(</span><span class="nb">and </span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">)</span>
+<span class="c1">;=&gt; 3</span>
+
+<span class="p">(</span><span class="nb">and </span><span class="mi">-1</span> <span class="nv">nil</span> <span class="mi">2</span><span class="p">)</span>
+<span class="c1">;=&gt; nil</span>
+</pre></div>
+
+<p>or returns the first <em>truthy</em> value, or the last value if all are <em>falsy</em>:</p>
+
+<div class="highlight highlight-clj"><pre><span class="p">(</span><span class="nb">or </span><span class="nv">false</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">)</span>
+<span class="c1">;=&gt; 2</span>
+
+<span class="p">(</span><span class="nb">or </span><span class="nv">false</span> <span class="nv">false</span> <span class="nv">nil</span><span class="p">)</span>
+<span class="c1">;=&gt; nil</span>
+</pre></div>
+
+<p><code>not</code> inverses the <em>truthiness</em> of the expression:</p>
+
+<div class="highlight highlight-clj"><pre><span class="p">(</span><span class="nb">not </span><span class="nv">nil</span><span class="p">)</span>
+<span class="c1">;=&gt; true</span>
+</pre></div>
+
+<h2>
+<a name="regular-expressions" class="anchor" href="#regular-expressions"><span class="octicon octicon-link"></span></a>Regular expressions</h2>
+
+<p><code>#"..."</code> is Clojure’s way of writing a regular expression.<br>
+Clojure and Java have very similar Regex syntax.</p>
+
+<div class="highlight highlight-clj"><pre><span class="p">(</span><span class="nb">re-find </span><span class="o">#</span><span class="s">"cat"</span> <span class="s">"mystic cat mouse"</span><span class="p">)</span>
+<span class="c1">;=&gt; "cat"</span>
+
+<span class="p">(</span><span class="nb">re-find </span><span class="o">#</span><span class="s">"cat"</span> <span class="s">"only dogs here"</span><span class="p">)</span>
+<span class="c1">;=&gt; nil</span>
+</pre></div>
+
+<p>The parentheses, i.e. <em>capturing group</em> means that the regular expression should capture that part of the match. We get back a <em>list</em> containing the part of the string that matched the first parentheses, followed by the part that matched the second parentheses, etc:</p>
+
+<div class="highlight highlight-clj"><pre><span class="p">(</span><span class="nb">re-matches </span><span class="o">#</span><span class="s">"(.+):(.+)"</span> <span class="s">"mouse:treat"</span><span class="p">)</span>
+<span class="c1">;=&gt; ["mouse:treat" "mouse" "treat"]</span>
+
+<span class="c1">;; capturing group in the regex causes each returned item to be a vector:</span>
+<span class="p">(</span><span class="nb">re-seq </span><span class="o">#</span><span class="s">"\w*(\w)"</span> <span class="s">"one-two/three"</span><span class="p">)</span>
+<span class="c1">;=&gt; (["one" "e"] ["two" "o"] ["three" "e"])</span>
+</pre></div>
+
+<p>Java's regex <code>Pattern</code> class has several methods that can be used directly, but only <code>split</code> is used regularly to split a string into an array of Strings:</p>
+
+<div class="highlight highlight-clj"><pre><span class="p">(</span><span class="nb">seq </span><span class="p">(</span><span class="nf">.split</span> <span class="o">#</span><span class="s">","</span> <span class="s">"1,2,3,4"</span><span class="p">))</span>  <span class="c1">;this is how you call Java methods</span>
+<span class="c1">;=&gt; ("1" "2" "3" "4")</span>
+</pre></div>
+
+<p><a href="#java-interop">Java interoperability section.</a>  </p>
+
+<p>The <code>re-seq</code> function returns a lazy sequence of all matches in a string:</p>
+
+<div class="highlight highlight-clj"><pre><span class="p">(</span><span class="nb">re-seq </span><span class="o">#</span><span class="s">"\w+"</span> <span class="s">"one-two/three"</span><span class="p">)</span>
+<span class="c1">;=&gt; ("one" "two" "three")</span>
+</pre></div>
+
+<blockquote>
+<p>Java's regex engine includes a <code>Matcher</code> object which mutates in a non-thread-safe way as it walks through a string finding matches. This object is exposed in Clojure through the <code>re-matcher</code> function and can be used in combination with <code>re-groups</code> and <code>re-find</code>.
+It's recommended to avoid direct usage of all of these three functions.</p>
 </blockquote>
 
 <h1>
@@ -1496,7 +1517,7 @@ Maps are represented with curly braces <code>{...}</code> filled by alternating 
 </pre></div>
 
 <h1>
-<a name="symbols" class="anchor" href="#symbols"><span class="octicon octicon-link"></span></a>Symbols</h1>
+<a name="symbols-1" class="anchor" href="#symbols-1"><span class="octicon octicon-link"></span></a>Symbols</h1>
 
 <p>Closest thing to a variable in Clojure. Primarily used to provide a name for a given value, i.e. to refer to function parameters, local variables, globals, and Java classes.</p>
 
@@ -2796,9 +2817,22 @@ This makes destructuring natural and straightforward. So anytime you find yourse
 
 <p><a href="https://bitdeli.com/free" title="Bitdeli Badge"><img src="https://d2weczhvl823v0.cloudfront.net/mbonaci/clojure/trend.png" alt="Bitdeli Badge"></a></p>
       </section>
-
+      <footer>
+        <p>Project maintained by <a href="https://github.com/mbonaci">mbonaci</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></small></p>
+      </footer>
     </div>
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-    
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-48000266-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
   </body>
 </html>
