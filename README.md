@@ -216,13 +216,15 @@ In Java, the expression above would be written like this:
 
 ![ast](https://github.com/mbonaci/clojure/raw/master/resources/ast.png)
 
-After seeing what _AST_ looks like, it becomes obvious that _infix_ is the natural way of representing expressions.  
+After seeing what _AST_ (as the ideal structure for representing code) looks like, I argue that _prefix_ is the natural way of representing expressions.  
 
 When you think of it (really hard), as early as first grade maths, the only option we ever see is _infix_ notation, so that's what gets hardwired inside our brains.
 
 That is why, IMO, the _Polish notation_ looks weird to us.
 
-> prefix notation allows any number of arguments in an operation (infix only two). Moreover, it completely eliminates the problem of operator precedence.
+> prefix notation allows any number of arguments in an operation (infix only two). Moreover, it completely eliminates the problem of operator precedence  
+
+> at this point I have to stress that this is my opinion after only a couple of weeks learning Clojure. I'm slightly affraid of what would happen to me after I explore all corners of the language :)
 
 ### Clojure is different
 
