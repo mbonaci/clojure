@@ -20,6 +20,9 @@
   },
   "homepage": "https://mbonaci.github.io/clojure",
   "devDependencies": {
-    "grunt": "~0.4.2"
+    "grunt": "~0.4.2",
+    "assemble": "~0.4.35",
+    "grunt-newer": "~0.6.1",
+    "assemble-contrib-markdown": "~0.1.0"
   }
 }

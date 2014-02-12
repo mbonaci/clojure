@@ -9,7 +9,7 @@ _Inspired? Made possible? Who am I kidding, I flat out stole from those kind peo
 I've been avoiding Clojure for a _long time_. Because it's a _Lisp dialect_ and I have a negative Lisp experience from school. It was either a bad timing or a bad teacher, I guess.  
 Hmm, I guess my guessing about it, in itself, implies the answer :) 
 
-> Times and times again it gets apparent to me. Late puberty nor adolescence is the right time to go wide with programming languages!
+> Times and times again it gets apparent to me. Late puberty and adolescence are the right times to go wide with programming languages!
 
 # :)
 ### It must had something to do with the way the book was written
@@ -31,8 +31,10 @@ It is built on three great facilities, **immutable data, first-class functions a
 
 **Dynamic typing** means that we don't declare types. Data types are inferred by the compiler.
 
-> So from now on, when we say "modify", "add", "remove", ... it really means "create a copy, modify the copy and return a reference to that new object".
-> In order to preserve the performance guarantees, to facilitate immutability Clojure uses something called **Structural sharing**, which basically means that the data structure of the new object simply points to the same elements the old object does, except the modified ones (called **path copying**).
+> So from now on, when we say "modify", "add", "remove", ... it really means - create a "copy", modify the copy and return a reference to that new object.
+> But the word "copy" from the previous sentence doesn't stand for a full, brute-force copy. In order to provide immutability and still preserve the performance guarantees (big O notation), Clojure uses something called **Structural sharing**, which basically means that the data structure of the new object is built by creating references to the elements of the old object, varying only with respect to the modified elements (called **path copying**). 
+
+> To picture this, think of a tree that gets a new node. Nodes of the new tree simply point to nodes of the old tree, so that, consequently, only a single full-blown node object gets created.
 
 # Set the fuck up!
 ### And gimme PRs
