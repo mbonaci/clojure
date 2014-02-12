@@ -1387,42 +1387,6 @@ Another idiomatic way to build a map is to use `zipmap` to "zip" together two se
 ;=> {5 2}
 ```
 
-**Sorted maps**
-
-The function `sorted-map` builds a map sorted by the comparison of its keys:
-
-```clj
-(sorted-map :b 1 :a 2 :c 0)
-;=> {:a 2, :b 1, :c 0}
-```
-
-If you need alternative key ordering, or ordering for keys that are not naturally comparable, use `sorted-map-by`, which allows you to provide a comparison function:
-
-```clj
-(sorted-map-by #(compare (subs %1 1) (subs %2 1)) "b" 1 "a" 2)
-;=> {"b" 2}
-
-(doc subs)
-;-------------------------
-;clojure.core/subs
-;([s start] [s start end])
-;  Returns the substring of s beginning at start inclusive, and ending
-;  at end (defaults to length of string), exclusive.
-
-;;Explanation:
-;; by doing this:
-#(compare (subs %1 1) (subs %2 1))
-
-;; we declared an anonymous function inline, which is the same as writing:
-(defn m-compare [first second]
-  (compare (subs first 1) (subs second 1)))
-
-;; and then passing that function to sorted-by-map:
-(sorted-map-by m-compare "b" 1 "a" 2)
-;=> {"b" 2}
-```
-
-
 `merge` yields a map containing all the elements of all given maps, preferring the values from later ones:
 
 ```clj
@@ -1437,7 +1401,71 @@ Remove map element with `dissoc`:
 ;=> {:a 1, :b 2}
 ```
 
-Like vectors, any item in a map literal is evaluated before the result is stored in the map. Unlike vectors, the order in which they are evaluated isn't guaranteed.
+**Sorted maps**
+
+The function `sorted-map` builds a map sorted by the comparison of its keys:
+
+```clj
+(sorted-map :b 1 :a 2 :c 0)
+;=> {:a 2, :b 1, :c 0}
+```
+
+If you need alternative key ordering, or ordering for keys that are not naturally comparable, use `sorted-map-by`, which allows you to provide a comparison function:
+
+```clj
+(sorted-map-by #(compare %1 %2) "bac" 9 "abc" 2)
+;=> {"abc" 2, "bac" 9}
+
+;;Explanation:
+;; by doing this:
+#(compare %1 %2)   ;%1 stands for first parameter, in our case first map element
+
+;; we declared an anonymous function inline, which is the same as writing:
+(defn m-compare [first second]
+  (compare first second))
+
+;; and then passing that function to sorted-by-map:
+(sorted-map-by m-compare "bac" 9 "abc" 2)
+;=> {"abc" 2, "bac" 9}
+```
+
+Sorted maps (and sets) support efficient jump to a particular key and walk forward or backward from there through the collection. This is where `subseq` and `rsubseq` come in:
+
+```clj
+(def sm (sorted-map :a 1, :b 2, :c 3, :d 4, :e 5, :f 6, :g 7))
+
+(subseq sm > :e)
+;=> ([:f 6] [:g 7])
+
+(subseq sm > :c < :f)
+;=> ([:d 4] [:e 5])
+```
+
+There's one important difference in how sorted maps and sets handle numeric keys. A number can be represented by different types (`long`, `int`, `float`,...) and in a hash map, those types are preserved, while in a sorted map all those types are converted to the most precise one:
+
+```clj
+(assoc {1 :int} 1.0 :float)
+;=> {1.0 :float, 1 :int}
+
+(assoc (sorted-map 1 :int) 1.0 :float)  ;only one is kept, since maps are unique
+;=> {1 :float}
+```
+
+When we're adding an element to a sorted map (or set), Clojure uses equality to determine both, the sort order and key presence (remember, maps have unique keys).
+
+**Array maps**
+
+Array maps are used to guarantee that the order of insertions will be preserved (just like vectors and arrays do):
+
+```clj
+(hash-map :a 1, :b 2, :c 3)
+{:a 1, :c 3, :b 2}
+
+(array-map :a 1, :b 2, :c 3)
+{:a 1, :b 2, :c 3}
+```
+
+> Like vectors, any item in a map literal is evaluated before the result is stored in the map. Unlike vectors, the order in which they are evaluated isn't guaranteed.
 
 ## Persistence
 
@@ -1467,16 +1495,16 @@ Using one of Clojure's persistent data structures shows the difference:
 mbo=> (def ds [:frane :luka :suzi])  ;init persistent collection
 ;=> #'mbo/ds
 
-ds                    ;print ds to REPL
+ds            ;print ds to REPL
 ;=> [:frane :luka :suzi]
 
 (def ds8 (replace {:suzi :glupaca} ds))   ;replace third element and bind the
-;=> #'mbo/ds8                                 ;whole collection to ds8
+;=> #'mbo/ds8                             ;new collection to ds8
 
-ds                    ;ds did not change
+ds            ;ds did not change
 ;=> [:frane :luka :suzi]
 
-ds8                   ;the newly created collection
+ds8           ;the newly created collection
 ;=> [:frane :luka :glupaca]
 ```
 
