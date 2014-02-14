@@ -1467,9 +1467,59 @@ Array maps are used to guarantee that the order of insertions will be preserved 
 
 > Like vectors, any item in a map literal is evaluated before the result is stored in the map. Unlike vectors, the order in which they are evaluated isn't guaranteed.
 
-## Persistence
+## Persistence, immutability and functional programming
 
-> Persistent collections are immutable, in-memory (not on-disk) collections that allow you to preserve historical versions of their state.
+We'll start this section by giving a couple of phrases that encapsulate Clojure's immutability principles.
+
+> if two objects aren't equal forever, then they're technically never equal
+
+> there's a difference between a mutable object and a mutable reference. The default in Java is that there are references that may point to mutable data, but in Clojure, there are only mutable references
+
+> immutable objects are always thread safe (Brian Goetz)
+
+**Structural sharing**
+
+```clojure
+(def baselist (list :barnabas :adam))
+
+(def lst1 (cons :willie baselist))
+
+(def lst2 (cons :phoenix baselist))
+
+baselist
+;=> (:barnabas :adam)                 ;baselist stays unchanged
+
+lst1
+;=> (:willie :barnabas :adam)
+
+lst2
+;=> (:phoenix :barnabas :adam)
+
+(= (next lst1) (next lst2))           ;they are not only equal
+;=> true
+
+(identical? (next lst1) (next lst2))  ;but also the same underlying object
+;=> true
+```
+
+You can think of `baselist` as a common historical version of `lst1` and `lst2`, but it's also the shared part of both lists. Not only are the `next` parts of both lists equal, they are identical (the same instance in memory).
+
+To further demonstrate _structural sharing_, we'll build a simple tree, where each node will have three fields: a value, a left branch and a right branch:
+
+```clojure
+{:val 5, :L nil, :R nil}
+```
+
+Our empty tree will be represented by `nil` and the map above will represent that empty tree after a single node has been added
+
+```clojure
+
+```
+
+
+
+
+> persistent collections are immutable, in-memory (not on-disk) collections that allow you to preserve historical versions of their state.
 
 Since arrays are mutable, any changes happen in-place:
 
