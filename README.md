@@ -1504,19 +1504,67 @@ lst2
 
 You can think of `baselist` as a common historical version of `lst1` and `lst2`, but it's also the shared part of both lists. Not only are the `next` parts of both lists equal, they are identical (the same instance in memory).
 
-To further demonstrate _structural sharing_, we'll build a simple tree, where each node will have three fields: a value, a left branch and a right branch:
+Unlike lists, vectors and maps allow changes anywhere in the collection, not just on one end. This is made possible by the underlying data structure that those collection types are built upon - a tree.
+
+A tree allows interior changes and still maintains shared structure between different versions/changes.
+
+To demonstrate how _structural sharing_ works, we'll build a simple tree, where each node will have three fields: a value, a left branch and a right branch:
 
 ```clojure
-{:val 5, :L nil, :R nil}
+{:val 50, :L nil, :R nil}
 ```
 
-Our empty tree will be represented by `nil` and the map above will represent that empty tree after a single node has been added
+Our empty tree will be represented by `nil` and the map above will represent that empty tree after a single node (with value `50`) has been added.
 
-```clojure
+Let's start slowly. To handle just this initial case of adding a single node to an empty tree, we'll write `xconj` function like this:
 
+```clj
+(defn xconj [t v]     ;add item with value 'v' to tree 't'
+  (cond
+    (nil? t) {:val v, :L nil, :R nil})) ;if t is nil this will be the first node (root)
+
+(xconj nil 50)
+;=> {:val 50, :L nil, :R nil}
 ```
 
+OK, that works, but let's not start sucking each other's dicks just yet. We need to handle the case of adding an item to a non-empty tree.
 
+So our tree currently doesn't even look like a tree (`:L` and `:R` point nowhere, which implies they point to `nil`):
+
+![Unbalanced binary tree with a single node](https://github.com/mbonaci/clojure/raw/master/resources/UnbalancedBinaryTree-01.png)
+
+When adding a node to a non-empty tree, in order to keep the tree sorted, we must follow a simple rule: _the value of any node in our tree must be greater than its left child and smaller or equal to its right child._
+So, in order to honor that rule, we need to compare the value being added with every node, starting from the root, until we find the appropriate place for it:
+
+```clj
+(defn xconj [t v]
+  (cond
+    (nil? t) {:val v, :L nil, :R nil}
+    (< v (:val t))))
+```
+
+```clj
+(defn xconj [t v]
+  (cond
+    (nil? t) {:val v, :L nil, :R nil}
+    (< v (:val t))
+          {:val (:val t),
+           :L (xconj (:L t) v),
+           :R (:R t)}
+    :else {:val (:val t)
+           :L (:L t)
+           :R (xconj (:R t) v)}
+   ))
+
+
+(defn xseq [t]
+  (when t
+    (concat (xseq (:L t)) [(:val t)] (xseq (:R t)))))
+```
+
+![Unbalanced binary tree](https://github.com/mbonaci/clojure/raw/master/resources/UnbalancedBinaryTree.png)
+
+![Balanced binary tree](https://github.com/mbonaci/clojure/raw/master/resources/BalancedBinaryTree.png)
 
 
 > persistent collections are immutable, in-memory (not on-disk) collections that allow you to preserve historical versions of their state.

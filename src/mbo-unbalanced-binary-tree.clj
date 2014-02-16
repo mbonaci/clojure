@@ -8,13 +8,12 @@
   (cond
     (nil? t) {:val v, :L nil, :R nil}
     (< v (:val t))
-      {:val (:val t),
-       :L (xconj (:L t) v),
-       :R (:R t)}
-     (> v (:val t))
-      {:val (:val t)
-       :L (:L t)
-       :R (xconj (:R t) v)}
+          {:val (:val t),
+           :L (xconj (:L t) v),
+           :R (:R t)}
+    :else {:val (:val t)
+           :L (:L t)
+           :R (xconj (:R t) v)}
    ))
 
 (def f1 (xconj nil 50))
