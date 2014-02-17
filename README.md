@@ -1564,7 +1564,7 @@ So, in order to honor that rule, we need to compare the value being added with e
 
 <img src="https://github.com/mbonaci/clojure/raw/master/resources/UnbalancedBinaryTree.png" alt="Unbalanced binary tree" title="Unbalanced binary tree" width="300px" style="margin-left: auto; display: block; margin-right: auto;" />
 
-This is how our tree would look like if it was balanced. Compare number of hops needed to find value `10`.
+This is how our tree would look like if it was balanced. Compare number of hops needed to find value `20`.
 
 <img src="https://github.com/mbonaci/clojure/raw/master/resources/BalancedBinaryTree.png" alt="Balanced binary tree" title="Balanced binary tree" width="510px" style="margin-left: auto; display: block; margin-right: auto;" />
 
