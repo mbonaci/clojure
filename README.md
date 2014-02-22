@@ -1531,7 +1531,7 @@ OK, that works, but let's not start sucking each other's dicks just yet. We need
 
 So our tree currently doesn't even look like a tree (`:L` and `:R` point nowhere, which implies they point to `nil`):
 
-![Unbalanced binary tree with a single node](https://github.com/mbonaci/clojure/raw/master/resources/UnbalancedBinaryTree-01.png)
+<img src="https://github.com/mbonaci/clojure/raw/master/resources/UnbalancedBinaryTree-01.png" alt="{:val 50, :L nil, :R nil}" title="Unbalanced binary tree with a single node" width="133px" style="margin-left: auto; display: block; margin-right: auto;" />
 
 When adding a node to a non-empty tree, in order to keep the tree sorted, we must follow a simple rule: _the value of any node in our tree must be greater than its left child and smaller or equal to its right child._
 So, in order to honor that rule, we need to compare the value being added with every node, starting from the root, until we find the appropriate place for it:
@@ -1562,9 +1562,13 @@ So, in order to honor that rule, we need to compare the value being added with e
     (concat (xseq (:L t)) [(:val t)] (xseq (:R t)))))
 ```
 
-![Unbalanced binary tree](https://github.com/mbonaci/clojure/raw/master/resources/UnbalancedBinaryTree.png)
+This is how our tree looks like:
 
-![Balanced binary tree](https://github.com/mbonaci/clojure/raw/master/resources/BalancedBinaryTree.png)
+<img src="https://github.com/mbonaci/clojure/raw/master/resources/UnbalancedBinaryTree.png" alt="Unbalanced binary tree" title="Unbalanced binary tree" width="300px" style="margin-left: auto; display: block; margin-right: auto;" />
+
+This is how our tree would look like if it was balanced. Compare number of hops needed to find value `20`.
+
+<img src="https://github.com/mbonaci/clojure/raw/master/resources/BalancedBinaryTree.png" alt="Balanced binary tree" title="Balanced binary tree" width="510px" style="margin-left: auto; display: block; margin-right: auto;" />
 
 
 > persistent collections are immutable, in-memory (not on-disk) collections that allow you to preserve historical versions of their state.
