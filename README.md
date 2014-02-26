@@ -1527,30 +1527,39 @@ Let's start slowly. To handle just this initial case of adding a single node to 
 ;=> {:val 50, :L nil, :R nil}
 ```
 
-OK, that works, but let's not start sucking each other's dicks just yet. We need to handle the case of adding an item to a non-empty tree.
+OK, that works, but let's not start sucking each others' dicks just yet (<sup>TM</sup>Mr Wolf). We need to handle the case of adding an item to a non-empty tree.
 
-So our tree currently doesn't even look like a tree (`:L` and `:R` point nowhere, which implies they point to `nil`):
+So our tree doesn't even look like a tree yet:
 
-<img src="https://github.com/mbonaci/clojure/raw/master/resources/UnbalancedBinaryTree-01.png" alt="{:val 50, :L nil, :R nil}" title="Unbalanced binary tree with a single node" width="133px" style="margin-left: auto; display: block; margin-right: auto;" />
+<img src="https://github.com/mbonaci/clojure/raw/master/resources/UnbalancedBinaryTree-01.png" alt="{:val 50, :L nil, :R nil}" title="Unbalanced binary tree with a single node" width="222px" style="margin-left: auto; display: block; margin-right: auto;" />
 
-When adding a node to a non-empty tree, in order to keep the tree sorted, we must follow a simple rule: _the value of any node in our tree must be greater than its left child and smaller or equal to its right child._
-So, in order to honor that rule, we need to compare the value being added with every node, starting from the root, until we find the appropriate place for it:
+`:L` and `:R` are `nil`, so, for the sake of simplicity, we'll just make a rule that if an element does not point to some other element, it means it is `nil`. Presented this way, our tree looks like a piece of crap:
+
+<img src="https://github.com/mbonaci/clojure/raw/master/resources/UnbalancedBinaryTree-02.png" alt="{:val 50, :L nil, :R nil}" title="Unbalanced binary tree with a single node" width="133px" style="margin-left: auto; display: block; margin-right: auto;" />
+
+When adding a node to a non-empty tree, in order to keep the tree sorted, we must follow a simple rule: _the value of any node in our tree must be greater than its left child and smaller or equal to its right child._  
+
+So, in order to honor that rule, we need to compare the value being added first with the root, then with other nodes, down the tree, until we find the appropriate place for it.  
+
+Let's try adding a couple of elements. How would we add value `40` to our tree?
+
+<img src="https://github.com/mbonaci/clojure/raw/master/resources/UnbalancedBinaryTree-03.png" alt="{:val 50, :L nil, :R nil}" title="Unbalanced binary tree with a single node" width="280px" style="margin-left: auto; display: block; margin-right: auto;" />
+
+Now that you saw this crucial image, take a look at the next one (let's keep our `nil`s a bit longer, it will be easier to reason about the algorithm):
+
+<img src="https://github.com/mbonaci/clojure/raw/master/resources/UnbalancedBinaryTree-04.png" alt="{:val 50, :L nil, :R nil}" title="Unbalanced binary tree with a single node" width="133px" style="margin-left: auto; display: block; margin-right: auto;" />
+
+How in earth did element `40` ended up there?
+
 
 ```clj
 (defn xconj [t v]
   (cond
-    (nil? t) {:val v, :L nil, :R nil}
-    (< v (:val t))))
-```
-
-```clj
-(defn xconj [t v]
-  (cond
-    (nil? t) {:val v, :L nil, :R nil}
-    (< v (:val t))
-          {:val (:val t),
-           :L (xconj (:L t) v),
-           :R (:R t)}
+    (nil? t) {:val v, :L nil, :R nil}   ;does tree exist?
+    (< v (:val t))              ;if v is smaller than the current item's value
+          {:val (:val t),       ;make new item whose value is the value of current item
+           :L (xconj (:L t) v), ;point :L to new tree by calling xconj on tree's :L child
+           :R (:R t)}           ;point :R to current item's :R
     :else {:val (:val t)
            :L (:L t)
            :R (xconj (:R t) v)}
@@ -1560,6 +1569,17 @@ So, in order to honor that rule, we need to compare the value being added with e
 (defn xseq [t]
   (when t
     (concat (xseq (:L t)) [(:val t)] (xseq (:R t)))))
+
+;;what is 'cond'?
+(doc cond)
+;=> -------------------------
+;=> clojure.core/cond
+;=> ([& clauses])
+;=> Macro
+;=>   Takes a set of test/expr pairs. It evaluates each test one at a
+;=>   time.  If a test returns logical true, cond evaluates and returns
+;=>   the value of the corresponding expr and doesn't evaluate any of the
+;=>   other tests or exprs. (cond) returns nil.
 ```
 
 This is how our tree looks like:
