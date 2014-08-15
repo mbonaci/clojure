@@ -57,7 +57,7 @@ For your convenience, here's a dead simple, step-by-step environment setup for U
 
 ```sh
 cd /usr/bin
-sudo curl -O https://raw.github.com/technomancy/leiningen/stable/bin/lein
+sudo curl -O https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
 sudo chmod a+x lein
  ```
 
