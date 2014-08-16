@@ -264,7 +264,7 @@ This is extremely powerful concept, which allows us to extend the language witho
 
 Don't worry if _macros_ are not clear yet (I explained them rather poorly, I know), we'll dedicate the whole chapter to that powerful construct.
 
-# Basics (this time real)
+# Basics (this time for real)
 
 ## Scalar data types
 
@@ -793,8 +793,8 @@ The mechanism for adding an element to a queue is `conj`:
 
 ```clj
 (def tasks
-  #_=>   (conj clojure.lang.PersistentQueue/EMPTY
-  #_=>         :wake-up :shower :brush-teeth))
+  (conj clojure.lang.PersistentQueue/EMPTY
+  :wake-up :shower :brush-teeth))
 ;=> #'mbo/tasks
 
 tasks
@@ -810,10 +810,10 @@ To get the front element, we use `peek`:
 ;=> :wake-up
 ```
 
-To remove elements from the front of a queue, we use `pop` (although possible, it's non-idiomatic and suboptimal to use `rest` with queues, because it returns a seq, not a queue and _fucks up_ the speed guarantees):
+To remove elements from the front of a queue, we use `pop` (although possible, it's non-idiomatic and suboptimal to use `rest` with queues, because it returns a seq, not a queue and _screws up_ the speed guarantees):
 
 ```clj
-(pop tasks)
+(pop tasks)       ;; returns new list, remember?
 ;=> <-(:shower :brush-teeth)-<
 
 (rest tasks)
@@ -941,7 +941,7 @@ Vectors are particularly efficient at three things (relative to lists):
  - walking in reverse order
 
 ```clj
-(def a-to-e (vec (map char (range 65 91))))
+(def a-to-e (vec (map char (range 65 70))))
 ;=> #'mbo/a-to-z
 
 a-to-e
