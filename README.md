@@ -29,7 +29,7 @@ It is built on three great facilities, **immutable data, first-class functions a
 
 **First class functions** means that a variable can be bound to a function, that a function can be passed to another (higher-order) function or that it may be returned from a function. In short, function is data.
 
-**Dynamic typing** means that we don't declare types. Data types are inferred by the compiler.
+**Dynamic typing** means that we don't declare types. Data types are resolved at runtime.
 
 > So from now on, when we say "modify", "add", "remove", ... it really means - create a "copy", modify the copy and return a reference to that new object.
 > But the word "copy" from the previous sentence doesn't stand for a full, brute-force copy. In order to provide immutability and still preserve the performance guarantees (big O notation), Clojure uses something called **Structural sharing**, which basically means that the data structure of the new object is built by creating references to the elements of the old object, varying only with respect to the modified elements (called **path copying**). 
