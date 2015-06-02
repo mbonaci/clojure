@@ -1704,7 +1704,7 @@ clojure.core/map
 ;=> #<core$map clojure.core$map@2a0406c4>
 
 clojure.set/union
-;=> ;=> #<set$union clojure.set$union@1be2bcc8>
+;=> #<set$union clojure.set$union@1be2bcc8>
 ```
 
 The body is sometimes described as an _implicit do_ (see [blocks bellow](#blocks)) because it follows the same rules: you may include any number of expressions and all will be evaluated, but only the value of the last one is returned.
