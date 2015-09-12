@@ -325,7 +325,7 @@ Long/MAX_VALUE
 (<span class="pl-en">inc</span> (<span class="pl-en">bigint</span> Long/MAX_VALUE))
 <span class="pl-c">;=&gt; 9223372036854775808N</span>
 
-(<span class="pl-en">type</span> <span class="pl-c1">5</span>N)
+(<span class="pl-en">type</span> <span class="pl-c1">5N</span>)
 <span class="pl-c">;=&gt; clojure.lang.BigInt</span>
 
 (<span class="pl-en">type</span> (<span class="pl-en">int</span> <span class="pl-c1">0</span>))
@@ -338,7 +338,7 @@ Long/MAX_VALUE
 <span class="pl-c">;=&gt; java.lang.Byte</span>
 
 <span class="pl-c">;; decimal, hexadecimal, octal, radix-32, and binary literals:</span>
-[<span class="pl-c1">127</span> <span class="pl-c1">0x7</span>F <span class="pl-c1">0177</span> <span class="pl-c1">32r3</span>V <span class="pl-c1">2r01111111</span>]
+[<span class="pl-c1">127</span> <span class="pl-c1">0x7F</span> <span class="pl-c1">0177</span> <span class="pl-c1">32r3V</span> <span class="pl-c1">2r01111111</span>]
 <span class="pl-c">;=&gt; [127 127 127 127 127]</span>
 <span class="pl-c">;; radix supports up to base 36</span>
 
@@ -351,25 +351,25 @@ Long/MAX_VALUE
 Byte/MAX_VALUE
 <span class="pl-c">;=&gt; 127</span>
 
-(<span class="pl-en">type</span> <span class="pl-c1">1</span>.23)
+(<span class="pl-en">type</span> <span class="pl-c1">1.23</span>)
 <span class="pl-c">;=&gt; java.lang.Double</span>
 
-(<span class="pl-en">type</span> (<span class="pl-en">float</span> <span class="pl-c1">1</span>.23))
+(<span class="pl-en">type</span> (<span class="pl-en">float</span> <span class="pl-c1">1.23</span>))
 <span class="pl-c">;=&gt; java.lang.Float</span>
 
 <span class="pl-c1">366</span>e3
 <span class="pl-c">;=&gt; 366000.0</span></pre></div>
 
-<div class="highlight highlight-clj"><pre>(<span class="pl-en">+</span> <span class="pl-c1">1</span> <span class="pl-c1">2</span>.0)
+<div class="highlight highlight-clj"><pre>(<span class="pl-en">+</span> <span class="pl-c1">1</span> <span class="pl-c1">2.0</span>)
 <span class="pl-c">;=&gt; 3.0</span>
 
-(<span class="pl-en">class</span> (<span class="pl-en">+</span> <span class="pl-c1">1</span> <span class="pl-c1">2</span>.0))
+(<span class="pl-en">class</span> (<span class="pl-en">+</span> <span class="pl-c1">1</span> <span class="pl-c1">2.0</span>))
 <span class="pl-c">;=&gt; java.lang.Double</span>
 
-(<span class="pl-en">=</span> <span class="pl-c1">3</span> <span class="pl-c1">3</span>.0)
+(<span class="pl-en">=</span> <span class="pl-c1">3</span> <span class="pl-c1">3.0</span>)
 <span class="pl-c">;=&gt; false</span>
 
-(<span class="pl-en">==</span> <span class="pl-c1">3</span> <span class="pl-c1">3</span>.0)
+(<span class="pl-en">==</span> <span class="pl-c1">3</span> <span class="pl-c1">3.0</span>)
 <span class="pl-c">;=&gt; true</span>
 
 (<span class="pl-en">*</span> <span class="pl-c1">2</span> <span class="pl-c1">3</span> <span class="pl-c1">1/5</span>)
@@ -417,10 +417,10 @@ Byte/MAX_VALUE
 (<span class="pl-en">rational?</span> <span class="pl-c1">2</span>)   <span class="pl-c">;is rational or may be rational</span>
 <span class="pl-c">;=&gt; true</span>
 
-(<span class="pl-en">rational?</span> <span class="pl-c1">2</span>.1)
+(<span class="pl-en">rational?</span> <span class="pl-c1">2.1</span>)
 <span class="pl-c">;=&gt; false</span>
 
-(<span class="pl-en">rationalize</span> <span class="pl-c1">2</span>.1)
+(<span class="pl-en">rationalize</span> <span class="pl-c1">2.1</span>)
 <span class="pl-c">;=&gt; 21/10</span>
 
 (<span class="pl-en">numerator</span> (<span class="pl-en">/</span> <span class="pl-c1">21</span> <span class="pl-c1">10</span>))
@@ -437,13 +437,13 @@ Byte/MAX_VALUE
 
 <p>Truncation is a process of limiting the accuracy of floating-point numbers, due to deficiencies in its representation. When a number is truncated, its precision is limited such that the maximum number of digits of accuracy is bound by the number of bits that can fit into the storage space allowed by its representation.</p>
 
-<div class="highlight highlight-clj"><pre>(<span class="pl-k">let</span> [pi-constant <span class="pl-c1">3</span>.14159265358979323846264338327950288419716939937M] <span class="pl-c">;notice the M</span>
+<div class="highlight highlight-clj"><pre>(<span class="pl-k">let</span> [pi-constant <span class="pl-c1">3.14159265358979323846264338327950288419716939937M</span>] <span class="pl-c">;notice the M</span>
   (<span class="pl-en">println</span> (<span class="pl-en">class</span> pi-constant))
   pi-constant)
 <span class="pl-c">;=&gt; java.math.BigDecimal</span>
 <span class="pl-c">;=&gt; 3.14159265358979323846264338327950288419716939937M</span>
 
-(<span class="pl-k">let</span> [pi-trunc <span class="pl-c1">3</span>.14159265358979323846264338327950288419716939937]
+(<span class="pl-k">let</span> [pi-trunc <span class="pl-c1">3.14159265358979323846264338327950288419716939937</span>]
   (<span class="pl-en">println</span> (<span class="pl-en">class</span> pi-trunc))
   pi-trunc)
 <span class="pl-c">;=&gt; java.lang.Double</span>
@@ -467,7 +467,7 @@ Byte/MAX_VALUE
 (<span class="pl-en">class</span> (<span class="pl-en">+</span> small <span class="pl-c1">90000000000000000000</span>))
 <span class="pl-c">;=&gt; clojure.lang.BigInt</span>
 
-(<span class="pl-en">class</span> (<span class="pl-en">+</span> small <span class="pl-c1">9</span>.0))
+(<span class="pl-en">class</span> (<span class="pl-en">+</span> small <span class="pl-c1">9.0</span>))
 <span class="pl-c">;=&gt; java.lang.Double</span>
 
 (<span class="pl-en">+</span> Integer/MAX_VALUE Integer/MAX_VALUE)
@@ -642,7 +642,7 @@ another=&gt; <span class="pl-c1">:haunted/name</span>     <span class="pl-c">;na
 <div class="highlight highlight-clj"><pre>(<span class="pl-en">and</span> <span class="pl-c1">1</span> <span class="pl-c1">2</span> <span class="pl-c1">3</span>)
 <span class="pl-c">;=&gt; 3</span>
 
-(<span class="pl-en">and</span> -1 <span class="pl-c1">nil</span> <span class="pl-c1">2</span>)
+(<span class="pl-en">and</span> <span class="pl-c1">-1</span> <span class="pl-c1">nil</span> <span class="pl-c1">2</span>)
 <span class="pl-c">;=&gt; nil</span></pre></div>
 
 <p>or returns the first <em>truthy</em> value, or the last value if all are <em>falsy</em>:</p>
@@ -932,7 +932,7 @@ Vectors are surrounded by square brackets, just like lists are surrounded by par
 <p>You can store primitive types inside of vectors using the <code>vector-of</code> function, which takes any of <code>:int</code>, <code>:long</code>, <code>:float</code>, <code>:double</code>, <code>:byte</code>, <code>:short</code>, <code>:boolean</code> and <code>:char</code> and returns an empty vector. This returned vector will act just like any other vector, except that, internally, it'll store its contents as primitives.<br>
 The new vector will try to coerce any additions into its internal type when they are being added:</p>
 
-<div class="highlight highlight-clj"><pre>(<span class="pl-en">into</span> (<span class="pl-en">vector-of</span> <span class="pl-c1">:int</span>) [Math/PI <span class="pl-c1">2</span> <span class="pl-c1">1</span>.3])
+<div class="highlight highlight-clj"><pre>(<span class="pl-en">into</span> (<span class="pl-en">vector-of</span> <span class="pl-c1">:int</span>) [Math/PI <span class="pl-c1">2</span> <span class="pl-c1">1.3</span>])
 <span class="pl-c">;=&gt; [3 2 1]</span>
 
 (<span class="pl-en">into</span> (<span class="pl-en">vector-of</span> <span class="pl-c1">:char</span>) [<span class="pl-c1">100</span> <span class="pl-c1">101</span> <span class="pl-c1">102</span>])
@@ -1228,8 +1228,7 @@ Although you can replace values within a vector, you can't insert or delete item
 <p>Since <code>contains?</code> looks for existence of a key it shouldn't work with sets, but it does. That is due to the fact that sets are implemented as maps with the same element as the <em>key</em> and <em>value</em> with an additional check for containment before insertion.</p>
 
 <h3>
-<a id="clojureset-namespace" class="anchor" href="#clojureset-namespace" aria-hidden="true"><span class="octicon octicon-link"></span></a>
-<code>clojure.set</code> namespace</h3>
+<a id="clojureset-namespace" class="anchor" href="#clojureset-namespace" aria-hidden="true"><span class="octicon octicon-link"></span></a><code>clojure.set</code> namespace</h3>
 
 <p><code>clojure.set/intersection</code> function works as you might expect. Given two sets, it returns a set of the common elements. Given <em>n</em> sets, it'll incrementally return the intersection of resulting sets and the next set:</p>
 
@@ -1386,10 +1385,10 @@ Maps are represented with curly braces <code>{...}</code> filled by alternating 
 
 <p>There's one important difference in how sorted maps and sets handle numeric keys. A number can be represented by different types (<code>long</code>, <code>int</code>, <code>float</code>,...) and in a hash map, those types are preserved, while in a sorted map all those types are converted to the most precise one:</p>
 
-<div class="highlight highlight-clj"><pre>(<span class="pl-en">assoc</span> {<span class="pl-c1">1</span> <span class="pl-c1">:int</span>} <span class="pl-c1">1</span>.0 <span class="pl-c1">:float</span>)
+<div class="highlight highlight-clj"><pre>(<span class="pl-en">assoc</span> {<span class="pl-c1">1</span> <span class="pl-c1">:int</span>} <span class="pl-c1">1.0</span> <span class="pl-c1">:float</span>)
 <span class="pl-c">;=&gt; {1.0 :float, 1 :int}</span>
 
-(<span class="pl-en">assoc</span> (<span class="pl-en">sorted-map</span> <span class="pl-c1">1</span> <span class="pl-c1">:int</span>) <span class="pl-c1">1</span>.0 <span class="pl-c1">:float</span>)  <span class="pl-c">;only one is kept, since maps are unique</span>
+(<span class="pl-en">assoc</span> (<span class="pl-en">sorted-map</span> <span class="pl-c1">1</span> <span class="pl-c1">:int</span>) <span class="pl-c1">1.0</span> <span class="pl-c1">:float</span>)  <span class="pl-c">;only one is kept, since maps are unique</span>
 <span class="pl-c">;=&gt; {1 :float}</span></pre></div>
 
 <p>When we're adding an element to a sorted map (or set), Clojure uses equality to determine both, the sort order and key presence (remember, maps have unique keys).</p>
@@ -1589,8 +1588,8 @@ The <code>let</code> expression first <strong>takes a vector of bindings</strong
 
 <p>“Let the symbol <code>cats</code> be <code>5</code>, and construct a string composed of <code>"I have "</code>, <code>cats</code>, and <code>" cats"</code>:</p>
 
-<div class="highlight highlight-clj"><pre>(<span class="pl-k">let</span> [mice <span class="pl-c1">5</span>] (<span class="pl-en">str</span> <span class="pl-s"><span class="pl-pds">"</span>I have <span class="pl-pds">"</span></span> mice <span class="pl-s"><span class="pl-pds">"</span> mice.<span class="pl-pds">"</span></span>))
-<span class="pl-c">;=&gt; "I have 5 mice."</span></pre></div>
+<div class="highlight highlight-clj"><pre>(<span class="pl-k">let</span> [cats <span class="pl-c1">5</span>] (<span class="pl-en">str</span> <span class="pl-s"><span class="pl-pds">"</span>I have <span class="pl-pds">"</span></span> cats <span class="pl-s"><span class="pl-pds">"</span> cats.<span class="pl-pds">"</span></span>))
+<span class="pl-c">;=&gt; "I have 5 cats."</span></pre></div>
 
 <p>Let bindings, also called <strong>locals</strong>, apply only within the <code>let</code> expression itself. They also override any existing definitions for symbols at that point in the program. For example, we can redefine addition to mean subtraction, for the duration of a <code>let</code>:</p>
 
@@ -1605,15 +1604,15 @@ The <code>let</code> expression first <strong>takes a vector of bindings</strong
 <p>We can also provide multiple bindings. Since Clojure doesn’t care about spacing, alignment, or newlines, we’ll write this on multiple lines, for clarity:</p>
 
 <div class="highlight highlight-clj"><pre>(<span class="pl-k">let</span> [person <span class="pl-s"><span class="pl-pds">"</span>joseph<span class="pl-pds">"</span></span>
-       num-cats <span class="pl-c1">186</span>]
-   (<span class="pl-en">str</span> person <span class="pl-s"><span class="pl-pds">"</span> has <span class="pl-pds">"</span></span> num-cats <span class="pl-s"><span class="pl-pds">"</span> cats!<span class="pl-pds">"</span></span>))  <span class="pl-c">;the body</span>
+      num-cats <span class="pl-c1">186</span>]
+  (<span class="pl-en">str</span> person <span class="pl-s"><span class="pl-pds">"</span> has <span class="pl-pds">"</span></span> num-cats <span class="pl-s"><span class="pl-pds">"</span> cats!<span class="pl-pds">"</span></span>))  <span class="pl-c">;the body</span>
 <span class="pl-c">;=&gt; "joseph has 186 cats!"</span></pre></div>
 
 <p>When multiple bindings are given, they are evaluated in order. Later bindings can use previous bindings:</p>
 
 <div class="highlight highlight-clj"><pre>(<span class="pl-k">let</span> [cats <span class="pl-c1">3</span>
-       legs (<span class="pl-en">*</span> <span class="pl-c1">4</span> cats)]
- (<span class="pl-en">str</span> legs <span class="pl-s"><span class="pl-pds">"</span> legs all together<span class="pl-pds">"</span></span>))
+      legs (<span class="pl-en">*</span> <span class="pl-c1">4</span> cats)]
+  (<span class="pl-en">str</span> legs <span class="pl-s"><span class="pl-pds">"</span> legs all together<span class="pl-pds">"</span></span>))
 <span class="pl-c">;=&gt; "12 legs all together"</span></pre></div>
 
 <blockquote>
@@ -1660,7 +1659,7 @@ what-where=&gt; one-simbol
 
 what-where=&gt; (<span class="pl-en">resolve</span> 'one-simbol)
 <span class="pl-c">;=&gt; #'what-where/one-simbol  ;looks like namespace-qualified symbol</span>
-                         <span class="pl-c">;but it's just a characteristic of symbol evaluation</span>
+                             <span class="pl-c">;but it's just a characteristic of symbol evaluation</span>
 
 what-where=&gt; `one-symbol   <span class="pl-c">;back tick</span>
 <span class="pl-c">;=&gt; what-where/one-symbol</span></pre></div>
@@ -1670,7 +1669,7 @@ what-where=&gt; `one-symbol   <span class="pl-c">;back tick</span>
 
 <p>Functions are a first-class type in Clojure. They can be used the same as any value (stored in Vars, held in collections, passed as arguments and returned as a result of other functions).</p>
 
-<div class="highlight highlight-clj"><pre>let(<span class="pl-en"> [x]</span> (<span class="pl-en">+</span> x <span class="pl-c1">1</span>))</pre></div>
+<div class="highlight highlight-clj"><pre>(<span class="pl-k">let</span> [x] (<span class="pl-en">+</span> x <span class="pl-c1">1</span>))</pre></div>
 
 <p>We can’t actually evaluate this program, because there’s no value for <code>x</code> yet. It could be <code>1</code>, or <code>4</code>, or <code>1453</code>. We say that <code>x</code> is <em>unbound</em>, because it has no binding to a particular value. This is the nature of the <strong>function</strong>: an expression with unbound symbols.</p>
 
@@ -2021,7 +2020,7 @@ The <code>loop</code> acts exactly like <code>let</code> but provides a target f
 <span class="pl-c">;=&gt; nil</span></pre></div>
 
 <blockquote>
-<p><code>when</code> is same as <code>if</code>, except it doesn't have the <code>else</code> part and it requires an implicit <code>do</code> in order to perform side-effects</p>
+<p><code>when</code> is same as <code>if</code>, except it doesn't have the <code>else</code> part and it provides an implicit <code>do</code> in order to perform side-effects</p>
 </blockquote>
 
 <p>This is nearly identical to how you’d structure a while loop in an imperative language.One significant difference is that the value of <code>x</code> isn’t decremented somewhere in the body of the loop. Instead, a new value is calculated as a parameter to <code>recur</code>, which immediately does two things: rebinds <code>x</code> to the new value and returns control to the top of <code>print-down-from</code>.<br>
@@ -2182,7 +2181,7 @@ If the function has multiple arguments, the <code>recur</code> call must as well
 
 <p><code>take-while</code> and <code>drop-while</code> work just like <code>take</code> and <code>drop</code>, but use a function to decide when to stop:</p>
 
-<div class="highlight highlight-clj"><pre>(<span class="pl-en">take-while</span> pos? [<span class="pl-c1">3</span> <span class="pl-c1">2</span> <span class="pl-c1">1</span> <span class="pl-c1">0</span> -1 -2 <span class="pl-c1">10</span>])
+<div class="highlight highlight-clj"><pre>(<span class="pl-en">take-while</span> pos? [<span class="pl-c1">3</span> <span class="pl-c1">2</span> <span class="pl-c1">1</span> <span class="pl-c1">0</span> <span class="pl-c1">-1</span> <span class="pl-c1">-2</span> <span class="pl-c1">10</span>])
 <span class="pl-c">;=&gt; (3 2 1)</span></pre></div>
 
 <p>In general, one can cut a sequence in twain by using <code>split-at</code> with a particular index. There’s also <code>split-with</code>, which uses a function to decide when to cut:</p>
@@ -2196,7 +2195,7 @@ If the function has multiple arguments, the <code>recur</code> call must as well
 <p>Notice that because indexes start at zero, sequence functions tend to have predictable number of elements.<code>(split-at 4)</code> yields four elements in the first collection, and ensures the second collection begins at index four. <code>(range 10)</code> has ten elements, corresponding to the first ten indices in a sequence. <code>(range 3 5)</code> has two (as in <code>5 - 3 = 2</code>) elements. These choices simplify the definition of recursive functions as well.
 We can select particular elements from a sequence by applying a function. To pull up all positive numbers in a list, use <code>filter</code>:</p>
 
-<div class="highlight highlight-clj"><pre>(<span class="pl-en">filter</span> pos? [<span class="pl-c1">1</span> <span class="pl-c1">5</span> -4 -7 <span class="pl-c1">3</span> <span class="pl-c1">0</span>])
+<div class="highlight highlight-clj"><pre>(<span class="pl-en">filter</span> pos? [<span class="pl-c1">1</span> <span class="pl-c1">5</span> <span class="pl-c1">-4</span> <span class="pl-c1">-7</span> <span class="pl-c1">3</span> <span class="pl-c1">0</span>])
 <span class="pl-c">;=&gt; (1 5 3)</span></pre></div>
 
 <p><code>filter</code> looks at each element in turn, and includes it in the resulting sequence only if <code>(f element)</code> returns a <em>truthy</em> value. Its complement is <code>remove</code>, which only includes those elements where <code>(f element)</code> is <code>false</code> or <code>nil</code>:</p>
@@ -2211,17 +2210,17 @@ We can select particular elements from a sequence by applying a function. To pul
 
 <p>Separate a series of numbers into negative and positive subsequences:</p>
 
-<div class="highlight highlight-clj"><pre>(<span class="pl-en">partition-by</span> neg? [<span class="pl-c1">1</span> <span class="pl-c1">2</span> <span class="pl-c1">3</span> <span class="pl-c1">2</span> <span class="pl-c1">1</span> -1 -2 -3 -2 -1 <span class="pl-c1">1</span> <span class="pl-c1">2</span>])
+<div class="highlight highlight-clj"><pre>(<span class="pl-en">partition-by</span> neg? [<span class="pl-c1">1</span> <span class="pl-c1">2</span> <span class="pl-c1">3</span> <span class="pl-c1">2</span> <span class="pl-c1">1</span> <span class="pl-c1">-1</span> <span class="pl-c1">-2</span> <span class="pl-c1">-3</span> <span class="pl-c1">-2</span> <span class="pl-c1">-1</span> <span class="pl-c1">1</span> <span class="pl-c1">2</span>])
 <span class="pl-c">;=&gt; ((1 2 3 2 1) (-1 -2 -3 -2 -1) (1 2))</span></pre></div>
 
 <p><code>partition-all n collection</code> may include partitions with fewer than <code>n</code> items at the end:</p>
 
-<div class="highlight highlight-clj"><pre>(<span class="pl-en">partition-all</span> <span class="pl-c1">3</span> [<span class="pl-c1">1</span> <span class="pl-c1">2</span> -5 <span class="pl-c1">3</span> <span class="pl-c1">2</span> <span class="pl-c1">1</span> -1 -2 -3 -2 -1 <span class="pl-c1">1</span> <span class="pl-c1">2</span>])
+<div class="highlight highlight-clj"><pre>(<span class="pl-en">partition-all</span> <span class="pl-c1">3</span> [<span class="pl-c1">1</span> <span class="pl-c1">2</span> <span class="pl-c1">-5</span> <span class="pl-c1">3</span> <span class="pl-c1">2</span> <span class="pl-c1">1</span> <span class="pl-c1">-1</span> <span class="pl-c1">-2</span> <span class="pl-c1">-3</span> <span class="pl-c1">-2</span> <span class="pl-c1">-1</span> <span class="pl-c1">1</span> <span class="pl-c1">2</span>])
 <span class="pl-c">;=&gt; ((1 2 -5) (3 2 1) (-1 -2 -3) ( -2 -1 1) ( 2))</span></pre></div>
 
 <p>while <code>partition</code> may not:</p>
 
-<div class="highlight highlight-clj"><pre>(<span class="pl-en">partition</span> <span class="pl-c1">3</span> [<span class="pl-c1">1</span> <span class="pl-c1">2</span> -5 <span class="pl-c1">3</span> <span class="pl-c1">2</span> <span class="pl-c1">1</span> -1 -2 -3 -2 -1 <span class="pl-c1">1</span> <span class="pl-c1">2</span>])
+<div class="highlight highlight-clj"><pre>(<span class="pl-en">partition</span> <span class="pl-c1">3</span> [<span class="pl-c1">1</span> <span class="pl-c1">2</span> <span class="pl-c1">-5</span> <span class="pl-c1">3</span> <span class="pl-c1">2</span> <span class="pl-c1">1</span> <span class="pl-c1">-1</span> <span class="pl-c1">-2</span> <span class="pl-c1">-3</span> <span class="pl-c1">-2</span> <span class="pl-c1">-1</span> <span class="pl-c1">1</span> <span class="pl-c1">2</span>])
 <span class="pl-c">;=&gt; ((1 2 -5) (3 2 1) (-1 -2 -3) (-2 -1 1))</span></pre></div>
 
 <h3>
@@ -2289,7 +2288,7 @@ In general, we want to combine elements together in some way, using a function. 
 
 <p>Remember?</p>
 
-<div class="highlight highlight-clj"><pre>(<span class="pl-en">conj</span> [-1 <span class="pl-c1">0</span>] [<span class="pl-c1">1</span> <span class="pl-c1">2</span> <span class="pl-c1">3</span> <span class="pl-c1">4</span> <span class="pl-c1">5</span>])
+<div class="highlight highlight-clj"><pre>(<span class="pl-en">conj</span> [<span class="pl-c1">-1</span> <span class="pl-c1">0</span>] [<span class="pl-c1">1</span> <span class="pl-c1">2</span> <span class="pl-c1">3</span> <span class="pl-c1">4</span> <span class="pl-c1">5</span>])
 <span class="pl-c">;=&gt; [-1 0 [1 2 3 4 5]]               ; not [-1 0 1 2 3 4 5]</span></pre></div>
 
 <p>This looks like a <code>map</code> function. All that’s missing is some kind of transformation applied to each element:</p>
@@ -2317,7 +2316,7 @@ In general, we want to combine elements together in some way, using a function. 
 
 <p>We’re using a special function here, <code>reduced</code>, to indicate that we’ve completed our reduction early and can skip the rest of the sequence.</p>
 
-<div class="highlight highlight-clj"><pre>(<span class="pl-en">my-take-while</span> pos? [<span class="pl-c1">2</span> <span class="pl-c1">1</span> <span class="pl-c1">0</span> -1 <span class="pl-c1">0</span> <span class="pl-c1">1</span> <span class="pl-c1">2</span>])
+<div class="highlight highlight-clj"><pre>(<span class="pl-en">my-take-while</span> pos? [<span class="pl-c1">2</span> <span class="pl-c1">1</span> <span class="pl-c1">0</span> <span class="pl-c1">-1</span> <span class="pl-c1">0</span> <span class="pl-c1">1</span> <span class="pl-c1">2</span>])
 <span class="pl-c">;=&gt; [2 1]</span></pre></div>
 
 <p>Most of Clojure’s <strong>sequence functions are lazy</strong>. For instance, we can increment every number from zero to infinity:</p>
