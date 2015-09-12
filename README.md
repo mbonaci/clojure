@@ -1683,8 +1683,8 @@ We can also provide multiple bindings. Since Clojure doesn’t care about spacin
 
 ```clj
 (let [person "joseph"
-	   num-cats 186]
-   (str person " has " num-cats " cats!"))  ;the body
+      num-cats 186]
+  (str person " has " num-cats " cats!"))  ;the body
 ;=> "joseph has 186 cats!"
 ```
 
@@ -1692,8 +1692,8 @@ When multiple bindings are given, they are evaluated in order. Later bindings ca
 
 ```clj
 (let [cats 3
-	   legs (* 4 cats)]
- (str legs " legs all together"))
+      legs (* 4 cats)]
+  (str legs " legs all together"))
 ;=> "12 legs all together"
 ```
 
