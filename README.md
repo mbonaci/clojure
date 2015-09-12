@@ -1661,8 +1661,8 @@ The `let` expression first **takes a vector of bindings**: alternating symbols a
 “Let the symbol `cats` be `5`, and construct a string composed of `"I have "`, `cats`, and `" cats"`:
 
 ```clj
-(let [mice 5] (str "I have " mice " mice."))
-;=> "I have 5 mice."
+(let [cats 5] (str "I have " cats " cats."))
+;=> "I have 5 cats."
 ```
 
 Let bindings, also called **locals**, apply only within the `let` expression itself. They also override any existing definitions for symbols at that point in the program. For example, we can redefine addition to mean subtraction, for the duration of a `let`:
