@@ -1744,7 +1744,7 @@ what-where=> one-simbol
 
 what-where=> (resolve 'one-simbol)
 ;=> #'what-where/one-simbol  ;looks like namespace-qualified symbol
-						 ;but it's just a characteristic of symbol evaluation
+                             ;but it's just a characteristic of symbol evaluation
 
 what-where=> `one-symbol   ;back tick
 ;=> what-where/one-symbol
