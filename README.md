@@ -1755,7 +1755,7 @@ what-where=> `one-symbol   ;back tick
 Functions are a first-class type in Clojure. They can be used the same as any value (stored in Vars, held in collections, passed as arguments and returned as a result of other functions).
 
 ```clj
-let( [x] (+ x 1))
+(let [x] (+ x 1))
 ```
 
 We can’t actually evaluate this program, because there’s no value for `x` yet. It could be `1`, or `4`, or `1453`. We say that `x` is _unbound_, because it has no binding to a particular value. This is the nature of the __function__: an expression with unbound symbols.
