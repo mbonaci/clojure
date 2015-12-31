@@ -1946,7 +1946,7 @@ When you have a series or block of expressions that need to be treated as one, u
 ;=> 3
 ```
 
-The expressions `6` and `(+ 5 4)` are perfectly legal. The addition in `(+ 5 4)` is even done, but the value is thrown away, only the final expression `3` is returned
+The expressions `6` and `(+ 5 4)` are perfectly legal. The addition in `(+ 5 4)` is even done, but the value is thrown away, only the final expression `3` is returned.
 
 ## How does `type` work?
 
