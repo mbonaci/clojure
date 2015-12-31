@@ -2925,7 +2925,7 @@ A useful feature of vector destructuring is `:as`, which is used to bind a local
 
 ```clj
 (let [range-vec (vec (range 10))
-  [a b c & more :as all] range-vec]
+      [a b c & more :as all] range-vec]
   (println "a b c are: " a b c)
   (println "the rest is " more)
   (println "all is: " all))
