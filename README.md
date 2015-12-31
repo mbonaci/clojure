@@ -2399,7 +2399,7 @@ Separate a series of numbers into negative and positive subsequences:
 
 ```clj
 (partition-all 3 [1 2 -5 3 2 1 -1 -2 -3 -2 -1 1 2])
-;=> ((1 2 -5) (3 2 1) (-1 -2 -3) ( -2 -1 1) ( 2))
+;=> ((1 2 -5) (3 2 1) (-1 -2 -3) (-2 -1 1) (2))
 ```
 
 while `partition` may not:
