@@ -2160,7 +2160,7 @@ Clojure has a _special form_ called `recur` that's specifically used for tail re
 
 > `when` is same as `if`, except it doesn't have the `else` part and it provides an implicit `do` in order to perform side-effects
 
-This is nearly identical to how you’d structure a while loop in an imperative language.One significant difference is that the value of `x` isn’t decremented somewhere in the body of the loop. Instead, a new value is calculated as a parameter to `recur`, which immediately does two things: rebinds `x` to the new value and returns control to the top of `print-down-from`.  
+This is nearly identical to how you’d structure a while loop in an imperative language. One significant difference is that the value of `x` isn’t decremented somewhere in the body of the loop. Instead, a new value is calculated as a parameter to `recur`, which immediately does two things: rebinds `x` to the new value and returns control to the top of `print-down-from`.  
 If the function has multiple arguments, the `recur` call must as well, just as if you were calling the function by name instead of using the `recur` special form. And just as with a function call, the expressions in the `recur` are evaluated in order first and only then bound to the function arguments simultaneously.
 
 ## Building Sequences
