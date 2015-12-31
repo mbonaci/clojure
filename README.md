@@ -2333,9 +2333,7 @@ To randomize the order of a sequence, use `shuffle`:
 
 ## Subsequences
 
-`take` selects the first `n` elements
-`drop` removes the first `n` elements
-`take-last` and `drop-last` operate on the last `n` elements:
+`take` selects the first `n` elements, `drop` removes the first `n` elements, `take-last` and `drop-last` operate on the last `n` elements:
 
 ```clj
 (take 3 (range 10))
