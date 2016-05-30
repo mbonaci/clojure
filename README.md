@@ -714,7 +714,7 @@ the `.` (dot) operator used for Java interoperability purposes.
 ;=> (1 2 3)
 ```
 
-Remember, we quote lists (any everything else needed quoting) with a `'` (or `quote`) to prevent them from being evaluated.  
+Remember, we quote lists (and everything else that needs quoting) with a `'` (or `quote`) to prevent them from being evaluated.  
 
 ```clj
 '(1 2 3)
@@ -1549,7 +1549,7 @@ Now that you saw this crucial image, take a look at the next one (let's keep our
 
 <img src="https://github.com/mbonaci/clojure/raw/master/resources/UnbalancedBinaryTree-04.png" alt="{:val 50, :L nil, :R nil}" title="Unbalanced binary tree with a single node" width="133px" style="margin-left: auto; display: block; margin-right: auto;" />
 
-How in earth did element `40` ended up there?
+How on earth did element `40` ended up there?
 
 
 ```clj
