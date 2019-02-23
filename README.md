@@ -4,7 +4,7 @@ _Inspired by Aphyr's excellent, Clojure from-the-ground-up tutorial and made pos
 _Inspired? Made possible? Who am I kidding, I flat out stole from those kind people._
 
 
-## Clojure? That's a Lisp, for god's sake!
+## Clojure? That's a Lisp, for God's sake!
 
 I've been avoiding Clojure for a _long time_. Because it's a _Lisp dialect_ and I have a negative Lisp experience from school. It was either a bad timing or a bad teacher, I guess.  
 Hmm, I guess my guessing about it, in itself, implies the answer :) 
@@ -36,8 +36,8 @@ It is built on three great facilities, **immutable data, first-class functions a
 
 > To picture this, think of a tree that gets a new node. Nodes of the new tree simply point to nodes of the old tree, so that, consequently, only a single full-blown node object gets created.
 
-# Set the fuck up!
-### And gimme PRs
+# Setup
+### Open PRs
 
 <img src="https://github.com/mbonaci/clojure/raw/master/resources/lein.jpg"
  alt="Leiningen logo" title="The man himself" align="right" />
